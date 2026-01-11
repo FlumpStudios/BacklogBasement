@@ -42,17 +42,17 @@ namespace BacklogBasement.Services
             if (localGames.Count < 5)
             {
                 var igdbGames = await _igdbService.SearchGamesAsync(query);
-                    System.Console.WriteLine($"IGDB search returned {igdbGames.Count()} games");
-                                    foreach (var igdbGame in igdbGames)
-                    {
-                        System.Console.WriteLine($"IGDB game: {igdbGame.Name}, ID: {igdbGame.Id}, Cover: {(igdbGame.Cover != null ? "exists" : "null")}, ImageId: {igdbGame.Cover}");
-                        
-                        // Check if already in local database
-                        var existingGame = await _context.Games
-                            .FirstOrDefaultAsync(g => g.IgdbId == igdbGame.Id);
+                System.Console.WriteLine($"IGDB search returned {igdbGames.Count()} games");
+                foreach (var igdbGame in igdbGames)
+                {
+                    System.Console.WriteLine($"IGDB game: {igdbGame.Name}, ID: {igdbGame.Id}, Cover: {(igdbGame.Cover != null ? "exists" : "null")}, ImageId: {igdbGame.Cover}");
 
-                        if (existingGame == null)
-                        {
+                    // Check if already in local database
+                    var existingGame = await _context.Games
+                        .FirstOrDefaultAsync(g => g.IgdbId == igdbGame.Id);
+
+                    if (existingGame == null)
+                    {
                         // Add to local database
                         var newGame = new Game
                         {
@@ -60,11 +60,11 @@ namespace BacklogBasement.Services
                             IgdbId = igdbGame.Id,
                             Name = igdbGame.Name,
                             Summary = igdbGame.Summary ?? string.Empty,
-                            ReleaseDate = igdbGame.FirstReleaseDate.HasValue 
-                                ? DateTimeOffset.FromUnixTimeSeconds(igdbGame.FirstReleaseDate.Value).DateTime 
+                            ReleaseDate = igdbGame.first_release_date.HasValue
+                                ? DateTimeOffset.FromUnixTimeSeconds(igdbGame.first_release_date.Value).DateTime
                                 : null,
-                            CoverUrl = igdbGame.Cover != null && !string.IsNullOrWhiteSpace(igdbGame.Cover)
-                                ? $"https://images.igdb.com/igdb/image/upload/t_cover_big/{igdbGame?.Cover}.jpg" 
+                            CoverUrl = igdbGame.Cover != null && !string.IsNullOrWhiteSpace(igdbGame.Cover.image_id)
+                                ? $"https://images.igdb.com/igdb/image/upload/t_cover_big/{igdbGame?.Cover.image_id}.jpg"
                                 : null,
                             CreatedAt = DateTime.UtcNow
                         };
@@ -137,11 +137,11 @@ namespace BacklogBasement.Services
                 IgdbId = igdbGame.Id,
                 Name = igdbGame.Name,
                 Summary = igdbGame.Summary ?? string.Empty,
-                ReleaseDate = igdbGame.FirstReleaseDate.HasValue 
-                    ? DateTimeOffset.FromUnixTimeSeconds(igdbGame.FirstReleaseDate.Value).DateTime 
+                ReleaseDate = igdbGame.first_release_date.HasValue
+                    ? DateTimeOffset.FromUnixTimeSeconds(igdbGame.first_release_date.Value).DateTime
                     : null,
-                CoverUrl = igdbGame.Cover != null && !string.IsNullOrWhiteSpace(igdbGame.Cover)
-                    ? $"https://images.igdb.com/igdb/image/upload/t_cover_big/{igdbGame.Cover}.jpg" 
+                CoverUrl = igdbGame.Cover != null && !string.IsNullOrWhiteSpace(igdbGame.Cover.image_id)
+                    ? $"https://images.igdb.com/igdb/image/upload/t_cover_big/{igdbGame.Cover}.jpg"
                     : null,
                 CreatedAt = DateTime.UtcNow
             };

@@ -14,12 +14,12 @@ namespace BacklogBasement.Services
         public long Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string? Summary { get; set; }
-        public long? FirstReleaseDate { get; set; }
-        public string? Cover { get; set; }
+        public long? first_release_date { get; set; }
+        public IgdbCover? Cover { get; set; }
     }
 
     public class IgdbCover
-    {
-        public string ImageId { get; set; } = string.Empty;
+    {   
+        public string image_id { get; set; } = string.Empty;
     }
 }

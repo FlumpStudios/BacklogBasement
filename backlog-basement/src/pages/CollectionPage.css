@@ -1,0 +1,17 @@
+.collection-page {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.collection-header {
+  margin-bottom: var(--spacing-xl);
+}
+
+.collection-header h1 {
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.collection-subtitle {
+  color: var(--color-text-secondary);
+  margin: 0;
+}

@@ -1,0 +1,23 @@
+.not-found-page {
+  text-align: center;
+  padding: var(--spacing-xxl);
+  min-height: calc(100vh - 200px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.not-found-icon {
+  font-size: 6rem;
+  margin-bottom: var(--spacing-lg);
+}
+
+.not-found-page h1 {
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.not-found-page p {
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-xl) 0;
+}

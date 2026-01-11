@@ -1,0 +1,7 @@
+export { LandingPage } from './LandingPage';
+export { LoginPage } from './LoginPage';
+export { DashboardPage } from './DashboardPage';
+export { SearchPage } from './SearchPage';
+export { CollectionPage } from './CollectionPage';
+export { GameDetailPage } from './GameDetailPage';
+export { NotFoundPage } from './NotFoundPage';

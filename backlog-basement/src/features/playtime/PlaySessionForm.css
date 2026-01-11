@@ -1,0 +1,22 @@
+.play-session-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.duration-inputs {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.duration-input {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.duration-label {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}

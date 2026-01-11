@@ -1,0 +1,28 @@
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-xxl);
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.empty-state-icon {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: var(--spacing-lg);
+}
+
+.empty-state-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 var(--spacing-sm) 0;
+  color: var(--color-text);
+}
+
+.empty-state-description {
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-lg) 0;
+}
+
+.empty-state-action {
+  margin-top: var(--spacing-lg);
+}

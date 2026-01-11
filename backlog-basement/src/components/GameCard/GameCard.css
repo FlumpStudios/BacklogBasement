@@ -1,0 +1,75 @@
+.game-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.game-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.game-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.game-card-cover {
+  aspect-ratio: 3 / 4;
+  background: var(--color-surface-elevated);
+  overflow: hidden;
+}
+
+.game-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.game-card-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  background: linear-gradient(135deg, var(--color-surface), var(--color-surface-elevated));
+}
+
+.game-card-info {
+  padding: var(--spacing-md);
+}
+
+.game-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 var(--spacing-xs) 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.game-card-year {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.game-card-playtime {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--color-primary);
+  margin-top: var(--spacing-xs);
+}
+
+.game-card-actions {
+  padding: 0 var(--spacing-md) var(--spacing-md);
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.game-card-actions .btn {
+  flex: 1;
+}

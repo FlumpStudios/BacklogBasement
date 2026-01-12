@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useCollection, useRemoveFromCollection } from '../hooks';
 import { CollectionStats } from '../features/collection';
 import { GameGrid } from '../features/games';
-import { EmptyState, useToast } from '../components';
+import { EmptyState, useToast, SteamSection } from '../components';
 import { CollectionItemDto } from '../types';
 import './CollectionPage.css';
 
@@ -50,6 +50,8 @@ export function CollectionPage() {
           All the games in your personal library
         </p>
       </header>
+
+      <SteamSection />
 
       {collection && collection.length > 0 ? (
         <>

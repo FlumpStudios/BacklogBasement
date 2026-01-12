@@ -1,7 +1,8 @@
 // Game DTOs - matches backend GameDto/GameSummaryDto
 export interface GameDto {
   id: string;
-  igdbId: number;
+  igdbId?: number | null;
+  steamAppId?: number | null;
   name: string;
   coverUrl?: string | null;
   releaseDate?: string | null;
@@ -45,6 +46,49 @@ export interface UserDto {
   email: string;
   displayName: string;
   avatarUrl?: string;
+  steamId?: string | null;
+  hasSteamLinked?: boolean;
+}
+
+// Steam DTOs
+export interface SteamStatusDto {
+  isLinked: boolean;
+  steamId?: string | null;
+}
+
+export interface SteamImportRequest {
+  includePlaytime: boolean;
+}
+
+export interface SteamImportResult {
+  totalGames: number;
+  importedCount: number;
+  skippedCount: number;
+  failedCount: number;
+  importedGames: SteamImportedGameDto[];
+  skippedGames: SteamSkippedGameDto[];
+  failedGames: SteamFailedGameDto[];
+}
+
+export interface SteamImportedGameDto {
+  gameId: string;
+  name: string;
+  steamAppId: number;
+  igdbId?: number | null;
+  matchedToIgdb: boolean;
+  playtimeMinutes?: number | null;
+}
+
+export interface SteamSkippedGameDto {
+  name: string;
+  steamAppId: number;
+  reason: string;
+}
+
+export interface SteamFailedGameDto {
+  name: string;
+  steamAppId: number;
+  error: string;
 }
 
 // API Response types

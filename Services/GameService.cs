@@ -32,6 +32,7 @@ namespace BacklogBasement.Services
                 {
                     Id = g.Id,
                     IgdbId = g.IgdbId,
+                    SteamAppId = g.SteamAppId,
                     Name = g.Name,
                     ReleaseDate = g.ReleaseDate,
                     CoverUrl = g.CoverUrl
@@ -76,6 +77,7 @@ namespace BacklogBasement.Services
                         {
                             Id = newGame.Id,
                             IgdbId = newGame.IgdbId,
+                            SteamAppId = newGame.SteamAppId,
                             Name = newGame.Name,
                             ReleaseDate = newGame.ReleaseDate,
                             CoverUrl = newGame.CoverUrl
@@ -97,6 +99,7 @@ namespace BacklogBasement.Services
             {
                 Id = game.Id,
                 IgdbId = game.IgdbId,
+                SteamAppId = game.SteamAppId,
                 Name = game.Name,
                 Summary = game.Summary,
                 ReleaseDate = game.ReleaseDate,
@@ -116,6 +119,7 @@ namespace BacklogBasement.Services
                 {
                     Id = game.Id,
                     IgdbId = game.IgdbId,
+                    SteamAppId = game.SteamAppId,
                     Name = game.Name,
                     Summary = game.Summary,
                     ReleaseDate = game.ReleaseDate,
@@ -153,6 +157,7 @@ namespace BacklogBasement.Services
             {
                 Id = game.Id,
                 IgdbId = game.IgdbId,
+                SteamAppId = game.SteamAppId,
                 Name = game.Name,
                 Summary = game.Summary,
                 ReleaseDate = game.ReleaseDate,

@@ -60,5 +60,35 @@ namespace BacklogBasement.Services
 
             return userId;
         }
+
+        public async Task<User?> LinkSteamAsync(Guid userId, string steamId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+                return null;
+
+            // Check if this Steam ID is already linked to another account
+            var existingUser = await _context.Users
+                .FirstOrDefaultAsync(u => u.SteamId == steamId && u.Id != userId);
+            if (existingUser != null)
+                throw new InvalidOperationException("This Steam account is already linked to another user");
+
+            user.SteamId = steamId;
+            await _context.SaveChangesAsync();
+
+            return user;
+        }
+
+        public async Task<User?> UnlinkSteamAsync(Guid userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+                return null;
+
+            user.SteamId = null;
+            await _context.SaveChangesAsync();
+
+            return user;
+        }
     }
 }

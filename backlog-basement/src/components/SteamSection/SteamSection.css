@@ -1,0 +1,258 @@
+.steam-section {
+  background: var(--surface-elevated);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.steam-section h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+}
+
+.steam-linked {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.steam-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.steam-status-icon {
+  color: var(--success);
+  font-size: 1.25rem;
+}
+
+.steam-id {
+  font-family: monospace;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-left: 0.5rem;
+}
+
+.steam-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.steam-not-linked p {
+  color: var(--text-secondary);
+  margin: 0 0 1rem 0;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--border);
+}
+
+.btn-steam {
+  background: #1b2838;
+  color: white;
+}
+
+.btn-steam:hover:not(:disabled) {
+  background: #2a475e;
+}
+
+.steam-icon {
+  flex-shrink: 0;
+}
+
+/* Import Modal Styles */
+.import-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.import-options p {
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  padding: 0.75rem;
+  background: var(--surface-hover);
+  border-radius: 8px;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: var(--primary);
+}
+
+.import-note {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+/* Import Results */
+.import-results {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.import-summary h4 {
+  margin: 0 0 1rem 0;
+  color: var(--text-primary);
+}
+
+.import-stats {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--surface-hover);
+  border-radius: 8px;
+  min-width: 80px;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.stat-success .stat-value {
+  color: var(--success);
+}
+
+.stat-skipped .stat-value {
+  color: var(--warning);
+}
+
+.stat-failed .stat-value {
+  color: var(--error);
+}
+
+.import-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.import-list h5 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.import-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.import-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border);
+}
+
+.import-list li:last-child {
+  border-bottom: none;
+}
+
+.import-list li.more {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.badge {
+  font-size: 0.625rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.badge-igdb {
+  background: var(--primary);
+  color: white;
+}
+
+.playtime {
+  margin-left: auto;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.reason {
+  margin-left: auto;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.import-list-skipped {
+  opacity: 0.8;
+}

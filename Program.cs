@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
+using AspNet.Security.OpenId.Steam;
 using BacklogBasement.Data;
 using BacklogBasement.Services;
 using BacklogBasement.Middleware;
@@ -56,7 +57,7 @@ public class Program
                 options.Cookie.Name = "backlog-basement-auth";
                 options.Cookie.HttpOnly = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.Cookie.SameSite = SameSiteMode.None; // Important for cross-origin
+                options.Cookie.SameSite = SameSiteMode.None; // Required for cross-origin
                 options.LoginPath = "/auth/login";
                 options.LogoutPath = "/auth/logout";
                 options.AccessDeniedPath = "/auth/access-denied";
@@ -74,6 +75,16 @@ public class Program
                 options.ClaimActions.MapJsonKey("sub", "sub");
                 options.ClaimActions.MapJsonKey("email", "email");
                 options.ClaimActions.MapJsonKey("name", "name");
+            })
+            .AddSteam(options =>
+            {
+                options.ApplicationKey = builder.Configuration["Steam:ApiKey"]
+                    ?? throw new InvalidOperationException("Steam:ApiKey not configured");
+                options.CallbackPath = "/signin-steam"; // Use default path, avoid conflict with controller
+
+                // Configure correlation cookie for the OAuth flow
+                options.CorrelationCookie.SameSite = SameSiteMode.None;
+                options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
             });
 
         // Add authorization
@@ -93,6 +104,10 @@ public class Program
             builder.Services.AddScoped<IIgdbService, IgdbService>();
             builder.Services.AddHttpClient<IIgdbService, IgdbService>();
         }
+
+        // Register Steam services
+        builder.Services.AddHttpClient<ISteamService, SteamService>();
+        builder.Services.AddScoped<ISteamImportService, SteamImportService>();
 
         var app = builder.Build();
 

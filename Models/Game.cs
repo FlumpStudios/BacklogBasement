@@ -6,7 +6,8 @@ namespace BacklogBasement.Models
     public class Game
     {
         public Guid Id { get; set; }
-        public long IgdbId { get; set; }
+        public long? IgdbId { get; set; }
+        public long? SteamAppId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Summary { get; set; } = string.Empty;
         public DateTime? ReleaseDate { get; set; }

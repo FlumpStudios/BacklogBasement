@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using AspNet.Security.OpenId.Steam;
 using BacklogBasement.Services;
 using System.Threading.Tasks;
 using System.Security.Claims;
@@ -14,11 +15,13 @@ namespace BacklogBasement.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly ILogger<AuthController> _logger;
         private readonly string _frontendUrl;
 
-        public AuthController(IUserService userService, IConfiguration configuration)
+        public AuthController(IUserService userService, IConfiguration configuration, ILogger<AuthController> logger)
         {
             _userService = userService;
+            _logger = logger;
             _frontendUrl = configuration["FrontendUrl"] ?? "http://localhost:5173";
         }
 
@@ -113,8 +116,104 @@ namespace BacklogBasement.Controllers
                 id = user.Id.ToString(),
                 email = user.Email,
                 name = user.DisplayName,
-                googleId = user.GoogleSubjectId
+                googleId = user.GoogleSubjectId,
+                steamId = user.SteamId,
+                hasSteamLinked = !string.IsNullOrEmpty(user.SteamId)
             });
+        }
+
+        [HttpGet("link-steam")]
+        [Authorize]
+        public IActionResult LinkSteam()
+        {
+            // Store the user's ID in the authentication properties so we can use it in the callback
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var properties = new AuthenticationProperties
+            {
+                RedirectUri = Url.Action("SteamCallback"),
+                Items = { { "UserId", userId } }
+            };
+            return Challenge(properties, SteamAuthenticationDefaults.AuthenticationScheme);
+        }
+
+        [HttpGet("callback/steam")]
+        public async Task<IActionResult> SteamCallback()
+        {
+            try
+            {
+                _logger.LogInformation("Steam callback initiated");
+
+                // Authenticate with Steam to get the Steam identity
+                var authenticateResult = await HttpContext.AuthenticateAsync(SteamAuthenticationDefaults.AuthenticationScheme);
+
+                if (!authenticateResult.Succeeded)
+                {
+                    _logger.LogWarning("Steam authentication failed: {Failure}", authenticateResult.Failure?.Message ?? "Unknown");
+                    return Redirect($"{_frontendUrl}/?steam=error&message=authentication_failed");
+                }
+
+                _logger.LogInformation("Steam authentication succeeded");
+
+                // Get the Steam ID from the claims
+                // Steam's OpenID returns the Steam ID in the NameIdentifier claim as a URL like:
+                // https://steamcommunity.com/openid/id/76561198012345678
+                var steamIdentifier = authenticateResult.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                _logger.LogInformation("Steam identifier from claims: {SteamIdentifier}", steamIdentifier ?? "null");
+
+                if (string.IsNullOrEmpty(steamIdentifier))
+                {
+                    _logger.LogWarning("No Steam ID found in claims");
+                    return Redirect($"{_frontendUrl}/?steam=error&message=no_steam_id");
+                }
+
+                // Extract the Steam ID from the URL (last segment)
+                var steamId = steamIdentifier.Split('/').Last();
+                _logger.LogInformation("Extracted Steam ID: {SteamId}", steamId);
+
+                // Get the current user's ID from the authentication properties or from the cookie
+                var userId = _userService.GetCurrentUserId();
+                _logger.LogInformation("Current user ID from cookie: {UserId}", userId?.ToString() ?? "null");
+
+                if (userId == null)
+                {
+                    _logger.LogWarning("User not logged in during Steam callback");
+                    return Redirect($"{_frontendUrl}/?steam=error&message=not_logged_in");
+                }
+
+                // Link the Steam account to the user
+                await _userService.LinkSteamAsync(userId.Value, steamId);
+                _logger.LogInformation("Successfully linked Steam ID {SteamId} to user {UserId}", steamId, userId);
+                return Redirect($"{_frontendUrl}/?steam=success");
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning(ex, "Steam account already linked");
+                return Redirect($"{_frontendUrl}/?steam=error&message=already_linked");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error during Steam callback");
+                return Redirect($"{_frontendUrl}/?steam=error&message=unexpected_error");
+            }
+        }
+
+        [HttpDelete("unlink-steam")]
+        [Authorize]
+        public async Task<IActionResult> UnlinkSteam()
+        {
+            var userId = _userService.GetCurrentUserId();
+            if (userId == null)
+                return Unauthorized();
+
+            var user = await _userService.UnlinkSteamAsync(userId.Value);
+            if (user == null)
+                return NotFound();
+
+            return Ok(new { message = "Steam account unlinked successfully" });
         }
     }
 }

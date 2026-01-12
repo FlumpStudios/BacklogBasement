@@ -24,10 +24,21 @@ namespace BacklogBasement.Data
                 .HasIndex(u => u.GoogleSubjectId)
                 .IsUnique();
 
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.SteamId)
+                .IsUnique()
+                .HasFilter("[SteamId] IS NOT NULL");
+
             // Configure Game entity
             modelBuilder.Entity<Game>()
                 .HasIndex(g => g.IgdbId)
-                .IsUnique();
+                .IsUnique()
+                .HasFilter("[IgdbId] IS NOT NULL");
+
+            modelBuilder.Entity<Game>()
+                .HasIndex(g => g.SteamAppId)
+                .IsUnique()
+                .HasFilter("[SteamAppId] IS NOT NULL");
 
             // Configure UserGame entity
             modelBuilder.Entity<UserGame>()

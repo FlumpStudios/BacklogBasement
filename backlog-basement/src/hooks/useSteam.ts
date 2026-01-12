@@ -1,0 +1,46 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { steamApi } from '../api';
+import { SteamImportRequest } from '../types';
+import { COLLECTION_QUERY_KEY } from './useCollection';
+
+export const STEAM_STATUS_QUERY_KEY = ['steam', 'status'];
+
+export function useSteamStatus() {
+  return useQuery({
+    queryKey: STEAM_STATUS_QUERY_KEY,
+    queryFn: steamApi.getStatus,
+  });
+}
+
+export function useSteamLink() {
+  return {
+    linkUrl: steamApi.getLinkUrl(),
+    link: () => {
+      window.location.href = steamApi.getLinkUrl();
+    },
+  };
+}
+
+export function useSteamUnlink() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: steamApi.unlink,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: STEAM_STATUS_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
+    },
+  });
+}
+
+export function useSteamImport() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (request: SteamImportRequest) => steamApi.importLibrary(request),
+    onSuccess: () => {
+      // Invalidate collection to show newly imported games
+      queryClient.invalidateQueries({ queryKey: COLLECTION_QUERY_KEY });
+    },
+  });
+}

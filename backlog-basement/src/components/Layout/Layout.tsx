@@ -1,5 +1,6 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth';
+import { ThemeToggle } from '../ThemeToggle';
 import './Layout.css';
 
 export function Layout() {
@@ -32,6 +33,7 @@ export function Layout() {
                 <Link to="/search" className="nav-link">
                   Search
                 </Link>
+                <ThemeToggle />
                 <div className="user-menu">
                   {user?.avatarUrl && (
                     <img
@@ -47,9 +49,12 @@ export function Layout() {
                 </div>
               </>
             ) : (
-              <Link to="/login" className="btn btn-primary">
-                Sign In
-              </Link>
+              <>
+                <ThemeToggle />
+                <Link to="/login" className="btn btn-primary">
+                  Sign In
+                </Link>
+              </>
             )}
           </nav>
         </div>

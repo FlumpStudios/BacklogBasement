@@ -16,6 +16,7 @@ namespace BacklogBasement.Services
         public int Playtime2Weeks { get; set; } // Playtime in last 2 weeks in minutes
         public string? ImgIconUrl { get; set; }
         public string? ImgLogoUrl { get; set; }
+        public string? HeaderUrl { get; set; } // Steam CDN header image (460x215)
     }
 
     public class SteamOwnedGamesResponse

@@ -75,7 +75,9 @@ namespace BacklogBasement.Services
                         : null,
                     ImgLogoUrl = !string.IsNullOrEmpty(g.Img_Logo_Url)
                         ? $"https://media.steampowered.com/steamcommunity/public/images/apps/{g.Appid}/{g.Img_Logo_Url}.jpg"
-                        : null
+                        : null,
+                    // Use Steam CDN header image - more reliable than logo hash
+                    HeaderUrl = $"https://cdn.akamai.steamstatic.com/steam/apps/{g.Appid}/header.jpg"
                 }).ToList();
 
                 _logger.LogInformation("Successfully fetched {Count} games for Steam ID: {SteamId}", games.Count, steamId);

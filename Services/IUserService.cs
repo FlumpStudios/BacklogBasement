@@ -9,6 +9,7 @@ namespace BacklogBasement.Services
         Task<User> GetOrCreateUserAsync(string googleSubjectId, string email, string displayName);
         Task<User?> GetCurrentUserAsync();
         Guid? GetCurrentUserId();
+        Guid? GetCachedCurrentUserId();
         Task<User?> LinkSteamAsync(Guid userId, string steamId);
         Task<User?> UnlinkSteamAsync(Guid userId);
     }

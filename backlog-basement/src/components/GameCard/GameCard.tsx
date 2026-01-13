@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { GameDto } from '../../types';
 import { formatPlaytime, getYear } from '../../utils';
@@ -20,17 +21,21 @@ function isValidCoverUrl(url?: string | null): boolean {
 export function GameCard({ game, playtime, showPlaytime = false, actions }: GameCardProps) {
   const releaseYear = getYear(game.releaseDate ?? undefined);
   const hasCover = isValidCoverUrl(game.coverUrl);
+  const [imageError, setImageError] = useState(false);
+
+  const showPlaceholder = !hasCover || imageError;
 
   return (
     <div className="game-card">
       <Link to={`/games/${game.id}`} className="game-card-link">
         <div className="game-card-cover">
-          {hasCover ? (
+          {!showPlaceholder ? (
             <img
               src={game.coverUrl!}
               alt={game.name}
               loading="lazy"
               className="game-card-image"
+              onError={() => setImageError(true)}
             />
           ) : (
             <div className="game-card-placeholder">

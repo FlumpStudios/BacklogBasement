@@ -51,6 +51,14 @@ namespace BacklogBasement.Services
 
             return await _context.Users.FindAsync(userId);
         }
+        public Guid? GetCachedCurrentUserId()
+        {
+            var userIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst("UserId");
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+                return null;
+
+            return userId;
+        }
 
         public Guid? GetCurrentUserId()
         {

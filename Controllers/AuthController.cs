@@ -7,6 +7,7 @@ using BacklogBasement.Services;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using BacklogBasement.Models;
+using System.Linq;
 
 namespace BacklogBasement.Controllers
 {
@@ -102,23 +103,24 @@ namespace BacklogBasement.Controllers
             var email = User.FindFirst(ClaimTypes.Email)?.Value;
             var displayName = User.FindFirst(ClaimTypes.Name)?.Value;
 
-            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(email))
-                return Unauthorized();
+            if (string.IsNullOrEmpty(userId))
+                return Forbid();
 
             // Get the user and return full user info
             var user = await _userService.GetCurrentUserAsync();
             
             if (user == null)
-                return Unauthorized();
+                return Forbid();
 
             return Ok(new
             {
                 id = user.Id.ToString(),
-                email = user.Email,
+                email = user.Email ?? string.Empty,
                 name = user.DisplayName,
                 googleId = user.GoogleSubjectId,
                 steamId = user.SteamId,
-                hasSteamLinked = !string.IsNullOrEmpty(user.SteamId)
+                hasSteamLinked = true
+
             });
         }
 
@@ -175,7 +177,7 @@ namespace BacklogBasement.Controllers
                 _logger.LogInformation("Extracted Steam ID: {SteamId}", steamId);
 
                 // Get the current user's ID from the authentication properties or from the cookie
-                var userId = _userService.GetCurrentUserId();
+                var userId = authenticateResult.Properties.Items["UserId"];
                 _logger.LogInformation("Current user ID from cookie: {UserId}", userId?.ToString() ?? "null");
 
                 if (userId == null)
@@ -185,7 +187,7 @@ namespace BacklogBasement.Controllers
                 }
 
                 // Link the Steam account to the user
-                await _userService.LinkSteamAsync(userId.Value, steamId);
+                await _userService.LinkSteamAsync(new Guid(userId), steamId);
                 _logger.LogInformation("Successfully linked Steam ID {SteamId} to user {UserId}", steamId, userId);
                 return Redirect($"{_frontendUrl}/?steam=success");
             }

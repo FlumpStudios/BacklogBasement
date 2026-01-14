@@ -119,8 +119,7 @@ namespace BacklogBasement.Controllers
                 name = user.DisplayName,
                 googleId = user.GoogleSubjectId,
                 steamId = user.SteamId,
-                hasSteamLinked = true
-
+                hasSteamLinked = !string.IsNullOrEmpty(user.SteamId)
             });
         }
 
@@ -154,7 +153,7 @@ namespace BacklogBasement.Controllers
                 if (!authenticateResult.Succeeded)
                 {
                     _logger.LogWarning("Steam authentication failed: {Failure}", authenticateResult.Failure?.Message ?? "Unknown");
-                    return Redirect($"{_frontendUrl}/?steam=error&message=authentication_failed");
+                    return Redirect($"{_frontendUrl}/collection?steam=error&message=authentication_failed");
                 }
 
                 _logger.LogInformation("Steam authentication succeeded");
@@ -169,37 +168,61 @@ namespace BacklogBasement.Controllers
                 if (string.IsNullOrEmpty(steamIdentifier))
                 {
                     _logger.LogWarning("No Steam ID found in claims");
-                    return Redirect($"{_frontendUrl}/?steam=error&message=no_steam_id");
+                    return Redirect($"{_frontendUrl}/collection?steam=error&message=no_steam_id");
                 }
 
                 // Extract the Steam ID from the URL (last segment)
                 var steamId = steamIdentifier.Split('/').Last();
                 _logger.LogInformation("Extracted Steam ID: {SteamId}", steamId);
 
-                // Get the current user's ID from the authentication properties or from the cookie
+                // Get the current user's ID from the authentication properties
                 var userId = authenticateResult.Properties.Items["UserId"];
-                _logger.LogInformation("Current user ID from cookie: {UserId}", userId?.ToString() ?? "null");
+                _logger.LogInformation("User ID from auth properties: {UserId}", userId?.ToString() ?? "null");
 
                 if (userId == null)
                 {
                     _logger.LogWarning("User not logged in during Steam callback");
-                    return Redirect($"{_frontendUrl}/?steam=error&message=not_logged_in");
+                    return Redirect($"{_frontendUrl}/collection?steam=error&message=not_logged_in");
                 }
 
                 // Link the Steam account to the user
-                await _userService.LinkSteamAsync(new Guid(userId), steamId);
+                var user = await _userService.LinkSteamAsync(new Guid(userId), steamId);
+
+                if (user == null)
+                {
+                    _logger.LogWarning("User {UserId} not found during Steam linking", userId);
+                    return Redirect($"{_frontendUrl}/collection?steam=error&message=user_not_found");
+                }
+
                 _logger.LogInformation("Successfully linked Steam ID {SteamId} to user {UserId}", steamId, userId);
-                return Redirect($"{_frontendUrl}/?steam=success");
+
+                // Re-sign in the user with their original Google credentials
+                // This is necessary because Steam auth replaced the cookie
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.Name, user.DisplayName),
+                    new Claim("GoogleId", user.GoogleSubjectId)
+                };
+
+                var identity = new ClaimsIdentity(claims, "Google");
+                var principal = new ClaimsPrincipal(identity);
+
+                await HttpContext.SignInAsync("Cookies", principal);
+                _logger.LogInformation("Re-signed in user {UserId} after Steam linking", userId);
+
+                return Redirect($"{_frontendUrl}/collection?steam=linked");
             }
             catch (InvalidOperationException ex)
             {
                 _logger.LogWarning(ex, "Steam account already linked");
-                return Redirect($"{_frontendUrl}/?steam=error&message=already_linked");
+                return Redirect($"{_frontendUrl}/collection?steam=error&message=already_linked");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unexpected error during Steam callback");
-                return Redirect($"{_frontendUrl}/?steam=error&message=unexpected_error");
+                return Redirect($"{_frontendUrl}/collection?steam=error&message=unexpected_error");
             }
         }
 

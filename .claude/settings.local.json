@@ -3,7 +3,8 @@
     "allow": [
       "Bash(dotnet ef database update:*)",
       "Bash(dotnet add package:*)",
-      "Bash(dotnet build:*)"
+      "Bash(dotnet build:*)",
+      "Bash(npm run build:*)"
     ]
   }
 }

@@ -31,12 +31,13 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   useEffect(() => {
     console.log('[ThemeContext] Theme changed to:', theme);
     const body = document.body;
-    
+
     // Apply theme styles directly to body
     if (theme === 'light') {
       body.style.backgroundColor = '#f8f9fa';
       body.style.color = '#212529';
-      
+      body.style.colorScheme = 'light';
+
       // Set CSS variables on body
       body.style.setProperty('--color-background', '#f8f9fa');
       body.style.setProperty('--color-surface', '#ffffff');
@@ -48,7 +49,8 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     } else {
       body.style.backgroundColor = '#0f0f14';
       body.style.color = '#f5f5f7';
-      
+      body.style.colorScheme = 'dark';
+
       // Reset CSS variables on body to dark theme
       body.style.setProperty('--color-background', '#0f0f14');
       body.style.setProperty('--color-surface', '#1a1a24');
@@ -58,10 +60,10 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       body.style.setProperty('--color-text-secondary', '#a1a1aa');
       body.style.setProperty('--color-text-muted', '#71717a');
     }
-    
+
     localStorage.setItem('theme', theme);
     console.log('[ThemeContext] Theme applied:', theme);
-    
+
   }, [theme]);
 
   const toggleTheme = () => {

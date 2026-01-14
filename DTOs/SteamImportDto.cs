@@ -48,4 +48,11 @@ namespace BacklogBasement.DTOs
         public bool IsLinked { get; set; }
         public string? SteamId { get; set; }
     }
+
+    public class SteamPlaytimeSyncResult
+    {
+        public bool Success { get; set; }
+        public int PlaytimeMinutes { get; set; }
+        public string? Error { get; set; }
+    }
 }

@@ -168,5 +168,95 @@ namespace BacklogBasement.Services
 
             return result;
         }
+
+        public async Task<SteamPlaytimeSyncResult> SyncGamePlaytimeAsync(Guid userId, Guid gameId)
+        {
+            // Get user and verify Steam is linked
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null || string.IsNullOrEmpty(user.SteamId))
+            {
+                return new SteamPlaytimeSyncResult
+                {
+                    Success = false,
+                    Error = "Steam account is not linked"
+                };
+            }
+
+            // Get the game and verify it has a SteamAppId
+            var game = await _context.Games.FindAsync(gameId);
+            if (game == null)
+            {
+                return new SteamPlaytimeSyncResult
+                {
+                    Success = false,
+                    Error = "Game not found"
+                };
+            }
+
+            if (!game.SteamAppId.HasValue)
+            {
+                return new SteamPlaytimeSyncResult
+                {
+                    Success = false,
+                    Error = "Game is not a Steam game"
+                };
+            }
+
+            // Verify game is in user's collection
+            var userGame = await _context.UserGames
+                .FirstOrDefaultAsync(ug => ug.UserId == userId && ug.GameId == gameId);
+
+            if (userGame == null)
+            {
+                return new SteamPlaytimeSyncResult
+                {
+                    Success = false,
+                    Error = "Game is not in your collection"
+                };
+            }
+
+            // Fetch playtime from Steam
+            var playtime = await _steamService.GetGamePlaytimeAsync(user.SteamId, game.SteamAppId.Value);
+            if (playtime == null)
+            {
+                return new SteamPlaytimeSyncResult
+                {
+                    Success = false,
+                    Error = "Could not fetch playtime from Steam"
+                };
+            }
+
+            // Delete all existing play sessions for this game
+            var existingSessions = await _context.PlaySessions
+                .Where(ps => ps.UserGameId == userGame.Id)
+                .ToListAsync();
+
+            _context.PlaySessions.RemoveRange(existingSessions);
+
+            // Create new play session with Steam's total playtime (if > 0)
+            if (playtime.Value > 0)
+            {
+                var playSession = new PlaySession
+                {
+                    Id = Guid.NewGuid(),
+                    UserGameId = userGame.Id,
+                    DurationMinutes = playtime.Value,
+                    PlayedAt = DateTime.UtcNow
+                };
+                _context.PlaySessions.Add(playSession);
+            }
+
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation(
+                "Synced Steam playtime for game {GameId}: {Playtime} minutes",
+                gameId, playtime.Value);
+
+            return new SteamPlaytimeSyncResult
+            {
+                Success = true,
+                PlaytimeMinutes = playtime.Value
+            };
+        }
     }
 }

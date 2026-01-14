@@ -24,6 +24,7 @@ export interface CollectionItemDto {
   dateAdded: string;
   notes?: string | null;
   totalPlayTimeMinutes: number;
+  source: 'steam' | 'manual';
 }
 
 // Play Session DTOs - maps from backend PlaySessionDto
@@ -89,6 +90,12 @@ export interface SteamFailedGameDto {
   name: string;
   steamAppId: number;
   error: string;
+}
+
+export interface SteamPlaytimeSyncResult {
+  success: boolean;
+  playtimeMinutes: number;
+  error?: string;
 }
 
 // API Response types

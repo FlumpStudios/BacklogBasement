@@ -12,6 +12,7 @@ namespace BacklogBasement.DTOs
         public DateTime DateAdded { get; set; }
         public string? Notes { get; set; }
         public int TotalPlayTimeMinutes { get; set; }
+        public string Source { get; set; } = "manual"; // "steam" or "manual"
     }
 
     public class AddToCollectionRequest

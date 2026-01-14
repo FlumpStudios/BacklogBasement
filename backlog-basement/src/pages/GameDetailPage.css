@@ -104,9 +104,17 @@
   margin-bottom: var(--spacing-xl);
 }
 
-.game-sessions h2 {
+.sessions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.sessions-header h2 {
   font-size: 1.25rem;
-  margin: 0 0 var(--spacing-md) 0;
+  margin: 0;
 }
 
 .not-found {

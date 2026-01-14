@@ -44,3 +44,17 @@ export function useSteamImport() {
     },
   });
 }
+
+export function useSyncSteamPlaytime(gameId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => steamApi.syncPlaytime(gameId),
+    onSuccess: () => {
+      // Invalidate play sessions to refresh the list
+      queryClient.invalidateQueries({ queryKey: [...COLLECTION_QUERY_KEY, gameId, 'play-sessions'] });
+      // Invalidate collection to update total playtime
+      queryClient.invalidateQueries({ queryKey: COLLECTION_QUERY_KEY });
+    },
+  });
+}

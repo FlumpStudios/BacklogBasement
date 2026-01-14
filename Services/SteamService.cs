@@ -100,5 +100,12 @@ namespace BacklogBasement.Services
                 return Enumerable.Empty<SteamGame>();
             }
         }
+
+        public async Task<int?> GetGamePlaytimeAsync(string steamId, long steamAppId)
+        {
+            var games = await GetOwnedGamesAsync(steamId);
+            var game = games.FirstOrDefault(g => g.AppId == steamAppId);
+            return game?.PlaytimeForever;
+        }
     }
 }

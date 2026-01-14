@@ -6,6 +6,7 @@ namespace BacklogBasement.Services
     public interface ISteamService
     {
         Task<IEnumerable<SteamGame>> GetOwnedGamesAsync(string steamId);
+        Task<int?> GetGamePlaytimeAsync(string steamId, long steamAppId);
     }
 
     public class SteamGame

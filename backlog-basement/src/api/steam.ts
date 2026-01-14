@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import { SteamStatusDto, SteamImportRequest, SteamImportResult } from '../types';
+import { SteamStatusDto, SteamImportRequest, SteamImportResult, SteamPlaytimeSyncResult } from '../types';
 
 const AUTH_BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
 
@@ -30,6 +30,14 @@ export const steamApi = {
    */
   importLibrary: async (request: SteamImportRequest): Promise<SteamImportResult> => {
     const response = await apiClient.post<SteamImportResult>('/steam/import', request);
+    return response.data;
+  },
+
+  /**
+   * Sync playtime from Steam for a specific game
+   */
+  syncPlaytime: async (gameId: string): Promise<SteamPlaytimeSyncResult> => {
+    const response = await apiClient.post<SteamPlaytimeSyncResult>(`/steam/${gameId}/sync-playtime`);
     return response.data;
   },
 };

@@ -36,7 +36,8 @@ namespace BacklogBasement.Services
                     CoverUrl = ug.Game.CoverUrl,
                     DateAdded = ug.DateAdded,
                     Notes = ug.Notes,
-                    TotalPlayTimeMinutes = 0 // Will be populated separately
+                    TotalPlayTimeMinutes = 0, // Will be populated separately
+                    Source = ug.Game.SteamAppId.HasValue ? "steam" : "manual"
                 })
                 .ToListAsync();
         }
@@ -81,7 +82,8 @@ namespace BacklogBasement.Services
                 CoverUrl = game.CoverUrl,
                 DateAdded = userGame.DateAdded,
                 Notes = userGame.Notes,
-                TotalPlayTimeMinutes = 0
+                TotalPlayTimeMinutes = 0,
+                Source = game.SteamAppId.HasValue ? "steam" : "manual"
             };
         }
 
@@ -121,7 +123,8 @@ namespace BacklogBasement.Services
                 CoverUrl = userGame.Game.CoverUrl,
                 DateAdded = userGame.DateAdded,
                 Notes = userGame.Notes,
-                TotalPlayTimeMinutes = totalPlayTime
+                TotalPlayTimeMinutes = totalPlayTime,
+                Source = userGame.Game.SteamAppId.HasValue ? "steam" : "manual"
             };
         }
     }

@@ -8,6 +8,7 @@ import {
   usePlaySessions,
   useAddPlaySession,
   useDeletePlaySession,
+  useSyncSteamPlaytime,
 } from '../hooks';
 import { PlaySessionForm, PlaySessionList } from '../features/playtime';
 import { Modal, useToast } from '../components';
@@ -27,6 +28,7 @@ export function GameDetailPage() {
   const removeFromCollection = useRemoveFromCollection();
   const addPlaySession = useAddPlaySession(id!);
   const deletePlaySession = useDeletePlaySession(id!);
+  const syncSteamPlaytime = useSyncSteamPlaytime(id!);
 
   const [showPlaySessionModal, setShowPlaySessionModal] = useState(false);
 
@@ -69,6 +71,15 @@ export function GameDetailPage() {
       showToast('Play session deleted', 'success');
     } catch {
       showToast('Failed to delete play session', 'error');
+    }
+  };
+
+  const handleSyncSteamPlaytime = async () => {
+    try {
+      const result = await syncSteamPlaytime.mutateAsync();
+      showToast(`Synced ${formatPlaytime(result.playtimeMinutes)} from Steam`, 'success');
+    } catch {
+      showToast('Failed to sync playtime from Steam', 'error');
     }
   };
 
@@ -165,7 +176,18 @@ export function GameDetailPage() {
 
           {isInCollection && playSessions && (
             <div className="game-sessions">
-              <h2>Play Sessions</h2>
+              <div className="sessions-header">
+                <h2>Play Sessions</h2>
+                {collectionItem?.source === 'steam' && (
+                  <button
+                    onClick={handleSyncSteamPlaytime}
+                    className="btn btn-secondary btn-sm"
+                    disabled={syncSteamPlaytime.isPending}
+                  >
+                    {syncSteamPlaytime.isPending ? 'Syncing...' : 'Sync from Steam'}
+                  </button>
+                )}
+              </div>
               <PlaySessionList
                 sessions={playSessions}
                 onDelete={handleDeletePlaySession}

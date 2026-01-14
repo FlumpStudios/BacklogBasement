@@ -37,7 +37,9 @@ namespace BacklogBasement.Services
                     DateAdded = ug.DateAdded,
                     Notes = ug.Notes,
                     TotalPlayTimeMinutes = 0, // Will be populated separately
-                    Source = ug.Game.SteamAppId.HasValue ? "steam" : "manual"
+                    Source = ug.Game.SteamAppId.HasValue ? "steam" : "manual",
+                    Status = ug.Status,
+                    DateCompleted = ug.DateCompleted
                 })
                 .ToListAsync();
         }
@@ -83,7 +85,9 @@ namespace BacklogBasement.Services
                 DateAdded = userGame.DateAdded,
                 Notes = userGame.Notes,
                 TotalPlayTimeMinutes = 0,
-                Source = game.SteamAppId.HasValue ? "steam" : "manual"
+                Source = game.SteamAppId.HasValue ? "steam" : "manual",
+                Status = userGame.Status,
+                DateCompleted = userGame.DateCompleted
             };
         }
 
@@ -124,7 +128,61 @@ namespace BacklogBasement.Services
                 DateAdded = userGame.DateAdded,
                 Notes = userGame.Notes,
                 TotalPlayTimeMinutes = totalPlayTime,
-                Source = userGame.Game.SteamAppId.HasValue ? "steam" : "manual"
+                Source = userGame.Game.SteamAppId.HasValue ? "steam" : "manual",
+                Status = userGame.Status,
+                DateCompleted = userGame.DateCompleted
+            };
+        }
+
+        public async Task<CollectionItemDto?> UpdateGameStatusAsync(Guid userId, Guid gameId, string? status)
+        {
+            // Validate status value
+            var validStatuses = new[] { null, "backlog", "playing", "completed" };
+            if (status != null && !validStatuses.Contains(status))
+            {
+                throw new BadRequestException("Invalid status. Must be null, 'backlog', 'playing', or 'completed'");
+            }
+
+            var userGame = await _context.UserGames
+                .Include(ug => ug.Game)
+                .FirstOrDefaultAsync(ug => ug.UserId == userId && ug.GameId == gameId);
+
+            if (userGame == null)
+            {
+                throw new NotFoundException("Game not found in collection");
+            }
+
+            var previousStatus = userGame.Status;
+            userGame.Status = status;
+
+            // Set DateCompleted when marking as completed
+            if (status == "completed" && previousStatus != "completed")
+            {
+                userGame.DateCompleted = DateTime.UtcNow;
+            }
+            // Clear DateCompleted when moving away from completed
+            else if (status != "completed" && previousStatus == "completed")
+            {
+                userGame.DateCompleted = null;
+            }
+
+            await _context.SaveChangesAsync();
+
+            var totalPlayTime = await _playSessionService.GetTotalPlayTimeAsync(userId, gameId);
+
+            return new CollectionItemDto
+            {
+                Id = userGame.Id,
+                GameId = userGame.GameId,
+                GameName = userGame.Game.Name,
+                ReleaseDate = userGame.Game.ReleaseDate,
+                CoverUrl = userGame.Game.CoverUrl,
+                DateAdded = userGame.DateAdded,
+                Notes = userGame.Notes,
+                TotalPlayTimeMinutes = totalPlayTime,
+                Source = userGame.Game.SteamAppId.HasValue ? "steam" : "manual",
+                Status = userGame.Status,
+                DateCompleted = userGame.DateCompleted
             };
         }
     }

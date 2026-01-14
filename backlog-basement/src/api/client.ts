@@ -40,6 +40,9 @@ export const api = {
   put: <T>(url: string, data?: unknown, config?: AxiosRequestConfig) =>
     request<T>({ ...config, method: 'PUT', url, data }),
 
+  patch: <T>(url: string, data?: unknown, config?: AxiosRequestConfig) =>
+    request<T>({ ...config, method: 'PATCH', url, data }),
+
   delete: <T>(url: string, config?: AxiosRequestConfig) =>
     request<T>({ ...config, method: 'DELETE', url }),
 };

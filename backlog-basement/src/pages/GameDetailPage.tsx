@@ -9,7 +9,9 @@ import {
   useAddPlaySession,
   useDeletePlaySession,
   useSyncSteamPlaytime,
+  useUpdateGameStatus,
 } from '../hooks';
+import { GameStatus } from '../types';
 import { PlaySessionForm, PlaySessionList } from '../features/playtime';
 import { Modal, useToast } from '../components';
 import { formatPlaytime, formatDate } from '../utils';
@@ -29,6 +31,7 @@ export function GameDetailPage() {
   const addPlaySession = useAddPlaySession(id!);
   const deletePlaySession = useDeletePlaySession(id!);
   const syncSteamPlaytime = useSyncSteamPlaytime(id!);
+  const updateGameStatus = useUpdateGameStatus();
 
   const [showPlaySessionModal, setShowPlaySessionModal] = useState(false);
 
@@ -80,6 +83,29 @@ export function GameDetailPage() {
       showToast(`Synced ${formatPlaytime(result.playtimeMinutes)} from Steam`, 'success');
     } catch {
       showToast('Failed to sync playtime from Steam', 'error');
+    }
+  };
+
+  const handleUpdateStatus = async (status: GameStatus) => {
+    try {
+      await updateGameStatus.mutateAsync({ gameId: id!, status });
+      const statusLabels: Record<string, string> = {
+        backlog: 'Added to Backlog',
+        playing: 'Marked as Playing',
+        completed: 'Marked as Completed',
+      };
+      showToast(status ? statusLabels[status] : 'Status cleared', 'success');
+    } catch {
+      showToast('Failed to update status', 'error');
+    }
+  };
+
+  const getStatusLabel = (status: GameStatus) => {
+    switch (status) {
+      case 'backlog': return 'Backlog';
+      case 'playing': return 'Playing';
+      case 'completed': return 'Completed';
+      default: return null;
     }
   };
 
@@ -173,6 +199,96 @@ export function GameDetailPage() {
               </button>
             )}
           </div>
+
+          {isInCollection && (
+            <div className="game-status-section">
+              <h3>Status</h3>
+              {collectionItem?.status && (
+                <span className={`status-badge status-${collectionItem.status}`}>
+                  {getStatusLabel(collectionItem.status)}
+                </span>
+              )}
+              <div className="status-actions">
+                {!collectionItem?.status && (
+                  <button
+                    onClick={() => handleUpdateStatus('backlog')}
+                    className="btn btn-secondary btn-sm"
+                    disabled={updateGameStatus.isPending}
+                  >
+                    Add to Backlog
+                  </button>
+                )}
+                {collectionItem?.status === 'backlog' && (
+                  <>
+                    <button
+                      onClick={() => handleUpdateStatus('playing')}
+                      className="btn btn-primary btn-sm"
+                      disabled={updateGameStatus.isPending}
+                    >
+                      Start Playing
+                    </button>
+                    <button
+                      onClick={() => handleUpdateStatus('completed')}
+                      className="btn btn-success btn-sm"
+                      disabled={updateGameStatus.isPending}
+                    >
+                      Mark Completed
+                    </button>
+                    <button
+                      onClick={() => handleUpdateStatus(null)}
+                      className="btn btn-ghost btn-sm"
+                      disabled={updateGameStatus.isPending}
+                    >
+                      Remove from Backlog
+                    </button>
+                  </>
+                )}
+                {collectionItem?.status === 'playing' && (
+                  <>
+                    <button
+                      onClick={() => handleUpdateStatus('completed')}
+                      className="btn btn-success btn-sm"
+                      disabled={updateGameStatus.isPending}
+                    >
+                      Mark Completed
+                    </button>
+                    <button
+                      onClick={() => handleUpdateStatus('backlog')}
+                      className="btn btn-secondary btn-sm"
+                      disabled={updateGameStatus.isPending}
+                    >
+                      Move to Backlog
+                    </button>
+                    <button
+                      onClick={() => handleUpdateStatus(null)}
+                      className="btn btn-ghost btn-sm"
+                      disabled={updateGameStatus.isPending}
+                    >
+                      Clear Status
+                    </button>
+                  </>
+                )}
+                {collectionItem?.status === 'completed' && (
+                  <>
+                    <button
+                      onClick={() => handleUpdateStatus('playing')}
+                      className="btn btn-primary btn-sm"
+                      disabled={updateGameStatus.isPending}
+                    >
+                      Play Again
+                    </button>
+                    <button
+                      onClick={() => handleUpdateStatus('backlog')}
+                      className="btn btn-secondary btn-sm"
+                      disabled={updateGameStatus.isPending}
+                    >
+                      Move to Backlog
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
 
           {isInCollection && playSessions && (
             <div className="game-sessions">

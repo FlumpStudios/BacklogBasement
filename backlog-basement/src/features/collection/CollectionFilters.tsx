@@ -12,6 +12,7 @@ export type SortOption =
 
 export type PlayStatusFilter = 'all' | 'played' | 'unplayed';
 export type SourceFilter = 'all' | 'steam' | 'manual';
+export type GameStatusFilter = 'all' | 'none' | 'backlog' | 'playing' | 'completed';
 
 interface CollectionFiltersProps {
   searchQuery: string;
@@ -22,6 +23,8 @@ interface CollectionFiltersProps {
   onPlayStatusChange: (status: PlayStatusFilter) => void;
   sourceFilter: SourceFilter;
   onSourceFilterChange: (source: SourceFilter) => void;
+  gameStatus: GameStatusFilter;
+  onGameStatusChange: (status: GameStatusFilter) => void;
   resultCount: number;
   totalCount: number;
 }
@@ -46,10 +49,12 @@ export function CollectionFilters({
   onPlayStatusChange,
   sourceFilter,
   onSourceFilterChange,
+  gameStatus,
+  onGameStatusChange,
   resultCount,
   totalCount,
 }: CollectionFiltersProps) {
-  const isFiltered = searchQuery || playStatus !== 'all' || sourceFilter !== 'all';
+  const isFiltered = searchQuery || playStatus !== 'all' || sourceFilter !== 'all' || gameStatus !== 'all';
 
   return (
     <div className="collection-filters">
@@ -99,6 +104,22 @@ export function CollectionFilters({
               <option value="all">All Sources</option>
               <option value="steam">Steam</option>
               <option value="manual">Added Manually</option>
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label htmlFor="game-status">Progress:</label>
+            <select
+              id="game-status"
+              value={gameStatus}
+              onChange={(e) => onGameStatusChange(e.target.value as GameStatusFilter)}
+              className="filter-select"
+            >
+              <option value="all">All Progress</option>
+              <option value="none">No Status</option>
+              <option value="backlog">Backlog</option>
+              <option value="playing">Playing</option>
+              <option value="completed">Completed</option>
             </select>
           </div>
 

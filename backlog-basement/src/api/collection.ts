@@ -1,5 +1,5 @@
 import { api } from './client';
-import { CollectionItemDto, CreatePlaySessionDto } from '../types';
+import { CollectionItemDto, CreatePlaySessionDto, GameStatus } from '../types';
 
 export const collectionApi = {
   /**
@@ -60,4 +60,10 @@ export const collectionApi = {
    */
   deletePlaySession: (gameId: string, sessionId: string) =>
     api.delete<void>(`/collection/${gameId}/play-sessions/${sessionId}`),
+
+  /**
+   * Update the status of a game in the collection
+   */
+  updateStatus: (gameId: string, status: GameStatus) =>
+    api.patch<CollectionItemDto>(`/collection/${gameId}/status`, { status }),
 };

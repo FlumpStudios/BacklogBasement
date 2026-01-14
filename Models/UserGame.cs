@@ -10,6 +10,8 @@ namespace BacklogBasement.Models
         public Guid GameId { get; set; }
         public DateTime DateAdded { get; set; }
         public string? Notes { get; set; }
+        public string? Status { get; set; } // null, "backlog", "playing", "completed"
+        public DateTime? DateCompleted { get; set; }
 
         // Navigation properties
         public User User { get; set; } = null!;

@@ -114,6 +114,34 @@ namespace BacklogBasement.Controllers
             }
         }
 
+        [HttpPatch("{gameId}/status")]
+        public async Task<ActionResult<CollectionItemDto>> UpdateStatus(Guid gameId, [FromBody] UpdateGameStatusRequest request)
+        {
+            try
+            {
+                var userId = _userService.GetCurrentUserId();
+                if (userId == null)
+                {
+                    return Unauthorized(new { error = "User not found" });
+                }
+
+                var result = await _collectionService.UpdateGameStatusAsync(userId.Value, gameId, request.Status);
+                return Ok(result);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new { error = ex.Message });
+            }
+            catch (BadRequestException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "An error occurred while updating status", details = ex.Message });
+            }
+        }
+
         private async Task<int> GetTotalPlayTimeAsync(Guid userId, Guid gameId)
         {
             // This is a simplified version - in a real app, you might want to cache this

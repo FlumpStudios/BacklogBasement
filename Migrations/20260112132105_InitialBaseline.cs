@@ -11,47 +11,14 @@ namespace BacklogBasement.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // Add SteamId column to Users table
-            migrationBuilder.AddColumn<string>(
-                name: "SteamId",
-                table: "Users",
-                type: "TEXT",
-                nullable: true);
-
-            // Add SteamAppId column to Games table
-            migrationBuilder.AddColumn<long>(
-                name: "SteamAppId",
-                table: "Games",
-                type: "INTEGER",
-                nullable: true);
-
-            // Create unique index on SteamId (filtered for non-null values)
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_SteamId",
-                table: "Users",
-                column: "SteamId",
-                unique: true,
-                filter: "[SteamId] IS NOT NULL");
-
-            // Create unique index on SteamAppId (filtered for non-null values)
-            migrationBuilder.CreateIndex(
-                name: "IX_Games_SteamAppId",
-                table: "Games",
-                column: "SteamAppId",
-                unique: true,
-                filter: "[SteamAppId] IS NOT NULL");
-
-            // Update IgdbId index to be filtered (allow null values)
-            migrationBuilder.DropIndex(
-                name: "IX_Games_IgdbId",
-                table: "Games");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Games_IgdbId",
-                table: "Games",
-                column: "IgdbId",
-                unique: true,
-                filter: "[IgdbId] IS NOT NULL");
+            // No-op: Database already has these changes from manual setup.
+            // This migration exists to establish a baseline for future migrations.
+            // The actual changes were:
+            // - Added SteamId column to Users table
+            // - Added SteamAppId column to Games table
+            // - Created IX_Users_SteamId unique filtered index
+            // - Created IX_Games_SteamAppId unique filtered index
+            // - Updated IX_Games_IgdbId to be filtered
         }
 
         /// <inheritdoc />

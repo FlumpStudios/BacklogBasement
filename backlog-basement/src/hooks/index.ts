@@ -6,6 +6,7 @@ export {
   usePlaySessions,
   useAddPlaySession,
   useDeletePlaySession,
+  useUpdateGameStatus,
   COLLECTION_QUERY_KEY,
 } from './useCollection';
 export { useGameSearch, useGameDetails } from './useGames';

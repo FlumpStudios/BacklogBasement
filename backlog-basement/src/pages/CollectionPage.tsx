@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useCollection, useRemoveFromCollection } from '../hooks';
-import { CollectionStats, CollectionFilters, SortOption, PlayStatusFilter, SourceFilter } from '../features/collection';
+import { CollectionStats, CollectionFilters, SortOption, PlayStatusFilter, SourceFilter, GameStatusFilter } from '../features/collection';
 import { GameGrid } from '../features/games';
 import { EmptyState, useToast, SteamSection } from '../components';
 import { CollectionItemDto } from '../types';
@@ -18,6 +18,7 @@ export function CollectionPage() {
   const [sortBy, setSortBy] = useState<SortOption>('name-asc');
   const [playStatus, setPlayStatus] = useState<PlayStatusFilter>('all');
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>('all');
+  const [gameStatus, setGameStatus] = useState<GameStatusFilter>('all');
 
   // Handle Steam linking callback
   useEffect(() => {
@@ -63,6 +64,17 @@ export function CollectionPage() {
       result = result.filter((item) => item.source === 'manual');
     }
 
+    // Apply game status filter
+    if (gameStatus === 'none') {
+      result = result.filter((item) => !item.status);
+    } else if (gameStatus === 'backlog') {
+      result = result.filter((item) => item.status === 'backlog');
+    } else if (gameStatus === 'playing') {
+      result = result.filter((item) => item.status === 'playing');
+    } else if (gameStatus === 'completed') {
+      result = result.filter((item) => item.status === 'completed');
+    }
+
     // Apply sorting
     result.sort((a, b) => {
       switch (sortBy) {
@@ -94,7 +106,7 @@ export function CollectionPage() {
     });
 
     return result;
-  }, [collection, searchQuery, sortBy, playStatus, sourceFilter]);
+  }, [collection, searchQuery, sortBy, playStatus, sourceFilter, gameStatus]);
 
   const handleRemove = async (gameId: string, gameName: string) => {
     try {
@@ -150,6 +162,8 @@ export function CollectionPage() {
             onPlayStatusChange={setPlayStatus}
             sourceFilter={sourceFilter}
             onSourceFilterChange={setSourceFilter}
+            gameStatus={gameStatus}
+            onGameStatusChange={setGameStatus}
             resultCount={filteredAndSortedCollection.length}
             totalCount={collection.length}
           />
@@ -168,6 +182,7 @@ export function CollectionPage() {
                   setSearchQuery('');
                   setPlayStatus('all');
                   setSourceFilter('all');
+                  setGameStatus('all');
                 }}
               >
                 Clear Filters

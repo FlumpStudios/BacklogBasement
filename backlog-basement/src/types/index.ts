@@ -25,7 +25,11 @@ export interface CollectionItemDto {
   notes?: string | null;
   totalPlayTimeMinutes: number;
   source: 'steam' | 'manual';
+  status?: 'backlog' | 'playing' | 'completed' | null;
+  dateCompleted?: string | null;
 }
+
+export type GameStatus = 'backlog' | 'playing' | 'completed' | null;
 
 // Play Session DTOs - maps from backend PlaySessionDto
 export interface PlaySessionDto {

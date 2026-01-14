@@ -13,11 +13,18 @@ namespace BacklogBasement.DTOs
         public string? Notes { get; set; }
         public int TotalPlayTimeMinutes { get; set; }
         public string Source { get; set; } = "manual"; // "steam" or "manual"
+        public string? Status { get; set; } // null, "backlog", "playing", "completed"
+        public DateTime? DateCompleted { get; set; }
     }
 
     public class AddToCollectionRequest
     {
         public Guid GameId { get; set; }
         public string? Notes { get; set; }
+    }
+
+    public class UpdateGameStatusRequest
+    {
+        public string? Status { get; set; } // null, "backlog", "playing", "completed"
     }
 }

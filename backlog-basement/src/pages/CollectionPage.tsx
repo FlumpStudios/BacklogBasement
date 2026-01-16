@@ -20,7 +20,7 @@ export function CollectionPage() {
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>('all');
   const [gameStatus, setGameStatus] = useState<GameStatusFilter>('all');
 
-  // Handle Steam linking callback
+  // Handle Steam linking callback and URL-based status filter
   useEffect(() => {
     const steamStatus = searchParams.get('steam');
     if (steamStatus === 'linked') {
@@ -32,6 +32,14 @@ export function CollectionPage() {
       showToast(`Failed to link Steam account: ${message || 'Unknown error'}`, 'error');
       searchParams.delete('steam');
       searchParams.delete('message');
+      setSearchParams(searchParams, { replace: true });
+    }
+
+    // Apply status filter from URL
+    const statusParam = searchParams.get('status');
+    if (statusParam && ['none', 'backlog', 'playing', 'completed'].includes(statusParam)) {
+      setGameStatus(statusParam as GameStatusFilter);
+      searchParams.delete('status');
       setSearchParams(searchParams, { replace: true });
     }
   }, [searchParams, setSearchParams, showToast]);

@@ -1,16 +1,44 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../auth';
-import { useCollection } from '../hooks';
+import { useCollection, useUpdateGameStatus } from '../hooks';
 import { CollectionStats } from '../features/collection';
 import { GameGrid } from '../features/games';
-import { EmptyState } from '../components';
+import { EmptyState, useToast } from '../components';
+import { CollectionItemDto } from '../types';
 import './DashboardPage.css';
 
 export function DashboardPage() {
   const { user } = useAuth();
   const { data: collection, isLoading } = useCollection();
+  const updateGameStatus = useUpdateGameStatus();
+  const { showToast } = useToast();
 
   const recentGames = collection?.slice(0, 4) ?? [];
+  const currentlyPlaying = collection?.filter(g => g.status === 'playing') ?? [];
+  const backlogGames = collection?.filter(g => g.status === 'backlog').slice(0, 4) ?? [];
+
+  // Games with no status, sorted by unplayed first, then by date added (oldest first)
+  const recommendedForBacklog = collection
+    ?.filter(g => !g.status)
+    .sort((a, b) => {
+      // Unplayed games first
+      const aUnplayed = (a.totalPlayTimeMinutes || 0) === 0;
+      const bUnplayed = (b.totalPlayTimeMinutes || 0) === 0;
+      if (aUnplayed && !bUnplayed) return -1;
+      if (!aUnplayed && bUnplayed) return 1;
+      // Then by date added (oldest first - they've been waiting longest)
+      return new Date(a.dateAdded).getTime() - new Date(b.dateAdded).getTime();
+    })
+    .slice(0, 4) ?? [];
+
+  const handleAddToBacklog = async (game: CollectionItemDto) => {
+    try {
+      await updateGameStatus.mutateAsync({ gameId: game.gameId, status: 'backlog' });
+      showToast(`Added "${game.gameName}" to your backlog`, 'success');
+    } catch {
+      showToast('Failed to update status', 'error');
+    }
+  };
 
   return (
     <div className="dashboard-page">
@@ -28,6 +56,30 @@ export function DashboardPage() {
         <>
           <CollectionStats collection={collection} />
 
+          {currentlyPlaying.length > 0 && (
+            <section className="dashboard-section">
+              <div className="section-header">
+                <h2>Currently Playing</h2>
+                <Link to="/collection?status=playing" className="btn btn-secondary btn-sm">
+                  View All
+                </Link>
+              </div>
+              <GameGrid games={currentlyPlaying} showPlaytime />
+            </section>
+          )}
+
+          {backlogGames.length > 0 && (
+            <section className="dashboard-section">
+              <div className="section-header">
+                <h2>Your Backlog</h2>
+                <Link to="/collection?status=backlog" className="btn btn-secondary btn-sm">
+                  View All ({collection?.filter(g => g.status === 'backlog').length})
+                </Link>
+              </div>
+              <GameGrid games={backlogGames} showPlaytime />
+            </section>
+          )}
+
           <section className="dashboard-section">
             <div className="section-header">
               <h2>Recent Games</h2>
@@ -37,6 +89,36 @@ export function DashboardPage() {
             </div>
             <GameGrid games={recentGames} showPlaytime />
           </section>
+
+          {recommendedForBacklog.length > 0 && (
+            <section className="dashboard-section">
+              <div className="section-header">
+                <h2>Add to Your Backlog?</h2>
+                <Link to="/collection?status=none" className="btn btn-secondary btn-sm">
+                  View All ({collection?.filter(g => !g.status).length})
+                </Link>
+              </div>
+              <p className="section-description">
+                These games are waiting to be organized
+              </p>
+              <GameGrid
+                games={recommendedForBacklog}
+                showPlaytime
+                renderActions={(item) => (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleAddToBacklog(item as CollectionItemDto);
+                    }}
+                    className="btn btn-secondary btn-sm"
+                    disabled={updateGameStatus.isPending}
+                  >
+                    + Add to Backlog
+                  </button>
+                )}
+              />
+            </section>
+          )}
         </>
       ) : (
         <EmptyState

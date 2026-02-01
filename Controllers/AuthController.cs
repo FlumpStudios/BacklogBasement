@@ -1,13 +1,14 @@
+using AspNet.Security.OpenId.Steam;
+using BacklogBasement.Models;
+using BacklogBasement.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using AspNet.Security.OpenId.Steam;
-using BacklogBasement.Services;
-using System.Threading.Tasks;
-using System.Security.Claims;
-using BacklogBasement.Models;
 using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
 
 namespace BacklogBasement.Controllers
 {
@@ -19,11 +20,11 @@ namespace BacklogBasement.Controllers
         private readonly ILogger<AuthController> _logger;
         private readonly string _frontendUrl;
 
-        public AuthController(IUserService userService, IConfiguration configuration, ILogger<AuthController> logger)
+        public AuthController(IUserService userService, ILogger<AuthController> logger, IConfiguration configuration)
         {
             _userService = userService;
             _logger = logger;
-            _frontendUrl = configuration["FrontendUrl"] ?? "http://localhost:5173";
+            _frontendUrl = configuration["FrontendUrl"]?.TrimEnd('/') ?? "http://localhost:5173";
         }
 
         [HttpGet("login")]

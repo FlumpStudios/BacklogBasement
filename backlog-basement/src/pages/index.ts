@@ -5,3 +5,5 @@ export { SearchPage } from './SearchPage';
 export { CollectionPage } from './CollectionPage';
 export { GameDetailPage } from './GameDetailPage';
 export { NotFoundPage } from './NotFoundPage';
+export { PrivacyPolicyPage } from './PrivacyPolicyPage';
+export { CookiePolicyPage } from './CookiePolicyPage';

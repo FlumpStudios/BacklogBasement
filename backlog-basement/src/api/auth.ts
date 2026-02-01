@@ -1,14 +1,27 @@
-import { apiClient } from './client';
+import axios from 'axios';
 import { UserDto } from '../types';
 
-const AUTH_BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
+// Auth endpoints live at /auth/* (not /api/auth/*), so derive the base URL
+// by stripping the /api suffix from the API base URL.
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
+const AUTH_BASE_URL = API_BASE.endsWith('/api')
+  ? API_BASE.slice(0, -4)
+  : API_BASE.replace(/\/api$/, '');
+
+const authClient = axios.create({
+  baseURL: AUTH_BASE_URL,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
 export const authApi = {
   /**
    * Get the current authenticated user
    */
   getCurrentUser: async (): Promise<UserDto> => {
-    const response = await apiClient.get<UserDto>(`${AUTH_BASE_URL}/auth/me`);
+    const response = await authClient.get<UserDto>('/auth/me');
     return response.data;
   },
 
@@ -22,6 +35,6 @@ export const authApi = {
    * Logout the current user
    */
   logout: async (): Promise<void> => {
-    await apiClient.post(`${AUTH_BASE_URL}/auth/logout`);
+    await authClient.post('/auth/logout');
   },
 };

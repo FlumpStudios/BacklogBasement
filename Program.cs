@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using AspNet.Security.OpenId.Steam;
 using BacklogBasement.Data;
@@ -51,18 +52,26 @@ public class Program
         builder.Services.AddScoped<IPlaySessionService, PlaySessionService>();
 
         // Configure cookie authentication
+        var isDevelopment = builder.Environment.IsDevelopment();
         builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(options =>
             {
                 options.Cookie.Name = "backlog-basement-auth";
                 options.Cookie.HttpOnly = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.Cookie.SameSite = SameSiteMode.None; // Required for cross-origin
+                // In dev the frontend and backend are on different origins, so
+                // SameSite=None is required for cross-origin AJAX to include the cookie.
+                options.Cookie.SameSite = isDevelopment ? SameSiteMode.None : SameSiteMode.Lax;
                 options.LoginPath = "/auth/login";
                 options.LogoutPath = "/auth/logout";
                 options.AccessDeniedPath = "/auth/access-denied";
                 options.SlidingExpiration = true;
                 options.ExpireTimeSpan = TimeSpan.FromDays(7);
+                options.Events.OnRedirectToLogin = context =>
+                {
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    return Task.CompletedTask;
+                };
             })
             .AddGoogle(options =>
             {
@@ -125,6 +134,12 @@ public class Program
             }
         }
 
+        // Forward headers from reverse proxy so URLs generate correctly
+        app.UseForwardedHeaders(new ForwardedHeadersOptions
+        {
+            ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost
+        });
+
         app.UseHttpsRedirection();
 
         // Add CORS middleware before authentication
@@ -133,10 +148,17 @@ public class Program
         // Add exception handling middleware
         app.UseMiddleware<ExceptionHandlingMiddleware>();
 
+        // Serve the frontend SPA from wwwroot
+        app.UseDefaultFiles();
+        app.UseStaticFiles();
+
         app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllers();
+
+        // SPA fallback: serve index.html for any unmatched routes
+        app.MapFallbackToFile("index.html");
 
         app.Run();
     }

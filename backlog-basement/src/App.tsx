@@ -9,6 +9,8 @@ import {
   CollectionPage,
   GameDetailPage,
   NotFoundPage,
+  PrivacyPolicyPage,
+  CookiePolicyPage,
 } from './pages';
 
 function App() {
@@ -18,6 +20,8 @@ function App() {
         {/* Public routes */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/privacy" element={<PrivacyPolicyPage />} />
+        <Route path="/cookies" element={<CookiePolicyPage />} />
 
         {/* Protected routes */}
         <Route

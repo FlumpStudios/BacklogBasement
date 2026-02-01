@@ -1,6 +1,7 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth';
 import { ThemeToggle } from '../ThemeToggle';
+import { CookieBanner } from '../CookieBanner';
 import './Layout.css';
 
 export function Layout() {
@@ -66,7 +67,14 @@ export function Layout() {
 
       <footer className="footer">
         <p>&copy; {new Date().getFullYear()} Backlog Basement. Powered by IGDB.</p>
+        <div className="footer-links">
+          <Link to="/privacy" className="footer-link">Privacy Policy</Link>
+          <span className="footer-separator">|</span>
+          <Link to="/cookies" className="footer-link">Cookie Policy</Link>
+        </div>
       </footer>
+
+      <CookieBanner />
     </div>
   );
 }

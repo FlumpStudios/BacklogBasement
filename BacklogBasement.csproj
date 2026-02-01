@@ -18,4 +18,20 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.0" />
   </ItemGroup>
 
+  <!-- Build frontend and include in publish output -->
+  <Target Name="BuildFrontend" BeforeTargets="Build" Condition="'$(BuildFrontend)' != 'false'">
+    <Exec Command="npm install" WorkingDirectory="backlog-basement" />
+    <Exec Command="npm run build" WorkingDirectory="backlog-basement" />
+  </Target>
+
+  <Target Name="PublishFrontend" AfterTargets="ComputeFilesToPublish">
+    <ItemGroup>
+      <DistFiles Include="backlog-basement\dist\**\*" />
+      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+        <RelativePath>wwwroot\%(DistFiles.RecursiveDir)%(DistFiles.Filename)%(DistFiles.Extension)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+
 </Project>

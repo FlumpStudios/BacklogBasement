@@ -94,6 +94,27 @@
   font-size: 0.875rem;
 }
 
+.footer-links {
+  margin-top: var(--spacing-sm);
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+
+.footer-link {
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.footer-link:hover {
+  color: var(--color-primary);
+}
+
+.footer-separator {
+  color: var(--color-border);
+}
+
 @media (max-width: 768px) {
   .nav {
     gap: var(--spacing-md);

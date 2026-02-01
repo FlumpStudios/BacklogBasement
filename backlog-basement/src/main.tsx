@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './auth';
 import { ToastProvider, ErrorBoundary } from './components';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { CookieConsentProvider } from './contexts/CookieConsentContext';
 import App from './App';
 import './index.css';
 
@@ -21,17 +22,19 @@ const queryClient = new QueryClient({
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <ThemeProvider>
-            <AuthProvider>
-              <ToastProvider>
-                <App />
-              </ToastProvider>
-            </AuthProvider>
-          </ThemeProvider>
-        </BrowserRouter>
-      </QueryClientProvider>
+      <CookieConsentProvider>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <ThemeProvider>
+              <AuthProvider>
+                <ToastProvider>
+                  <App />
+                </ToastProvider>
+              </AuthProvider>
+            </ThemeProvider>
+          </BrowserRouter>
+        </QueryClientProvider>
+      </CookieConsentProvider>
     </ErrorBoundary>
   </StrictMode>
 );

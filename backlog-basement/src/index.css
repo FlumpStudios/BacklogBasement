@@ -143,6 +143,15 @@ h3 {
   background: #dc2626;
 }
 
+.btn-warning {
+  background: #d97706;
+  color: white;
+}
+
+.btn-warning:hover:not(:disabled) {
+  background: #b45309;
+}
+
 .btn-sm {
   padding: var(--spacing-xs) var(--spacing-md);
   font-size: 0.875rem;

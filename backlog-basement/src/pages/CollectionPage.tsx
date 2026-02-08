@@ -43,6 +43,14 @@ export function CollectionPage() {
       searchParams.delete('status');
       setSearchParams(searchParams, { replace: true });
     }
+
+    // Apply play status filter from URL
+    const playStatusParam = searchParams.get('playStatus');
+    if (playStatusParam && ['played', 'unplayed'].includes(playStatusParam)) {
+      setPlayStatus(playStatusParam as PlayStatusFilter);
+      searchParams.delete('playStatus');
+      setSearchParams(searchParams, { replace: true });
+    }
   }, [searchParams, setSearchParams, showToast]);
 
   // Filter and sort the collection
@@ -135,6 +143,15 @@ export function CollectionPage() {
     }
   };
 
+  const handleRemoveFromBacklog = async (gameId: string, gameName: string) => {
+    try {
+      await updateGameStatus.mutateAsync({ gameId, status: null });
+      showToast(`Removed "${gameName}" from your backlog`, 'success');
+    } catch {
+      showToast('Failed to remove from backlog', 'error');
+    }
+  };
+
   const renderActions = (item: CollectionItemDto) => (
     <>
       {!item.status && (
@@ -147,6 +164,18 @@ export function CollectionPage() {
           disabled={updateGameStatus.isPending}
         >
           Add to Backlog
+        </button>
+      )}
+      {item.status === 'backlog' && (
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            handleRemoveFromBacklog(item.gameId, item.gameName);
+          }}
+          className="btn btn-warning btn-sm"
+          disabled={updateGameStatus.isPending}
+        >
+          Remove from Backlog
         </button>
       )}
       <button

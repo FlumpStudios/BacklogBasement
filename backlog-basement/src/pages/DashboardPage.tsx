@@ -13,7 +13,7 @@ export function DashboardPage() {
   const updateGameStatus = useUpdateGameStatus();
   const { showToast } = useToast();
 
-  const recentGames = collection?.slice(0, 4) ?? [];
+  const completedGames = collection?.filter(g => g.status === 'completed').slice(0, 4) ?? [];
   const currentlyPlaying = collection?.filter(g => g.status === 'playing') ?? [];
   const backlogGames = collection?.filter(g => g.status === 'backlog').slice(0, 4) ?? [];
 
@@ -80,26 +80,28 @@ export function DashboardPage() {
             </section>
           )}
 
-          <section className="dashboard-section">
-            <div className="section-header">
-              <h2>Recent Games</h2>
-              <Link to="/collection" className="btn btn-secondary btn-sm">
-                View All
-              </Link>
-            </div>
-            <GameGrid games={recentGames} showPlaytime />
-          </section>
+          {completedGames.length > 0 && (
+            <section className="dashboard-section">
+              <div className="section-header">
+                <h2>Completed Games</h2>
+                <Link to="/collection?status=completed" className="btn btn-secondary btn-sm">
+                  View All ({collection?.filter(g => g.status === 'completed').length})
+                </Link>
+              </div>
+              <GameGrid games={completedGames} showPlaytime />
+            </section>
+          )}
 
           {recommendedForBacklog.length > 0 && (
             <section className="dashboard-section">
               <div className="section-header">
                 <h2>Add to Your Backlog?</h2>
-                <Link to="/collection?status=none" className="btn btn-secondary btn-sm">
-                  View All ({collection?.filter(g => !g.status).length})
+                <Link to="/collection?playStatus=unplayed" className="btn btn-secondary btn-sm">
+                  View All ({collection?.filter(g => (g.totalPlayTimeMinutes || 0) === 0).length})
                 </Link>
               </div>
               <p className="section-description">
-                These games are waiting to be organized
+                Games with no play time
               </p>
               <GameGrid
                 games={recommendedForBacklog}

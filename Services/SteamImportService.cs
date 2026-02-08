@@ -258,5 +258,73 @@ namespace BacklogBasement.Services
                 PlaytimeMinutes = playtime.Value
             };
         }
+
+        public async Task<SteamBulkPlaytimeSyncResult> SyncAllPlaytimesAsync(Guid userId)
+        {
+            var result = new SteamBulkPlaytimeSyncResult();
+
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null || string.IsNullOrEmpty(user.SteamId))
+            {
+                throw new InvalidOperationException("Steam account is not linked");
+            }
+
+            // Fetch all games from Steam in one API call
+            var steamGames = await _steamService.GetOwnedGamesAsync(user.SteamId);
+            var steamPlaytimeByAppId = steamGames.ToDictionary(g => g.AppId, g => g.PlaytimeForever);
+
+            // Get all Steam games in the user's collection
+            var userSteamGames = await _context.UserGames
+                .Include(ug => ug.Game)
+                .Where(ug => ug.UserId == userId && ug.Game.SteamAppId.HasValue)
+                .ToListAsync();
+
+            result.TotalGames = userSteamGames.Count;
+
+            foreach (var userGame in userSteamGames)
+            {
+                try
+                {
+                    var steamAppId = userGame.Game.SteamAppId!.Value;
+                    if (!steamPlaytimeByAppId.TryGetValue(steamAppId, out var playtime))
+                        continue;
+
+                    // Delete existing play sessions for this game
+                    var existingSessions = await _context.PlaySessions
+                        .Where(ps => ps.UserGameId == userGame.Id)
+                        .ToListAsync();
+
+                    _context.PlaySessions.RemoveRange(existingSessions);
+
+                    // Create new play session with Steam's total playtime
+                    if (playtime > 0)
+                    {
+                        var playSession = new PlaySession
+                        {
+                            Id = Guid.NewGuid(),
+                            UserGameId = userGame.Id,
+                            DurationMinutes = playtime,
+                            PlayedAt = DateTime.UtcNow
+                        };
+                        _context.PlaySessions.Add(playSession);
+                    }
+
+                    result.UpdatedCount++;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to sync playtime for game {GameId}", userGame.GameId);
+                    result.FailedCount++;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation(
+                "Bulk playtime sync complete for user {UserId}: {Updated} updated, {Failed} failed out of {Total}",
+                userId, result.UpdatedCount, result.FailedCount, result.TotalGames);
+
+            return result;
+        }
     }
 }

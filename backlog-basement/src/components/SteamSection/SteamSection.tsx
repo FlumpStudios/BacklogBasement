@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useSteamStatus, useSteamLink, useSteamUnlink, useSteamImport } from '../../hooks';
+import { useSteamStatus, useSteamLink, useSteamUnlink, useSteamImport, useSyncAllSteamPlaytime, useCollection } from '../../hooks';
 import { Modal } from '../Modal/Modal';
+import { useToast } from '../Toast';
 import { SteamImportResult } from '../../types';
 import './SteamSection.css';
 
@@ -9,6 +10,11 @@ export function SteamSection() {
   const { link } = useSteamLink();
   const unlinkMutation = useSteamUnlink();
   const importMutation = useSteamImport();
+  const syncAllPlaytime = useSyncAllSteamPlaytime();
+  const { showToast } = useToast();
+
+  const { data: collection } = useCollection();
+  const hasSteamGames = collection?.some(g => g.source === 'steam') ?? false;
 
   const [showImportModal, setShowImportModal] = useState(false);
   const [includePlaytime, setIncludePlaytime] = useState(true);
@@ -28,6 +34,15 @@ export function SteamSection() {
     setImportResult(null);
     const result = await importMutation.mutateAsync({ includePlaytime });
     setImportResult(result);
+  };
+
+  const handleSyncAllPlaytime = async () => {
+    try {
+      const result = await syncAllPlaytime.mutateAsync();
+      showToast(`Updated playtime for ${result.updatedCount} Steam games`, 'success');
+    } catch {
+      showToast('Failed to sync playtime', 'error');
+    }
   };
 
   const handleCloseModal = () => {
@@ -52,10 +67,7 @@ export function SteamSection() {
         <div className="steam-linked">
           <div className="steam-status">
             <span className="steam-status-icon">&#x2714;</span>
-            <span>Steam account linked</span>
-            {steamStatus.steamId && (
-              <span className="steam-id">ID: {steamStatus.steamId}</span>
-            )}
+            <span>Steam account linked</span>            
           </div>
 
           <div className="steam-actions">
@@ -63,8 +75,17 @@ export function SteamSection() {
               className="btn btn-primary"
               onClick={() => setShowImportModal(true)}
             >
-              Import Library
+              {hasSteamGames ? 'Update Library' : 'Import Library'}
             </button>
+            {hasSteamGames && (
+              <button
+                className="btn btn-secondary"
+                onClick={handleSyncAllPlaytime}
+                disabled={syncAllPlaytime.isPending}
+              >
+                {syncAllPlaytime.isPending ? 'Syncing...' : 'Update Playtime for all games'}
+              </button>
+            )}
             <button
               className="btn btn-secondary"
               onClick={handleUnlink}
@@ -79,7 +100,7 @@ export function SteamSection() {
           <p>Connect your Steam account to import your game library.</p>
           <button className="btn btn-steam" onClick={handleLink}>
             <svg className="steam-icon" viewBox="0 0 24 24" width="20" height="20">
-              <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3l-.5 3H13v6.95c5.05-.5 9-4.76 9-9.95 0-5.52-4.48-10-10-10z"/>
+              <path fill="currentColor" d="M12 2a10 10 0 0 0-9.96 9.04l5.35 2.21a2.83 2.83 0 0 1 1.6-.49l2.39-3.47v-.05a3.77 3.77 0 1 1 3.77 3.77h-.09l-3.41 2.43a2.84 2.84 0 0 1-5.65.36l-3.83-1.58A10 10 0 1 0 12 2zm-4.99 15.57l-1.22-.5a2.13 2.13 0 0 0 3.87.57 2.13 2.13 0 0 0-1.14-2.78l1.26.52a1.56 1.56 0 1 1-2.77 2.19zm8.63-5.56a2.51 2.51 0 1 0-2.51-2.51 2.51 2.51 0 0 0 2.51 2.51z"/>
             </svg>
             Link Steam Account
           </button>

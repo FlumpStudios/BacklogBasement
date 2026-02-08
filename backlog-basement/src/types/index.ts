@@ -102,6 +102,12 @@ export interface SteamPlaytimeSyncResult {
   error?: string;
 }
 
+export interface SteamBulkPlaytimeSyncResult {
+  totalGames: number;
+  updatedCount: number;
+  failedCount: number;
+}
+
 // API Response types
 export interface PaginatedResponse<T> {
   items: T[];

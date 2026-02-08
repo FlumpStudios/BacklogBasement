@@ -16,5 +16,6 @@ export {
   useSteamUnlink,
   useSteamImport,
   useSyncSteamPlaytime,
+  useSyncAllSteamPlaytime,
   STEAM_STATUS_QUERY_KEY,
 } from './useSteam';

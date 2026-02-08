@@ -45,6 +45,17 @@ export function useSteamImport() {
   });
 }
 
+export function useSyncAllSteamPlaytime() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => steamApi.syncAllPlaytime(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: COLLECTION_QUERY_KEY });
+    },
+  });
+}
+
 export function useSyncSteamPlaytime(gameId: string) {
   const queryClient = useQueryClient();
 

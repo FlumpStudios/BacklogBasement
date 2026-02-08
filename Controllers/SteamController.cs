@@ -48,6 +48,24 @@ namespace BacklogBasement.Controllers
             }
         }
 
+        [HttpPost("sync-all-playtime")]
+        public async Task<ActionResult<SteamBulkPlaytimeSyncResult>> SyncAllPlaytime()
+        {
+            var userId = _userService.GetCurrentUserId();
+            if (userId == null)
+                return Unauthorized();
+
+            try
+            {
+                var result = await _steamImportService.SyncAllPlaytimesAsync(userId.Value);
+                return Ok(result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpPost("{gameId}/sync-playtime")]
         public async Task<ActionResult<SteamPlaytimeSyncResult>> SyncPlaytime(Guid gameId)
         {

@@ -55,4 +55,11 @@ namespace BacklogBasement.DTOs
         public int PlaytimeMinutes { get; set; }
         public string? Error { get; set; }
     }
+
+    public class SteamBulkPlaytimeSyncResult
+    {
+        public int TotalGames { get; set; }
+        public int UpdatedCount { get; set; }
+        public int FailedCount { get; set; }
+    }
 }

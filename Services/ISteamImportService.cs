@@ -9,5 +9,6 @@ namespace BacklogBasement.Services
         Task<SteamImportResult> ImportLibraryAsync(Guid userId, bool includePlaytime);
         Task<SteamStatusDto> GetSteamStatusAsync(Guid userId);
         Task<SteamPlaytimeSyncResult> SyncGamePlaytimeAsync(Guid userId, Guid gameId);
+        Task<SteamBulkPlaytimeSyncResult> SyncAllPlaytimesAsync(Guid userId);
     }
 }

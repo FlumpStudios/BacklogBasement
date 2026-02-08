@@ -37,49 +37,34 @@ namespace BacklogBasement.Middleware
             var response = context.Response;
             response.ContentType = "application/json";
 
-            var errorResponse = new
-            {
-                error = "An error occurred",
-                details = exception.Message
-            };
+            string error;
+            string details;
 
             switch (exception)
             {
                 case NotFoundException:
                     response.StatusCode = (int)HttpStatusCode.NotFound;
-                    errorResponse = new
-                    {
-                        error = "Resource not found",
-                        details = exception.Message
-                    };
+                    error = "Resource not found";
+                    details = exception.Message;
                     break;
                 case BadRequestException:
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    errorResponse = new
-                    {
-                        error = "Bad request",
-                        details = exception.Message
-                    };
+                    error = "Bad request";
+                    details = exception.Message;
                     break;
                 case UnauthorizedException:
                     response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                    errorResponse = new
-                    {
-                        error = "Unauthorized",
-                        details = exception.Message
-                    };
+                    error = "Unauthorized";
+                    details = exception.Message;
                     break;
                 default:
                     response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                    errorResponse = new
-                    {
-                        error = "Internal server error",
-                        details = "An unexpected error occurred"
-                    };
+                    error = "Internal server error";
+                    details = $"{exception.GetType().Name}: {exception.Message} | Inner: {exception.InnerException?.Message} | StackTrace: {exception.StackTrace}";
                     break;
             }
 
-            var jsonResponse = JsonSerializer.Serialize(errorResponse);
+            var jsonResponse = JsonSerializer.Serialize(new { error, details });
             await response.WriteAsync(jsonResponse);
         }
     }

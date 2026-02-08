@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { useCollection, useRemoveFromCollection } from '../hooks';
+import { useCollection, useRemoveFromCollection, useUpdateGameStatus } from '../hooks';
 import { CollectionStats, CollectionFilters, SortOption, PlayStatusFilter, SourceFilter, GameStatusFilter } from '../features/collection';
 import { GameGrid } from '../features/games';
 import { EmptyState, useToast, SteamSection } from '../components';
@@ -10,6 +10,7 @@ import './CollectionPage.css';
 export function CollectionPage() {
   const { data: collection, isLoading } = useCollection();
   const removeFromCollection = useRemoveFromCollection();
+  const updateGameStatus = useUpdateGameStatus();
   const { showToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -125,17 +126,40 @@ export function CollectionPage() {
     }
   };
 
+  const handleAddToBacklog = async (gameId: string, gameName: string) => {
+    try {
+      await updateGameStatus.mutateAsync({ gameId, status: 'backlog' });
+      showToast(`Added "${gameName}" to your backlog`, 'success');
+    } catch {
+      showToast('Failed to add to backlog', 'error');
+    }
+  };
+
   const renderActions = (item: CollectionItemDto) => (
-    <button
-      onClick={(e) => {
-        e.preventDefault();
-        handleRemove(item.gameId, item.gameName);
-      }}
-      className="btn btn-danger btn-sm"
-      disabled={removeFromCollection.isPending}
-    >
-      Remove
-    </button>
+    <>
+      {!item.status && (
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            handleAddToBacklog(item.gameId, item.gameName);
+          }}
+          className="btn btn-secondary btn-sm"
+          disabled={updateGameStatus.isPending}
+        >
+          Add to Backlog
+        </button>
+      )}
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          handleRemove(item.gameId, item.gameName);
+        }}
+        className="btn btn-danger btn-sm"
+        disabled={removeFromCollection.isPending}
+      >
+        Remove
+      </button>
+    </>
   );
 
   if (isLoading) {

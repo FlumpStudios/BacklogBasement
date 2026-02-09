@@ -53,6 +53,31 @@ export interface UserDto {
   avatarUrl?: string;
   steamId?: string | null;
   hasSteamLinked?: boolean;
+  username?: string | null;
+}
+
+// Profile DTOs
+export interface ProfileDto {
+  username: string;
+  displayName: string;
+  memberSince: string;
+  stats: ProfileStatsDto;
+  currentlyPlaying: CollectionItemDto[];
+  backlog: CollectionItemDto[];
+  collection: CollectionItemDto[];
+}
+
+export interface ProfileStatsDto {
+  totalGames: number;
+  totalPlayTimeMinutes: number;
+  backlogCount: number;
+  playingCount: number;
+  completedCount: number;
+}
+
+export interface UsernameAvailabilityResponse {
+  available: boolean;
+  username: string;
 }
 
 // Steam DTOs

@@ -11,6 +11,12 @@ export {
 } from './useCollection';
 export { useGameSearch, useGameDetails } from './useGames';
 export {
+  useProfile,
+  useCheckUsername,
+  useSetUsername,
+  PROFILE_QUERY_KEY,
+} from './useProfile';
+export {
   useSteamStatus,
   useSteamLink,
   useSteamUnlink,

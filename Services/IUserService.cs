@@ -12,5 +12,7 @@ namespace BacklogBasement.Services
         Guid? GetCachedCurrentUserId();
         Task<User?> LinkSteamAsync(Guid userId, string steamId);
         Task<User?> UnlinkSteamAsync(Guid userId);
+        Task<bool> IsUsernameAvailableAsync(string username);
+        Task<User> SetUsernameAsync(Guid userId, string username);
     }
 }

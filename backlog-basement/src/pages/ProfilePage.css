@@ -1,0 +1,60 @@
+.profile-page {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.profile-header {
+  margin-bottom: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.profile-identity {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.profile-display-name {
+  margin: 0;
+}
+
+.profile-username {
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+}
+
+.profile-member-since {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.profile-own-badge {
+  display: inline-block;
+  align-self: flex-start;
+  background: var(--color-primary);
+  color: white;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-md);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+.profile-section {
+  margin-top: var(--spacing-xl);
+}
+
+.profile-section h2 {
+  margin: 0 0 var(--spacing-lg) 0;
+}

@@ -29,6 +29,15 @@ namespace BacklogBasement.Data
                 .IsUnique()
                 .HasFilter("[SteamId] IS NOT NULL");
 
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Username)
+                .IsUnique()
+                .HasFilter("[Username] IS NOT NULL");
+
+            modelBuilder.Entity<User>()
+                .Property(u => u.Username)
+                .HasMaxLength(30);
+
             // Configure Game entity
             modelBuilder.Entity<Game>()
                 .HasIndex(g => g.IgdbId)

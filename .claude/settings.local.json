@@ -13,7 +13,8 @@
       "Bash(if exist publish rmdir /s /q publish)",
       "Bash(cmd /c \"if exist C:\\\\Projects\\\\BacklogBasement\\\\publish rmdir /s /q C:\\\\Projects\\\\BacklogBasement\\\\publish\")",
       "Bash(cmd /c \"dir C:\\\\Projects\\\\BacklogBasement\\\\publish /b\")",
-      "Bash(cmd /c \"dir C:\\\\Projects\\\\BacklogBasement\\\\publish\\\\wwwroot /b /s 2>nul\")"
+      "Bash(cmd /c \"dir C:\\\\Projects\\\\BacklogBasement\\\\publish\\\\wwwroot /b /s 2>nul\")",
+      "Bash(ls -la \"C:\\\\Projects\\\\BacklogBasement\\\\backlog-basement\\\\src\\\\components\"\" | grep -E \"^d \")"
     ]
   }
 }

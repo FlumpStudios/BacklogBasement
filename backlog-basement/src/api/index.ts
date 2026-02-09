@@ -3,3 +3,4 @@ export { authApi } from './auth';
 export { gamesApi } from './games';
 export { collectionApi } from './collection';
 export { steamApi } from './steam';
+export { profileApi } from './profile';

@@ -7,3 +7,4 @@ export { GameDetailPage } from './GameDetailPage';
 export { NotFoundPage } from './NotFoundPage';
 export { PrivacyPolicyPage } from './PrivacyPolicyPage';
 export { CookiePolicyPage } from './CookiePolicyPage';
+export { ProfilePage } from './ProfilePage';

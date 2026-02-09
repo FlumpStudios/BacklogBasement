@@ -11,6 +11,7 @@ import {
   NotFoundPage,
   PrivacyPolicyPage,
   CookiePolicyPage,
+  ProfilePage,
 } from './pages';
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/privacy" element={<PrivacyPolicyPage />} />
         <Route path="/cookies" element={<CookiePolicyPage />} />
+        <Route path="/profile/:username" element={<ProfilePage />} />
 
         {/* Protected routes */}
         <Route

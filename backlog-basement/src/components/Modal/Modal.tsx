@@ -6,12 +6,13 @@ interface ModalProps {
   onClose: () => void;
   title: string;
   children: React.ReactNode;
+  dismissible?: boolean;
 }
 
-export function Modal({ isOpen, onClose, title, children }: ModalProps) {
+export function Modal({ isOpen, onClose, title, children, dismissible = true }: ModalProps) {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === 'Escape' && dismissible) {
         onClose();
       }
     };
@@ -25,18 +26,20 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
       document.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = '';
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, dismissible]);
 
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay" onClick={dismissible ? onClose : undefined}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2 className="modal-title">{title}</h2>
-          <button onClick={onClose} className="modal-close" aria-label="Close">
-            ✕
-          </button>
+          {dismissible && (
+            <button onClick={onClose} className="modal-close" aria-label="Close">
+              ✕
+            </button>
+          )}
         </div>
         <div className="modal-content">{children}</div>
       </div>

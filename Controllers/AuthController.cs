@@ -120,7 +120,8 @@ namespace BacklogBasement.Controllers
                 name = user.DisplayName,
                 googleId = user.GoogleSubjectId,
                 steamId = user.SteamId,
-                hasSteamLinked = !string.IsNullOrEmpty(user.SteamId)
+                hasSteamLinked = !string.IsNullOrEmpty(user.SteamId),
+                username = user.Username
             });
         }
 

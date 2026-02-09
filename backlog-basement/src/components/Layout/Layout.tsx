@@ -2,6 +2,7 @@ import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth';
 import { ThemeToggle } from '../ThemeToggle';
 import { CookieBanner } from '../CookieBanner';
+import { UsernameSetupModal } from '../../features/profile';
 import './Layout.css';
 
 export function Layout() {
@@ -34,6 +35,11 @@ export function Layout() {
                 <Link to="/search" className="nav-link">
                   Search
                 </Link>
+                {user?.username && (
+                  <Link to={`/profile/${user.username}`} className="nav-link">
+                    My Profile
+                  </Link>
+                )}
                 <ThemeToggle />
                 <div className="user-menu">
                   {user?.avatarUrl && (
@@ -75,6 +81,7 @@ export function Layout() {
       </footer>
 
       <CookieBanner />
+      {isAuthenticated && !user?.username && <UsernameSetupModal />}
     </div>
   );
 }

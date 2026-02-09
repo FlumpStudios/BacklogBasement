@@ -1,10 +1,12 @@
 using System;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using BacklogBasement.Data;
+using BacklogBasement.Exceptions;
 using BacklogBasement.Models;
 
 namespace BacklogBasement.Services
@@ -94,6 +96,66 @@ namespace BacklogBasement.Services
                 return null;
 
             user.SteamId = null;
+            await _context.SaveChangesAsync();
+
+            return user;
+        }
+
+        private static readonly HashSet<string> ReservedUsernames = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "admin", "api", "auth", "profile", "dashboard", "collection",
+            "search", "games", "settings", "help", "about", "login", "logout",
+            "register", "signup", "signin", "user", "users", "home", "privacy",
+            "cookies", "terms", "support", "contact", "blog", "news", "status"
+        };
+
+        private static readonly Regex UsernameRegex = new(@"^[a-zA-Z0-9][a-zA-Z0-9_-]*[a-zA-Z0-9]$", RegexOptions.Compiled);
+
+        private static void ValidateUsername(string username)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+                throw new BadRequestException("Username is required");
+
+            if (username.Length < 3)
+                throw new BadRequestException("Username must be at least 3 characters");
+
+            if (username.Length > 30)
+                throw new BadRequestException("Username must be at most 30 characters");
+
+            if (!UsernameRegex.IsMatch(username))
+                throw new BadRequestException("Username can only contain letters, numbers, hyphens, and underscores, and cannot start or end with a hyphen or underscore");
+
+            if (ReservedUsernames.Contains(username))
+                throw new BadRequestException("This username is reserved");
+        }
+
+        public async Task<bool> IsUsernameAvailableAsync(string username)
+        {
+            ValidateUsername(username);
+
+            var lowerUsername = username.ToLowerInvariant();
+            return !await _context.Users
+                .AnyAsync(u => u.Username != null && u.Username.ToLower() == lowerUsername);
+        }
+
+        public async Task<User> SetUsernameAsync(Guid userId, string username)
+        {
+            ValidateUsername(username);
+
+            var user = await _context.Users.FindAsync(userId)
+                ?? throw new NotFoundException("User not found");
+
+            if (user.Username != null)
+                throw new BadRequestException("Username has already been set and cannot be changed");
+
+            var lowerUsername = username.ToLowerInvariant();
+            var taken = await _context.Users
+                .AnyAsync(u => u.Username != null && u.Username.ToLower() == lowerUsername);
+
+            if (taken)
+                throw new BadRequestException("This username is already taken");
+
+            user.Username = username;
             await _context.SaveChangesAsync();
 
             return user;

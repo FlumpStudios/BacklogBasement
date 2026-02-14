@@ -58,6 +58,7 @@ export interface UserDto {
 
 // Profile DTOs
 export interface ProfileDto {
+  userId: string;
   username: string;
   displayName: string;
   memberSince: string;
@@ -65,6 +66,7 @@ export interface ProfileDto {
   currentlyPlaying: CollectionItemDto[];
   backlog: CollectionItemDto[];
   collection: CollectionItemDto[];
+  friends: FriendDto[];
 }
 
 export interface ProfileStatsDto {
@@ -73,6 +75,51 @@ export interface ProfileStatsDto {
   backlogCount: number;
   playingCount: number;
   completedCount: number;
+  friendCount: number;
+}
+
+// Friend DTOs
+export interface FriendDto {
+  userId: string;
+  username: string;
+  displayName: string;
+  friendsSince: string;
+}
+
+export interface FriendRequestDto {
+  friendshipId: string;
+  userId: string;
+  username: string;
+  displayName: string;
+  sentAt: string;
+  direction: 'incoming' | 'outgoing';
+}
+
+export interface FriendshipStatusDto {
+  status: 'none' | 'pending_outgoing' | 'pending_incoming' | 'friends';
+  friendshipId?: string;
+}
+
+export interface PlayerSearchResultDto {
+  userId: string;
+  username: string;
+  displayName: string;
+  totalGames: number;
+}
+
+// Notification DTOs
+export interface NotificationDto {
+  id: string;
+  type: string;
+  message: string;
+  relatedUserId?: string;
+  relatedUsername?: string;
+  isRead: boolean;
+  createdAt: string;
+}
+
+export interface UnreadCountDto {
+  count: number;
 }
 
 export interface UsernameAvailabilityResponse {

@@ -4,17 +4,9 @@
   align-items: center;
 }
 
-.search-input-icon {
-  position: absolute;
-  left: var(--spacing-md);
-  font-size: 1rem;
-  pointer-events: none;
-}
-
 .search-input {
   width: 100%;
   padding: var(--spacing-md) var(--spacing-xl);
-  padding-left: calc(var(--spacing-md) * 2 + 1rem);
   font-size: 1rem;
   border: 2px solid var(--color-border);
   border-radius: var(--radius-lg);

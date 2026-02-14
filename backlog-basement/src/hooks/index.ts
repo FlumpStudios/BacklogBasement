@@ -25,3 +25,22 @@ export {
   useSyncAllSteamPlaytime,
   STEAM_STATUS_QUERY_KEY,
 } from './useSteam';
+export {
+  usePlayerSearch,
+  useFriendshipStatus,
+  useSendFriendRequest,
+  useAcceptFriendRequest,
+  useDeclineFriendRequest,
+  useRemoveFriend,
+  useFriends,
+  usePendingRequests,
+  FRIENDS_QUERY_KEY,
+  FRIEND_REQUESTS_QUERY_KEY,
+} from './useFriends';
+export {
+  useNotifications,
+  useUnreadCount,
+  useMarkAsRead,
+  useMarkAllAsRead,
+  NOTIFICATIONS_QUERY_KEY,
+} from './useNotifications';

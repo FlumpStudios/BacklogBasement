@@ -8,3 +8,4 @@ export { NotFoundPage } from './NotFoundPage';
 export { PrivacyPolicyPage } from './PrivacyPolicyPage';
 export { CookiePolicyPage } from './CookiePolicyPage';
 export { ProfilePage } from './ProfilePage';
+export { FriendsPage } from './FriendsPage';

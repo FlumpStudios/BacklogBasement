@@ -2,13 +2,13 @@ import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../auth';
 import { useProfile } from '../hooks';
 import { GameGrid } from '../features/games';
-import { EmptyState } from '../components';
+import { EmptyState, FriendButton } from '../components';
 import { formatPlaytime } from '../utils';
 import './ProfilePage.css';
 
 export function ProfilePage() {
   const { username } = useParams<{ username: string }>();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { data: profile, isLoading, isError } = useProfile(username ?? '');
 
   const isOwnProfile = user?.username === profile?.username;
@@ -50,6 +50,9 @@ export function ProfilePage() {
         {isOwnProfile && (
           <span className="profile-own-badge">This is your profile</span>
         )}
+        {!isOwnProfile && isAuthenticated && profile.userId && (
+          <FriendButton userId={profile.userId} />
+        )}
       </header>
 
       <div className="profile-stats">
@@ -73,6 +76,10 @@ export function ProfilePage() {
           <span className="stat-value">{profile.stats.completedCount}</span>
           <span className="stat-label">Completed</span>
         </div>
+        <div className="stat-card">
+          <span className="stat-value">{profile.stats.friendCount}</span>
+          <span className="stat-label">Friends</span>
+        </div>
       </div>
 
       {profile.currentlyPlaying.length > 0 && (
@@ -93,6 +100,20 @@ export function ProfilePage() {
         <section className="profile-section">
           <h2>Completed</h2>
           <GameGrid games={completedGames} showPlaytime />
+        </section>
+      )}
+
+      {profile.friends && profile.friends.length > 0 && (
+        <section className="profile-section">
+          <h2>Friends</h2>
+          <div className="profile-friends-list">
+            {profile.friends.map((friend) => (
+              <Link key={friend.userId} to={`/profile/${friend.username}`} className="profile-friend-card">
+                <span className="profile-friend-name">{friend.displayName}</span>
+                <span className="profile-friend-username">@{friend.username}</span>
+              </Link>
+            ))}
+          </div>
         </section>
       )}
 

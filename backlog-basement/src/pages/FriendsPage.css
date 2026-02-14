@@ -1,0 +1,20 @@
+.friends-page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.friends-page h1 {
+  margin: 0 0 var(--spacing-xl) 0;
+}
+
+.friends-page-search {
+  margin-bottom: var(--spacing-xl);
+}
+
+.friends-page-search h2 {
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+.friends-page-list {
+  margin-top: var(--spacing-lg);
+}

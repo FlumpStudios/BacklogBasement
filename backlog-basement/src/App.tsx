@@ -1,6 +1,6 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from './components';
-import { ProtectedRoute } from './auth';
+import { ProtectedRoute, useAuth } from './auth';
 import {
   LandingPage,
   LoginPage,
@@ -12,14 +12,20 @@ import {
   PrivacyPolicyPage,
   CookiePolicyPage,
   ProfilePage,
+  FriendsPage,
 } from './pages';
+
+function HomePage() {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <Navigate to="/dashboard" replace /> : <LandingPage />;
+}
 
 function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
         {/* Public routes */}
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/privacy" element={<PrivacyPolicyPage />} />
         <Route path="/cookies" element={<CookiePolicyPage />} />
@@ -55,6 +61,14 @@ function App() {
           element={
             <ProtectedRoute>
               <GameDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/friends"
+          element={
+            <ProtectedRoute>
+              <FriendsPage />
             </ProtectedRoute>
           }
         />

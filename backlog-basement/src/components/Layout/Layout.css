@@ -115,16 +115,90 @@
   color: var(--color-border);
 }
 
+.mobile-drawer {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.burger-btn {
+  display: none;
+}
+
 @media (max-width: 768px) {
-  .nav {
-    gap: var(--spacing-md);
-  }
-
-  .user-name {
-    display: none;
-  }
-
   .logo-text {
     display: none;
+  }
+
+  .burger-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: background var(--transition-fast);
+  }
+
+  .burger-btn:hover {
+    background: var(--color-surface-elevated);
+  }
+
+  .mobile-drawer {
+    position: fixed;
+    top: 64px;
+    right: -280px;
+    width: 280px;
+    height: calc(100vh - 64px);
+    background: var(--color-surface);
+    border-left: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-md) 0;
+    z-index: 101;
+    transition: right var(--transition-normal);
+    overflow-y: auto;
+  }
+
+  .mobile-drawer.open {
+    right: 0;
+  }
+
+  .mobile-drawer .nav-link {
+    display: block;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border);
+    font-size: 1rem;
+  }
+
+  .mobile-drawer .nav-link:hover {
+    background: var(--color-surface-elevated);
+  }
+
+  .mobile-drawer .user-menu {
+    margin-top: auto;
+    padding: var(--spacing-lg);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .mobile-drawer .user-name {
+    display: inline;
+  }
+
+  .drawer-backdrop {
+    position: fixed;
+    inset: 64px 0 0 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    animation: fadeIn 0.2s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 }

@@ -9,10 +9,12 @@ namespace BacklogBasement.Services
     public class ProfileService : IProfileService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IFriendshipService _friendshipService;
 
-        public ProfileService(ApplicationDbContext context)
+        public ProfileService(ApplicationDbContext context, IFriendshipService friendshipService)
         {
             _context = context;
+            _friendshipService = friendshipService;
         }
 
         public async Task<ProfileDto?> GetProfileByUsernameAsync(string username)
@@ -47,8 +49,11 @@ namespace BacklogBasement.Services
             var currentlyPlaying = collection.Where(c => c.Status == "playing").ToList();
             var backlog = collection.Where(c => c.Status == "backlog").ToList();
 
+            var friends = await _friendshipService.GetFriendsAsync(user.Id);
+
             return new ProfileDto
             {
+                UserId = user.Id,
                 Username = user.Username!,
                 DisplayName = user.DisplayName,
                 MemberSince = user.CreatedAt,
@@ -58,11 +63,13 @@ namespace BacklogBasement.Services
                     TotalPlayTimeMinutes = collection.Sum(c => c.TotalPlayTimeMinutes),
                     BacklogCount = backlog.Count,
                     PlayingCount = currentlyPlaying.Count,
-                    CompletedCount = collection.Count(c => c.Status == "completed")
+                    CompletedCount = collection.Count(c => c.Status == "completed"),
+                    FriendCount = friends.Count
                 },
                 CurrentlyPlaying = currentlyPlaying,
                 Backlog = backlog,
-                Collection = collection
+                Collection = collection,
+                Friends = friends
             };
         }
     }

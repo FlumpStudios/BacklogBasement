@@ -106,7 +106,8 @@ namespace BacklogBasement.Services
             "admin", "api", "auth", "profile", "dashboard", "collection",
             "search", "games", "settings", "help", "about", "login", "logout",
             "register", "signup", "signin", "user", "users", "home", "privacy",
-            "cookies", "terms", "support", "contact", "blog", "news", "status"
+            "cookies", "terms", "support", "contact", "blog", "news", "status",
+            "friends", "notifications"
         };
 
         private static readonly Regex UsernameRegex = new(@"^[a-zA-Z0-9][a-zA-Z0-9_-]*[a-zA-Z0-9]$", RegexOptions.Compiled);

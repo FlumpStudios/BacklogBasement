@@ -14,6 +14,8 @@ namespace BacklogBasement.Data
         public DbSet<Game> Games { get; set; } = null!;
         public DbSet<UserGame> UserGames { get; set; } = null!;
         public DbSet<PlaySession> PlaySessions { get; set; } = null!;
+        public DbSet<Friendship> Friendships { get; set; } = null!;
+        public DbSet<Notification> Notifications { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -72,6 +74,33 @@ namespace BacklogBasement.Data
                 .WithMany(ug => ug.PlaySessions)
                 .HasForeignKey(ps => ps.UserGameId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure Friendship entity
+            modelBuilder.Entity<Friendship>()
+                .HasIndex(f => new { f.RequesterId, f.AddresseeId })
+                .IsUnique();
+
+            modelBuilder.Entity<Friendship>()
+                .HasOne(f => f.Requester)
+                .WithMany(u => u.SentFriendRequests)
+                .HasForeignKey(f => f.RequesterId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Friendship>()
+                .HasOne(f => f.Addressee)
+                .WithMany(u => u.ReceivedFriendRequests)
+                .HasForeignKey(f => f.AddresseeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configure Notification entity
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.User)
+                .WithMany(u => u.Notifications)
+                .HasForeignKey(n => n.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Notification>()
+                .HasIndex(n => new { n.UserId, n.IsRead });
         }
     }
 }

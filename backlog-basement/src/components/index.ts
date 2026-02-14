@@ -8,3 +8,5 @@ export { Modal } from './Modal';
 export { ThemeToggle } from './ThemeToggle';
 export { SteamSection } from './SteamSection';
 export { CookieBanner } from './CookieBanner';
+export { NotificationBell } from './NotificationBell';
+export { FriendButton } from './FriendButton';

@@ -1,0 +1,23 @@
+.friend-btn {
+  font-size: 0.875rem;
+}
+
+.friend-btn-group {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.friend-label {
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.friend-remove-btn {
+  font-size: 0.75rem;
+}

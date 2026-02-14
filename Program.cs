@@ -50,6 +50,8 @@ public class Program
         builder.Services.AddScoped<IGameService, GameService>();
         builder.Services.AddScoped<ICollectionService, CollectionService>();
         builder.Services.AddScoped<IPlaySessionService, PlaySessionService>();
+        builder.Services.AddScoped<INotificationService, NotificationService>();
+        builder.Services.AddScoped<IFriendshipService, FriendshipService>();
         builder.Services.AddScoped<IProfileService, ProfileService>();
 
         // Configure cookie authentication

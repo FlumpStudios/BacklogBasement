@@ -5,6 +5,7 @@ namespace BacklogBasement.DTOs
 {
     public class ProfileDto
     {
+        public Guid UserId { get; set; }
         public string Username { get; set; } = string.Empty;
         public string DisplayName { get; set; } = string.Empty;
         public DateTime MemberSince { get; set; }
@@ -12,6 +13,7 @@ namespace BacklogBasement.DTOs
         public List<CollectionItemDto> CurrentlyPlaying { get; set; } = new();
         public List<CollectionItemDto> Backlog { get; set; } = new();
         public List<CollectionItemDto> Collection { get; set; } = new();
+        public List<FriendDto> Friends { get; set; } = new();
     }
 
     public class ProfileStatsDto
@@ -21,6 +23,7 @@ namespace BacklogBasement.DTOs
         public int BacklogCount { get; set; }
         public int PlayingCount { get; set; }
         public int CompletedCount { get; set; }
+        public int FriendCount { get; set; }
     }
 
     public class SetUsernameRequest

@@ -35,7 +35,6 @@ export function SearchInput({
 
   return (
     <div className="search-input-container">
-      <span className="search-input-icon">🔍</span>
       <input
         type="text"
         value={localValue}

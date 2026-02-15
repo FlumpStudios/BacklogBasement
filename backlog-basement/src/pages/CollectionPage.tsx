@@ -162,15 +162,6 @@ export function CollectionPage() {
     }
   };
 
-  const handleRemoveFromBacklog = async (gameId: string, gameName: string) => {
-    try {
-      await updateGameStatus.mutateAsync({ gameId, status: null });
-      showToast(`Removed "${gameName}" from your backlog`, 'success');
-    } catch {
-      showToast('Failed to remove from backlog', 'error');
-    }
-  };
-
   const renderActions = (item: CollectionItemDto) => (
     <>
       {!item.status && (
@@ -189,12 +180,28 @@ export function CollectionPage() {
         <button
           onClick={(e) => {
             e.preventDefault();
-            handleRemoveFromBacklog(item.gameId, item.gameName);
+            updateGameStatus.mutateAsync({ gameId: item.gameId, status: 'playing' }).then(() =>
+              showToast(`Started playing "${item.gameName}"`, 'success')
+            ).catch(() => showToast('Failed to update status', 'error'));
           }}
-          className="btn btn-warning btn-sm"
+          className="btn btn-secondary btn-sm"
           disabled={updateGameStatus.isPending}
         >
-          Remove from Backlog
+          Start Playing
+        </button>
+      )}
+      {item.status === 'playing' && (
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            updateGameStatus.mutateAsync({ gameId: item.gameId, status: 'completed' }).then(() =>
+              showToast(`Marked "${item.gameName}" as completed`, 'success')
+            ).catch(() => showToast('Failed to update status', 'error'));
+          }}
+          className="btn btn-secondary btn-sm"
+          disabled={updateGameStatus.isPending}
+        >
+          Mark Completed
         </button>
       )}
       <button

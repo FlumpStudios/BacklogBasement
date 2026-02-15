@@ -29,6 +29,7 @@ export function GameGrid({ games, showPlaytime = false, renderActions }: GameGri
             }
           : item;
         const playtime = isCollectionItem(item) ? item.totalPlayTimeMinutes : undefined;
+        const criticScore = isCollectionItem(item) ? item.criticScore : item.criticScore;
 
         return (
           <GameCard
@@ -36,6 +37,7 @@ export function GameGrid({ games, showPlaytime = false, renderActions }: GameGri
             game={gameForCard}
             playtime={playtime}
             showPlaytime={showPlaytime}
+            criticScore={criticScore}
             actions={renderActions?.(item)}
           />
         );

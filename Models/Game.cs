@@ -12,6 +12,8 @@ namespace BacklogBasement.Models
         public string Summary { get; set; } = string.Empty;
         public DateTime? ReleaseDate { get; set; }
         public string? CoverUrl { get; set; }
+        public int? CriticScore { get; set; }
+        public bool CriticScoreChecked { get; set; }
         public DateTime CreatedAt { get; set; }
 
         // Navigation properties

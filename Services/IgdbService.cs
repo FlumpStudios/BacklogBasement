@@ -33,7 +33,7 @@ namespace BacklogBasement.Services
             await EnsureAccessTokenAsync();
 
             var searchQuery = $@"
-                fields id, name, summary, first_release_date, cover.image_id;
+                fields id, name, summary, first_release_date, aggregated_rating, cover.image_id;
                 search ""{query}"";
                 limit 20;
             ";
@@ -63,7 +63,7 @@ namespace BacklogBasement.Services
             await EnsureAccessTokenAsync();
 
             var query = $@"
-                fields id, name, summary, first_release_date, cover.image_id;
+                fields id, name, summary, first_release_date, aggregated_rating, cover.image_id;
                 where id = {igdbId};
             ";
 

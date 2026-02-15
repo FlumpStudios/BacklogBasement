@@ -15,6 +15,7 @@ namespace BacklogBasement.DTOs
         public string Source { get; set; } = "manual"; // "steam" or "manual"
         public string? Status { get; set; } // null, "backlog", "playing", "completed"
         public DateTime? DateCompleted { get; set; }
+        public int? CriticScore { get; set; }
     }
 
     public class AddToCollectionRequest

@@ -107,5 +107,37 @@ namespace BacklogBasement.Services
             var game = games.FirstOrDefault(g => g.AppId == steamAppId);
             return game?.PlaytimeForever;
         }
+
+        public async Task<int?> GetMetacriticScoreAsync(long steamAppId)
+        {
+            try
+            {
+                var url = $"https://store.steampowered.com/api/appdetails?appids={steamAppId}";
+                var response = await _httpClient.GetAsync(url);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                    return null;
+
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                using var doc = JsonDocument.Parse(content);
+                var appData = doc.RootElement.GetProperty(steamAppId.ToString());
+
+                if (!appData.GetProperty("success").GetBoolean())
+                    return null;
+
+                if (appData.GetProperty("data").TryGetProperty("metacritic", out var metacritic))
+                {
+                    return metacritic.GetProperty("score").GetInt32();
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to fetch Metacritic score for Steam app {AppId}", steamAppId);
+                return null;
+            }
+        }
     }
 }

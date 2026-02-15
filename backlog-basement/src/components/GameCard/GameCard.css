@@ -23,6 +23,31 @@
   aspect-ratio: 3 / 4;
   background: var(--color-surface-elevated);
   overflow: hidden;
+  position: relative;
+}
+
+.game-card-score {
+  position: absolute;
+  top: var(--spacing-xs);
+  right: var(--spacing-xs);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.score-green {
+  background: #16a34a;
+}
+
+.score-yellow {
+  background: #ca8a04;
+}
+
+.score-red {
+  background: #dc2626;
 }
 
 .game-card-image {

@@ -51,6 +51,15 @@ export function CollectionPage() {
       searchParams.delete('playStatus');
       setSearchParams(searchParams, { replace: true });
     }
+
+    // Apply sort from URL
+    const sortParam = searchParams.get('sort');
+    const validSorts: SortOption[] = ['name-asc', 'name-desc', 'release-desc', 'release-asc', 'added-desc', 'added-asc', 'playtime-desc', 'playtime-asc', 'score-desc', 'score-asc'];
+    if (sortParam && validSorts.includes(sortParam as SortOption)) {
+      setSortBy(sortParam as SortOption);
+      searchParams.delete('sort');
+      setSearchParams(searchParams, { replace: true });
+    }
   }, [searchParams, setSearchParams, showToast]);
 
   // Filter and sort the collection
@@ -117,6 +126,16 @@ export function CollectionPage() {
           return (b.totalPlayTimeMinutes || 0) - (a.totalPlayTimeMinutes || 0);
         case 'playtime-asc':
           return (a.totalPlayTimeMinutes || 0) - (b.totalPlayTimeMinutes || 0);
+        case 'score-desc': {
+          const scoreA = a.criticScore ?? -1;
+          const scoreB = b.criticScore ?? -1;
+          return scoreB - scoreA;
+        }
+        case 'score-asc': {
+          const scoreA = a.criticScore ?? 101;
+          const scoreB = b.criticScore ?? 101;
+          return scoreA - scoreB;
+        }
         default:
           return 0;
       }

@@ -7,6 +7,7 @@ namespace BacklogBasement.Services
     {
         Task<IEnumerable<SteamGame>> GetOwnedGamesAsync(string steamId);
         Task<int?> GetGamePlaytimeAsync(string steamId, long steamAppId);
+        Task<int?> GetMetacriticScoreAsync(long steamAppId);
     }
 
     public class SteamGame

@@ -44,7 +44,7 @@ export function Layout() {
                   </Link>
                   {user?.username && (
                     <Link to={`/profile/${user.username}`} className="nav-link" onClick={closeMenu}>
-                      My Profile
+                      Profile
                     </Link>
                   )}
                   <Link to="/friends" className="nav-link" onClick={closeMenu}>

@@ -23,7 +23,12 @@
       "Bash(Select-Object -ExpandProperty FullName)",
       "Bash(npx tsc:*)",
       "Bash(scp:*)",
-      "Bash(ssh:*)"
+      "Bash(ssh:*)",
+      "WebFetch(domain:api-docs.igdb.com)",
+      "WebFetch(domain:wiki.teamfortress.com)",
+      "WebFetch(domain:tech.dukeyin.com)",
+      "WebFetch(domain:nik-davis.github.io)",
+      "WebFetch(domain:store.steampowered.com)"
     ]
   }
 }

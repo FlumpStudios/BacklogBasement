@@ -14,11 +14,13 @@ namespace BacklogBasement.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IPlaySessionService _playSessionService;
+        private readonly ISteamService _steamService;
 
-        public CollectionService(ApplicationDbContext context, IPlaySessionService playSessionService)
+        public CollectionService(ApplicationDbContext context, IPlaySessionService playSessionService, ISteamService steamService)
         {
             _context = context;
             _playSessionService = playSessionService;
+            _steamService = steamService;
         }
 
         public async Task<IEnumerable<CollectionItemDto>> GetUserCollectionAsync(Guid userId)
@@ -39,7 +41,8 @@ namespace BacklogBasement.Services
                     TotalPlayTimeMinutes = 0, // Will be populated separately
                     Source = ug.Game.SteamAppId.HasValue ? "steam" : "manual",
                     Status = ug.Status,
-                    DateCompleted = ug.DateCompleted
+                    DateCompleted = ug.DateCompleted,
+                    CriticScore = ug.Game.CriticScore
                 })
                 .ToListAsync();
         }
@@ -87,7 +90,8 @@ namespace BacklogBasement.Services
                 TotalPlayTimeMinutes = 0,
                 Source = game.SteamAppId.HasValue ? "steam" : "manual",
                 Status = userGame.Status,
-                DateCompleted = userGame.DateCompleted
+                DateCompleted = userGame.DateCompleted,
+                CriticScore = game.CriticScore
             };
         }
 
@@ -130,7 +134,8 @@ namespace BacklogBasement.Services
                 TotalPlayTimeMinutes = totalPlayTime,
                 Source = userGame.Game.SteamAppId.HasValue ? "steam" : "manual",
                 Status = userGame.Status,
-                DateCompleted = userGame.DateCompleted
+                DateCompleted = userGame.DateCompleted,
+                CriticScore = userGame.Game.CriticScore
             };
         }
 
@@ -166,6 +171,16 @@ namespace BacklogBasement.Services
                 userGame.DateCompleted = null;
             }
 
+            // Fetch critic score from Steam if not yet checked
+            var game = userGame.Game;
+            if (game.CriticScore == null && !game.CriticScoreChecked && game.SteamAppId.HasValue)
+            {
+                var score = await _steamService.GetMetacriticScoreAsync(game.SteamAppId.Value);
+                game.CriticScoreChecked = true;
+                if (score.HasValue)
+                    game.CriticScore = score;
+            }
+
             await _context.SaveChangesAsync();
 
             var totalPlayTime = await _playSessionService.GetTotalPlayTimeAsync(userId, gameId);
@@ -182,7 +197,8 @@ namespace BacklogBasement.Services
                 TotalPlayTimeMinutes = totalPlayTime,
                 Source = userGame.Game.SteamAppId.HasValue ? "steam" : "manual",
                 Status = userGame.Status,
-                DateCompleted = userGame.DateCompleted
+                DateCompleted = userGame.DateCompleted,
+                CriticScore = userGame.Game.CriticScore
             };
         }
     }

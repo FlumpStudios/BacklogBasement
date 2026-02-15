@@ -11,6 +11,7 @@ namespace BacklogBasement.DTOs
         public string Summary { get; set; } = string.Empty;
         public DateTime? ReleaseDate { get; set; }
         public string? CoverUrl { get; set; }
+        public int? CriticScore { get; set; }
     }
 
     public class GameSummaryDto
@@ -21,5 +22,6 @@ namespace BacklogBasement.DTOs
         public string Name { get; set; } = string.Empty;
         public DateTime? ReleaseDate { get; set; }
         public string? CoverUrl { get; set; }
+        public int? CriticScore { get; set; }
     }
 }

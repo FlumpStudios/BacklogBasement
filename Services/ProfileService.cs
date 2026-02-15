@@ -42,7 +42,8 @@ namespace BacklogBasement.Services
                     TotalPlayTimeMinutes = ug.PlaySessions.Sum(ps => ps.DurationMinutes),
                     Source = ug.Game.SteamAppId.HasValue ? "steam" : "manual",
                     Status = ug.Status,
-                    DateCompleted = ug.DateCompleted
+                    DateCompleted = ug.DateCompleted,
+                    CriticScore = ug.Game.CriticScore
                 })
                 .ToListAsync();
 

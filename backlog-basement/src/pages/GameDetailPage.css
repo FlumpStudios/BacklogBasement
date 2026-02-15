@@ -57,6 +57,48 @@
   margin: 0 0 var(--spacing-lg) 0;
 }
 
+.game-critic-score {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+  font-weight: 600;
+}
+
+.critic-score-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  background: currentColor;
+  -webkit-background-clip: text;
+}
+
+.game-critic-score .critic-score-value {
+  color: inherit;
+}
+
+.critic-score-label {
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+
+.critic-green {
+  background: rgba(22, 163, 74, 0.15);
+  color: #16a34a;
+}
+
+.critic-yellow {
+  background: rgba(202, 138, 4, 0.15);
+  color: #ca8a04;
+}
+
+.critic-red {
+  background: rgba(220, 38, 38, 0.15);
+  color: #dc2626;
+}
+
 .game-playtime {
   display: flex;
   align-items: center;

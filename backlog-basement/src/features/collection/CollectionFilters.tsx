@@ -8,7 +8,9 @@ export type SortOption =
   | 'added-desc'
   | 'added-asc'
   | 'playtime-desc'
-  | 'playtime-asc';
+  | 'playtime-asc'
+  | 'score-desc'
+  | 'score-asc';
 
 export type PlayStatusFilter = 'all' | 'played' | 'unplayed';
 export type SourceFilter = 'all' | 'steam' | 'manual';
@@ -38,6 +40,8 @@ const sortOptions: { value: SortOption; label: string }[] = [
   { value: 'added-asc', label: 'Date Added (Oldest)' },
   { value: 'playtime-desc', label: 'Most Played' },
   { value: 'playtime-asc', label: 'Least Played' },
+  { value: 'score-desc', label: 'Highest Rated' },
+  { value: 'score-asc', label: 'Lowest Rated' },
 ];
 
 export function CollectionFilters({

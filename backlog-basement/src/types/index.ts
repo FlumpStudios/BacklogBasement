@@ -7,6 +7,7 @@ export interface GameDto {
   coverUrl?: string | null;
   releaseDate?: string | null;
   summary?: string;
+  criticScore?: number | null;
 }
 
 export interface GameDetailDto extends GameDto {
@@ -27,6 +28,7 @@ export interface CollectionItemDto {
   source: 'steam' | 'manual';
   status?: 'backlog' | 'playing' | 'completed' | null;
   dateCompleted?: string | null;
+  criticScore?: number | null;
 }
 
 export type GameStatus = 'backlog' | 'playing' | 'completed' | null;

@@ -15,13 +15,19 @@ export function DashboardPage() {
 
   const completedGames = collection?.filter(g => g.status === 'completed').slice(0, 4) ?? [];
   const currentlyPlaying = collection?.filter(g => g.status === 'playing') ?? [];
-  const backlogGames = collection?.filter(g => g.status === 'backlog').slice(0, 4) ?? [];
+  const backlogGames = collection?.filter(g => g.status === 'backlog')
+    .sort((a, b) => new Date(a.dateAdded).getTime() - new Date(b.dateAdded).getTime())
+    .slice(0, 4) ?? [];
 
   // Games with no status, sorted by unplayed first, then by date added (oldest first)
   const recommendedForBacklog = collection
     ?.filter(g => !g.status)
     .sort((a, b) => {
-      // Unplayed games first
+      // Critic score first (highest first, games with scores before those without)
+      const aScore = a.criticScore ?? -1;
+      const bScore = b.criticScore ?? -1;
+      if (aScore !== bScore) return bScore - aScore;
+      // Then unplayed games first
       const aUnplayed = (a.totalPlayTimeMinutes || 0) === 0;
       const bUnplayed = (b.totalPlayTimeMinutes || 0) === 0;
       if (aUnplayed && !bUnplayed) return -1;
@@ -72,7 +78,7 @@ export function DashboardPage() {
             <section className="dashboard-section">
               <div className="section-header">
                 <h2>Your Backlog</h2>
-                <Link to="/collection?status=backlog" className="btn btn-secondary btn-sm">
+                <Link to="/collection?status=backlog&sort=added-asc" className="btn btn-secondary btn-sm">
                   View All ({collection?.filter(g => g.status === 'backlog').length})
                 </Link>
               </div>

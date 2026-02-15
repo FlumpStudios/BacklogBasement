@@ -13,11 +13,13 @@ namespace BacklogBasement.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IIgdbService _igdbService;
+        private readonly ISteamService _steamService;
 
-        public GameService(ApplicationDbContext context, IIgdbService igdbService)
+        public GameService(ApplicationDbContext context, IIgdbService igdbService, ISteamService steamService)
         {
             _context = context;
             _igdbService = igdbService;
+            _steamService = steamService;
         }
 
         public async Task<IEnumerable<GameSummaryDto>> SearchGamesAsync(string query)
@@ -35,7 +37,8 @@ namespace BacklogBasement.Services
                     SteamAppId = g.SteamAppId,
                     Name = g.Name,
                     ReleaseDate = g.ReleaseDate,
-                    CoverUrl = g.CoverUrl
+                    CoverUrl = g.CoverUrl,
+                    CriticScore = g.CriticScore
                 })
                 .ToListAsync();
 
@@ -52,6 +55,10 @@ namespace BacklogBasement.Services
                     var existingGame = await _context.Games
                         .FirstOrDefaultAsync(g => g.IgdbId == igdbGame.Id);
 
+                    var criticScore = igdbGame.aggregated_rating.HasValue
+                        ? (int?)Math.Round(igdbGame.aggregated_rating.Value)
+                        : null;
+
                     if (existingGame == null)
                     {
                         // Add to local database
@@ -67,6 +74,8 @@ namespace BacklogBasement.Services
                             CoverUrl = igdbGame.Cover != null && !string.IsNullOrWhiteSpace(igdbGame.Cover.image_id)
                                 ? $"https://images.igdb.com/igdb/image/upload/t_cover_big/{igdbGame?.Cover.image_id}.jpg"
                                 : null,
+                            CriticScore = criticScore,
+                            CriticScoreChecked = criticScore.HasValue,
                             CreatedAt = DateTime.UtcNow
                         };
 
@@ -80,8 +89,18 @@ namespace BacklogBasement.Services
                             SteamAppId = newGame.SteamAppId,
                             Name = newGame.Name,
                             ReleaseDate = newGame.ReleaseDate,
-                            CoverUrl = newGame.CoverUrl
+                            CoverUrl = newGame.CoverUrl,
+                            CriticScore = newGame.CriticScore
                         });
+                    }
+                    else
+                    {
+                        // Update CriticScore if currently null
+                        if (existingGame.CriticScore == null && criticScore.HasValue)
+                        {
+                            existingGame.CriticScore = criticScore;
+                            await _context.SaveChangesAsync();
+                        }
                     }
                 }
             }
@@ -95,6 +114,16 @@ namespace BacklogBasement.Services
             if (game == null)
                 return null;
 
+            // Lazy-fetch Metacritic score from Steam if we don't have a score and haven't checked yet
+            if (game.CriticScore == null && !game.CriticScoreChecked && game.SteamAppId.HasValue)
+            {
+                var score = await _steamService.GetMetacriticScoreAsync(game.SteamAppId.Value);
+                game.CriticScoreChecked = true;
+                if (score.HasValue)
+                    game.CriticScore = score;
+                await _context.SaveChangesAsync();
+            }
+
             return new GameDto
             {
                 Id = game.Id,
@@ -103,7 +132,8 @@ namespace BacklogBasement.Services
                 Name = game.Name,
                 Summary = game.Summary,
                 ReleaseDate = game.ReleaseDate,
-                CoverUrl = game.CoverUrl
+                CoverUrl = game.CoverUrl,
+                CriticScore = game.CriticScore
             };
         }
 
@@ -123,7 +153,8 @@ namespace BacklogBasement.Services
                     Name = game.Name,
                     Summary = game.Summary,
                     ReleaseDate = game.ReleaseDate,
-                    CoverUrl = game.CoverUrl
+                    CoverUrl = game.CoverUrl,
+                    CriticScore = game.CriticScore
                 };
             }
 
@@ -145,8 +176,12 @@ namespace BacklogBasement.Services
                     ? DateTimeOffset.FromUnixTimeSeconds(igdbGame.first_release_date.Value).DateTime
                     : null,
                 CoverUrl = igdbGame.Cover != null && !string.IsNullOrWhiteSpace(igdbGame.Cover.image_id)
-                    ? $"https://images.igdb.com/igdb/image/upload/t_cover_big/{igdbGame.Cover}.jpg"
+                    ? $"https://images.igdb.com/igdb/image/upload/t_cover_big/{igdbGame.Cover.image_id}.jpg"
                     : null,
+                CriticScore = igdbGame.aggregated_rating.HasValue
+                    ? (int?)Math.Round(igdbGame.aggregated_rating.Value)
+                    : null,
+                CriticScoreChecked = igdbGame.aggregated_rating.HasValue,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -161,7 +196,8 @@ namespace BacklogBasement.Services
                 Name = game.Name,
                 Summary = game.Summary,
                 ReleaseDate = game.ReleaseDate,
-                CoverUrl = game.CoverUrl
+                CoverUrl = game.CoverUrl,
+                CriticScore = game.CriticScore
             };
         }
     }

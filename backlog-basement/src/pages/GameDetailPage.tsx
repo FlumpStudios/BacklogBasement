@@ -155,6 +155,13 @@ export function GameDetailPage() {
             </p>
           )}
 
+          {game.criticScore != null && (
+            <div className={`game-critic-score ${game.criticScore >= 75 ? 'critic-green' : game.criticScore >= 50 ? 'critic-yellow' : 'critic-red'}`}>
+              <span className="critic-score-value">{game.criticScore}</span>
+              <span className="critic-score-label">Critic Score</span>
+            </div>
+          )}
+
           {isInCollection && collectionItem && (
             <div className="game-playtime">
               <span className="playtime-icon">⏱️</span>

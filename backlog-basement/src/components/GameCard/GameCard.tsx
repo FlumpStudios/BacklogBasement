@@ -8,7 +8,14 @@ interface GameCardProps {
   game: GameDto;
   playtime?: number;
   showPlaytime?: boolean;
+  criticScore?: number | null;
   actions?: React.ReactNode;
+}
+
+function getScoreColor(score: number): string {
+  if (score >= 75) return 'score-green';
+  if (score >= 50) return 'score-yellow';
+  return 'score-red';
 }
 
 // Check if a cover URL is valid (not empty or malformed)
@@ -18,7 +25,7 @@ function isValidCoverUrl(url?: string | null): boolean {
   return !url.endsWith('/.jpg') && !url.endsWith('/.png');
 }
 
-export function GameCard({ game, playtime, showPlaytime = false, actions }: GameCardProps) {
+export function GameCard({ game, playtime, showPlaytime = false, criticScore, actions }: GameCardProps) {
   const releaseYear = getYear(game.releaseDate ?? undefined);
   const hasCover = isValidCoverUrl(game.coverUrl);
   const [imageError, setImageError] = useState(false);
@@ -41,6 +48,11 @@ export function GameCard({ game, playtime, showPlaytime = false, actions }: Game
             <div className="game-card-placeholder">
               <span>🎮</span>
             </div>
+          )}
+          {criticScore != null && (
+            <span className={`game-card-score ${getScoreColor(criticScore)}`}>
+              {criticScore}
+            </span>
           )}
         </div>
         <div className="game-card-info">

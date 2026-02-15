@@ -15,6 +15,7 @@ namespace BacklogBasement.Services
         public string Name { get; set; } = string.Empty;
         public string? Summary { get; set; }
         public long? first_release_date { get; set; }
+        public double? aggregated_rating { get; set; }
         public IgdbCover? Cover { get; set; }
     }
 

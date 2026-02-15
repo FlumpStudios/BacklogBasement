@@ -46,6 +46,24 @@ export function DashboardPage() {
     }
   };
 
+  const handleMarkCompleted = async (game: CollectionItemDto) => {
+    try {
+      await updateGameStatus.mutateAsync({ gameId: game.gameId, status: 'completed' });
+      showToast(`Marked "${game.gameName}" as completed`, 'success');
+    } catch {
+      showToast('Failed to update status', 'error');
+    }
+  };
+
+  const handleStartPlaying = async (game: CollectionItemDto) => {
+    try {
+      await updateGameStatus.mutateAsync({ gameId: game.gameId, status: 'playing' });
+      showToast(`Started playing "${game.gameName}"`, 'success');
+    } catch {
+      showToast('Failed to update status', 'error');
+    }
+  };
+
   return (
     <div className="dashboard-page">
       <header className="dashboard-header">
@@ -70,7 +88,22 @@ export function DashboardPage() {
                   View All
                 </Link>
               </div>
-              <GameGrid games={currentlyPlaying} showPlaytime />
+              <GameGrid
+                games={currentlyPlaying}
+                showPlaytime
+                renderActions={(item) => (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleMarkCompleted(item as CollectionItemDto);
+                    }}
+                    className="btn btn-secondary btn-sm"
+                    disabled={updateGameStatus.isPending}
+                  >
+                    Mark Completed
+                  </button>
+                )}
+              />
             </section>
           )}
 
@@ -82,7 +115,22 @@ export function DashboardPage() {
                   View All ({collection?.filter(g => g.status === 'backlog').length})
                 </Link>
               </div>
-              <GameGrid games={backlogGames} showPlaytime />
+              <GameGrid
+                games={backlogGames}
+                showPlaytime
+                renderActions={(item) => (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleStartPlaying(item as CollectionItemDto);
+                    }}
+                    className="btn btn-secondary btn-sm"
+                    disabled={updateGameStatus.isPending}
+                  >
+                    Start Playing
+                  </button>
+                )}
+              />
             </section>
           )}
 

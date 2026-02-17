@@ -28,7 +28,8 @@
       "WebFetch(domain:wiki.teamfortress.com)",
       "WebFetch(domain:tech.dukeyin.com)",
       "WebFetch(domain:nik-davis.github.io)",
-      "WebFetch(domain:store.steampowered.com)"
+      "WebFetch(domain:store.steampowered.com)",
+      "Bash(rsync:*)"
     ]
   }
 }

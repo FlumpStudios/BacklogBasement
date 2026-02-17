@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSteamStatus, useSteamLink, useSteamUnlink, useSteamImport, useSyncAllSteamPlaytime, useCollection } from '../../hooks';
 import { Modal } from '../Modal/Modal';
 import { useToast } from '../Toast';
@@ -50,26 +50,51 @@ export function SteamSection() {
     setImportResult(null);
   };
 
+  const [isOpen, setIsOpen] = useState(true);
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  useEffect(() => {
+    if (!hasInitialized && !statusLoading) {
+      setIsOpen(!(steamStatus?.isLinked && hasSteamGames));
+      setHasInitialized(true);
+    }
+  }, [statusLoading, steamStatus, hasSteamGames, hasInitialized]);
+
   if (statusLoading) {
     return (
       <div className="steam-section">
-        <h3>Steam Integration</h3>
-        <p>Loading...</p>
+        <div className="steam-header">
+          <h3>Steam Integration</h3>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="steam-section">
-      <h3>Steam Integration</h3>
+      <button className="steam-header" onClick={() => setIsOpen(!isOpen)}>
+        <div className="steam-header-left">
+          <h3>Steam Integration</h3>
+          {steamStatus?.isLinked ? (
+            <span className="steam-header-status steam-header-linked">
+              <span className="steam-status-icon">&#x2714;</span>
+              Linked
+            </span>
+          ) : (
+            <span className="steam-header-status steam-header-not-linked">
+              Not linked
+            </span>
+          )}
+        </div>
+        <span className={`steam-chevron ${isOpen ? 'open' : ''}`}>&#9662;</span>
+      </button>
+
+      <div className={`steam-body ${isOpen ? 'open' : ''}`}>
+        <div className="steam-body-inner">
+          <div className="steam-body-content">
 
       {steamStatus?.isLinked ? (
         <div className="steam-linked">
-          <div className="steam-status">
-            <span className="steam-status-icon">&#x2714;</span>
-            <span>Steam account linked</span>            
-          </div>
-
           <div className="steam-actions">
             <button
               className="btn btn-primary"
@@ -106,6 +131,10 @@ export function SteamSection() {
           </button>
         </div>
       )}
+
+          </div>
+        </div>
+      </div>
 
       <Modal
         isOpen={showImportModal}

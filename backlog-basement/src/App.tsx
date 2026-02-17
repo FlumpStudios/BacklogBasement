@@ -13,6 +13,8 @@ import {
   CookiePolicyPage,
   ProfilePage,
   FriendsPage,
+  UserCollectionPage,
+  CompareCollectionsPage,
 } from './pages';
 
 function HomePage() {
@@ -30,6 +32,15 @@ function App() {
         <Route path="/privacy" element={<PrivacyPolicyPage />} />
         <Route path="/cookies" element={<CookiePolicyPage />} />
         <Route path="/profile/:username" element={<ProfilePage />} />
+        <Route path="/profile/:username/collection" element={<UserCollectionPage />} />
+        <Route
+          path="/profile/:username/compare"
+          element={
+            <ProtectedRoute>
+              <CompareCollectionsPage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Protected routes */}
         <Route

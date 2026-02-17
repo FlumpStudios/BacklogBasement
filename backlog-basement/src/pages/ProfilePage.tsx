@@ -53,6 +53,11 @@ export function ProfilePage() {
         {!isOwnProfile && isAuthenticated && profile.userId && (
           <FriendButton userId={profile.userId} />
         )}
+        {!isOwnProfile && isAuthenticated && (
+          <Link to={`/profile/${profile.username}/compare`} className="btn btn-secondary">
+            Compare collections
+          </Link>
+        )}
       </header>
 
       <div className="profile-stats">
@@ -119,7 +124,7 @@ export function ProfilePage() {
 
       {profile.collection.length > 0 && (
         <section className="profile-section">
-          <Link to="/collection" className="btn btn-secondary">
+          <Link to={isOwnProfile ? '/collection' : `/profile/${profile.username}/collection`} className="btn btn-secondary">
             View full collection
           </Link>
         </section>

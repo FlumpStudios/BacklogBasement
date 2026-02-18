@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../auth';
-import { useProfile, useFriendshipStatus } from '../hooks';
+import { useProfile, useFriendshipStatus, useSuggestions, useDismissSuggestion } from '../hooks';
 import { GameGrid } from '../features/games';
 import { SuggestGameModal } from '../features/suggestions';
 import { EmptyState, FriendButton } from '../components';
@@ -21,6 +21,8 @@ export function ProfilePage() {
   const isOwnProfile = user?.username === profile?.username;
   const isFriend = friendshipStatus?.status === 'friends';
   const completedGames = profile?.collection.filter(g => g.status === 'completed') ?? [];
+  const { data: suggestions } = useSuggestions(isOwnProfile);
+  const dismissSuggestion = useDismissSuggestion();
 
   if (isLoading) {
     return (
@@ -99,6 +101,35 @@ export function ProfilePage() {
           <span className="stat-label">Friends</span>
         </div>
       </div>
+
+      {isOwnProfile && suggestions && suggestions.length > 0 && (
+        <section className="profile-section">
+          <h2>Recommended by friends</h2>
+          <GameGrid
+            games={suggestions.map(s => ({
+              id: s.gameId,
+              name: s.gameName,
+              coverUrl: s.coverUrl,
+            }))}
+            renderActions={(game) => {
+              const suggestion = suggestions.find(s => s.gameId === game.id);
+              if (!suggestion) return null;
+              return (
+                <div className="suggestion-actions">
+                  <span className="suggestion-from">From {suggestion.senderDisplayName}</span>
+                  <button
+                    className="btn btn-sm btn-dismiss"
+                    onClick={() => dismissSuggestion.mutate(suggestion.id)}
+                    disabled={dismissSuggestion.isPending}
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              );
+            }}
+          />
+        </section>
+      )}
 
       {profile.currentlyPlaying.length > 0 && (
         <section className="profile-section">

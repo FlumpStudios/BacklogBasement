@@ -4,10 +4,11 @@ import { SendGameSuggestionRequest } from '../types';
 
 export const SUGGESTIONS_QUERY_KEY = ['suggestions'];
 
-export function useSuggestions() {
+export function useSuggestions(enabled = true) {
   return useQuery({
     queryKey: SUGGESTIONS_QUERY_KEY,
     queryFn: () => suggestionsApi.getReceived(),
+    enabled,
   });
 }
 

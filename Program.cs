@@ -53,6 +53,7 @@ public class Program
         builder.Services.AddScoped<INotificationService, NotificationService>();
         builder.Services.AddScoped<IFriendshipService, FriendshipService>();
         builder.Services.AddScoped<IProfileService, ProfileService>();
+        builder.Services.AddScoped<IGameSuggestionService, GameSuggestionService>();
 
         // Configure cookie authentication
         var isDevelopment = builder.Environment.IsDevelopment();

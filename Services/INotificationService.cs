@@ -11,6 +11,6 @@ namespace BacklogBasement.Services
         Task<int> GetUnreadCountAsync(Guid userId);
         Task MarkAsReadAsync(Guid userId, Guid notificationId);
         Task MarkAllAsReadAsync(Guid userId);
-        Task CreateNotificationAsync(Guid userId, string type, string message, Guid? relatedUserId = null);
+        Task CreateNotificationAsync(Guid userId, string type, string message, Guid? relatedUserId = null, Guid? relatedGameId = null);
     }
 }

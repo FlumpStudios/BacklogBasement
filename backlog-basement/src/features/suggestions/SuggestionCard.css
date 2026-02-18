@@ -1,0 +1,107 @@
+.suggestion-card {
+  position: relative;
+  min-width: 200px;
+  max-width: 200px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.suggestion-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.suggestion-card-link {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: var(--color-text);
+}
+
+.suggestion-cover {
+  width: 100%;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+}
+
+.suggestion-cover-placeholder {
+  width: 100%;
+  aspect-ratio: 3/4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+  font-size: 2rem;
+}
+
+.suggestion-info {
+  padding: var(--spacing-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.suggestion-game-name {
+  font-weight: 600;
+  font-size: 0.85rem;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.suggestion-from {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.suggestion-sender-link {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.suggestion-sender-link:hover {
+  text-decoration: underline;
+}
+
+.suggestion-message {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  font-style: italic;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.suggestion-dismiss {
+  position: absolute;
+  top: var(--spacing-xs);
+  right: var(--spacing-xs);
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.suggestion-card:hover .suggestion-dismiss {
+  opacity: 1;
+}
+
+.suggestion-dismiss:hover {
+  background: rgba(0, 0, 0, 0.8);
+}

@@ -3,6 +3,7 @@ import { useAuth } from '../auth';
 import { useCollection, useUpdateGameStatus } from '../hooks';
 import { CollectionStats } from '../features/collection';
 import { GameGrid } from '../features/games';
+import { SuggestionsSection } from '../features/suggestions';
 import { EmptyState, useToast } from '../components';
 import { CollectionItemDto } from '../types';
 import './DashboardPage.css';
@@ -79,6 +80,8 @@ export function DashboardPage() {
       ) : collection && collection.length > 0 ? (
         <>
           <CollectionStats collection={collection} />
+
+          <SuggestionsSection />
 
           {currentlyPlaying.length > 0 && (
             <section className="dashboard-section">

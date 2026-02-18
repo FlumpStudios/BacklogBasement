@@ -13,7 +13,9 @@ import {
 } from '../hooks';
 import { GameStatus } from '../types';
 import { PlaySessionForm, PlaySessionList } from '../features/playtime';
+import { SuggestGameModal } from '../features/suggestions';
 import { Modal, useToast } from '../components';
+import { useAuth } from '../auth';
 import { formatPlaytime, formatDate } from '../utils';
 import './GameDetailPage.css';
 
@@ -33,7 +35,9 @@ export function GameDetailPage() {
   const syncSteamPlaytime = useSyncSteamPlaytime(id!);
   const updateGameStatus = useUpdateGameStatus();
 
+  const { isAuthenticated } = useAuth();
   const [showPlaySessionModal, setShowPlaySessionModal] = useState(false);
+  const [showSuggestModal, setShowSuggestModal] = useState(false);
 
   const isInCollection = collection?.some((item) => item.gameId === id);
   const collectionItem = collection?.find((item) => item.gameId === id);
@@ -205,6 +209,14 @@ export function GameDetailPage() {
                 + Add to Collection
               </button>
             )}
+            {isAuthenticated && (
+              <button
+                onClick={() => setShowSuggestModal(true)}
+                className="btn btn-secondary"
+              >
+                Suggest to Friend
+              </button>
+            )}
           </div>
 
           {isInCollection && (
@@ -331,6 +343,16 @@ export function GameDetailPage() {
           isLoading={addPlaySession.isPending}
         />
       </Modal>
+
+      {game && (
+        <SuggestGameModal
+          isOpen={showSuggestModal}
+          onClose={() => setShowSuggestModal(false)}
+          mode="pick-friend"
+          gameId={id}
+          gameName={game.name}
+        />
+      )}
     </div>
   );
 }

@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../auth';
-import { useProfile } from '../hooks';
+import { useProfile, useFriendshipStatus } from '../hooks';
 import { GameGrid } from '../features/games';
+import { SuggestGameModal } from '../features/suggestions';
 import { EmptyState, FriendButton } from '../components';
 import { formatPlaytime } from '../utils';
 import './ProfilePage.css';
@@ -11,7 +13,13 @@ export function ProfilePage() {
   const { user, isAuthenticated } = useAuth();
   const { data: profile, isLoading, isError } = useProfile(username ?? '');
 
+  const [showSuggestModal, setShowSuggestModal] = useState(false);
+  const { data: friendshipStatus } = useFriendshipStatus(
+    !isAuthenticated || user?.username === profile?.username ? undefined : profile?.userId
+  );
+
   const isOwnProfile = user?.username === profile?.username;
+  const isFriend = friendshipStatus?.status === 'friends';
   const completedGames = profile?.collection.filter(g => g.status === 'completed') ?? [];
 
   if (isLoading) {
@@ -57,6 +65,11 @@ export function ProfilePage() {
           <Link to={`/profile/${profile.username}/compare`} className="btn btn-secondary">
             Compare collections
           </Link>
+        )}
+        {!isOwnProfile && isAuthenticated && isFriend && (
+          <button className="btn btn-secondary" onClick={() => setShowSuggestModal(true)}>
+            Suggest a game
+          </button>
         )}
       </header>
 
@@ -128,6 +141,16 @@ export function ProfilePage() {
             View full collection
           </Link>
         </section>
+      )}
+
+      {profile && (
+        <SuggestGameModal
+          isOpen={showSuggestModal}
+          onClose={() => setShowSuggestModal(false)}
+          mode="pick-game"
+          friendUserId={profile.userId}
+          friendDisplayName={profile.displayName}
+        />
       )}
     </div>
   );

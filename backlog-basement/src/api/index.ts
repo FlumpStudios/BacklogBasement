@@ -6,3 +6,4 @@ export { steamApi } from './steam';
 export { profileApi } from './profile';
 export { friendsApi } from './friends';
 export { notificationsApi } from './notifications';
+export { suggestionsApi } from './suggestions';

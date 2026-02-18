@@ -18,5 +18,6 @@ namespace BacklogBasement.Models
 
         // Navigation properties
         public ICollection<UserGame> UserGames { get; set; } = new List<UserGame>();
+        public ICollection<GameSuggestion> GameSuggestions { get; set; } = new List<GameSuggestion>();
     }
 }

@@ -1,0 +1,123 @@
+.suggest-modal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.suggest-search-input {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 0.95rem;
+}
+
+.suggest-results {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.suggest-result-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.suggest-result-item:hover {
+  background: var(--color-surface-hover, rgba(255, 255, 255, 0.05));
+}
+
+.suggest-result-item + .suggest-result-item {
+  border-top: 1px solid var(--color-border);
+}
+
+.suggest-result-cover {
+  width: 32px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+
+.suggest-result-name {
+  font-weight: 500;
+}
+
+.suggest-result-username {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+}
+
+.suggest-selected {
+  padding: var(--spacing-sm);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.suggest-selected-game {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.suggest-selected-cover {
+  width: 32px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+
+.suggest-selected-name {
+  font-weight: 500;
+  flex: 1;
+}
+
+.suggest-selected-username {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+}
+
+.suggest-change-btn {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: var(--spacing-xs);
+}
+
+.suggest-change-btn:hover {
+  text-decoration: underline;
+}
+
+.suggest-message textarea {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  resize: vertical;
+}
+
+.suggest-send-btn {
+  width: 100%;
+}
+
+.suggest-empty {
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding: var(--spacing-lg);
+}

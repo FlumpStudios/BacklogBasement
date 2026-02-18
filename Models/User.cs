@@ -18,5 +18,7 @@ namespace BacklogBasement.Models
         public ICollection<Friendship> SentFriendRequests { get; set; } = new List<Friendship>();
         public ICollection<Friendship> ReceivedFriendRequests { get; set; } = new List<Friendship>();
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+        public ICollection<GameSuggestion> SentSuggestions { get; set; } = new List<GameSuggestion>();
+        public ICollection<GameSuggestion> ReceivedSuggestions { get; set; } = new List<GameSuggestion>();
     }
 }

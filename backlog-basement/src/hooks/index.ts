@@ -44,3 +44,9 @@ export {
   useMarkAllAsRead,
   NOTIFICATIONS_QUERY_KEY,
 } from './useNotifications';
+export {
+  useSuggestions,
+  useSendSuggestion,
+  useDismissSuggestion,
+  SUGGESTIONS_QUERY_KEY,
+} from './useSuggestions';

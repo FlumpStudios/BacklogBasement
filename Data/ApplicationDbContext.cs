@@ -16,6 +16,7 @@ namespace BacklogBasement.Data
         public DbSet<PlaySession> PlaySessions { get; set; } = null!;
         public DbSet<Friendship> Friendships { get; set; } = null!;
         public DbSet<Notification> Notifications { get; set; } = null!;
+        public DbSet<GameSuggestion> GameSuggestions { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -101,6 +102,28 @@ namespace BacklogBasement.Data
 
             modelBuilder.Entity<Notification>()
                 .HasIndex(n => new { n.UserId, n.IsRead });
+
+            // Configure GameSuggestion entity
+            modelBuilder.Entity<GameSuggestion>()
+                .HasOne(gs => gs.Sender)
+                .WithMany(u => u.SentSuggestions)
+                .HasForeignKey(gs => gs.SenderUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<GameSuggestion>()
+                .HasOne(gs => gs.Recipient)
+                .WithMany(u => u.ReceivedSuggestions)
+                .HasForeignKey(gs => gs.RecipientUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<GameSuggestion>()
+                .HasOne(gs => gs.Game)
+                .WithMany(g => g.GameSuggestions)
+                .HasForeignKey(gs => gs.GameId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<GameSuggestion>()
+                .HasIndex(gs => new { gs.RecipientUserId, gs.IsDismissed });
         }
     }
 }

@@ -116,6 +116,7 @@ export interface NotificationDto {
   message: string;
   relatedUserId?: string;
   relatedUsername?: string;
+  relatedGameId?: string;
   isRead: boolean;
   createdAt: string;
 }
@@ -180,6 +181,25 @@ export interface SteamBulkPlaytimeSyncResult {
   totalGames: number;
   updatedCount: number;
   failedCount: number;
+}
+
+// Game Suggestion DTOs
+export interface GameSuggestionDto {
+  id: string;
+  senderUserId: string;
+  senderUsername: string;
+  senderDisplayName: string;
+  gameId: string;
+  gameName: string;
+  coverUrl?: string | null;
+  message?: string | null;
+  createdAt: string;
+}
+
+export interface SendGameSuggestionRequest {
+  recipientUserId: string;
+  gameId: string;
+  message?: string;
 }
 
 // API Response types

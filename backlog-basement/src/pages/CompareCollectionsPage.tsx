@@ -7,7 +7,7 @@ import { EmptyState } from '../components';
 import { CollectionItemDto } from '../types';
 import './CompareCollectionsPage.css';
 
-type Tab = 'common' | 'only-you' | 'only-them';
+type Tab = 'common' | 'only-you' | 'only-them' | 'shared-backlog';
 
 export function CompareCollectionsPage() {
   const { username } = useParams<{ username: string }>();
@@ -17,23 +17,30 @@ export function CompareCollectionsPage() {
   const [activeTab, setActiveTab] = useState<Tab>('common');
   const [search, setSearch] = useState('');
 
-  const { common, onlyYou, onlyThem } = useMemo(() => {
+  const { common, onlyYou, onlyThem, sharedBacklog } = useMemo(() => {
     if (!myCollection || !profile) {
-      return { common: [], onlyYou: [], onlyThem: [] };
+      return { common: [], onlyYou: [], onlyThem: [], sharedBacklog: [] };
     }
 
     const myGameIds = new Set(myCollection.map((g) => g.gameId));
     const theirGameIds = new Set(profile.collection.map((g) => g.gameId));
+    const theirBacklogIds = new Set(
+      profile.collection.filter((g) => g.status === 'backlog').map((g) => g.gameId)
+    );
 
     const common: CollectionItemDto[] = [];
     const onlyYou: CollectionItemDto[] = [];
     const onlyThem: CollectionItemDto[] = [];
+    const sharedBacklog: CollectionItemDto[] = [];
 
     for (const game of myCollection) {
       if (theirGameIds.has(game.gameId)) {
         common.push(game);
       } else {
         onlyYou.push(game);
+      }
+      if (game.status === 'backlog' && theirBacklogIds.has(game.gameId)) {
+        sharedBacklog.push(game);
       }
     }
 
@@ -43,15 +50,19 @@ export function CompareCollectionsPage() {
       }
     }
 
-    return { common, onlyYou, onlyThem };
+    return { common, onlyYou, onlyThem, sharedBacklog };
   }, [myCollection, profile]);
 
   const activeGames = useMemo(() => {
-    const list = activeTab === 'common' ? common : activeTab === 'only-you' ? onlyYou : onlyThem;
+    const list =
+      activeTab === 'common' ? common
+      : activeTab === 'only-you' ? onlyYou
+      : activeTab === 'only-them' ? onlyThem
+      : sharedBacklog;
     if (!search.trim()) return list;
     const q = search.toLowerCase();
     return list.filter((g) => g.gameName.toLowerCase().includes(q));
-  }, [activeTab, common, onlyYou, onlyThem, search]);
+  }, [activeTab, common, onlyYou, onlyThem, sharedBacklog, search]);
 
   const isLoading = loadingMine || loadingProfile;
 
@@ -83,6 +94,7 @@ export function CompareCollectionsPage() {
     { key: 'common', label: 'In Common', count: common.length },
     { key: 'only-you', label: 'Only You', count: onlyYou.length },
     { key: 'only-them', label: `Only ${displayName}`, count: onlyThem.length },
+    { key: 'shared-backlog', label: 'Shared Backlog', count: sharedBacklog.length },
   ];
 
   return (
@@ -143,7 +155,9 @@ export function CompareCollectionsPage() {
                 ? "You don't have any games in common yet."
                 : activeTab === 'only-you'
                   ? `All your games are also in ${displayName}'s collection.`
-                  : `${displayName} doesn't have any unique games.`
+                  : activeTab === 'only-them'
+                    ? `${displayName} doesn't have any unique games.`
+                    : `You and ${displayName} don't have any shared backlog games yet.`
           }
         />
       )}

@@ -15,6 +15,8 @@ import {
   FriendsPage,
   UserCollectionPage,
   CompareCollectionsPage,
+  GameClubsPage,
+  GameClubDetailPage,
 } from './pages';
 
 function HomePage() {
@@ -80,6 +82,22 @@ function App() {
           element={
             <ProtectedRoute>
               <FriendsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/clubs"
+          element={
+            <ProtectedRoute>
+              <GameClubsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/clubs/:id"
+          element={
+            <ProtectedRoute>
+              <GameClubDetailPage />
             </ProtectedRoute>
           }
         />

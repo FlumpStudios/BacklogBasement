@@ -93,6 +93,9 @@ PublishScripts/
 *.ldf
 *.ndf
 
+# Claude Code
+.claude/commands/
+
 # Editor directories
 .vscode/*
 !.vscode/extensions.json

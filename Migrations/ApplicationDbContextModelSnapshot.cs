@@ -97,6 +97,237 @@ namespace BacklogBasement.Migrations
                     b.ToTable("Games");
                 });
 
+            modelBuilder.Entity("BacklogBasement.Models.GameClub", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("GameClubs");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.GameClubInvite", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ClubId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("InvitedByUserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("InviteeUserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("RespondedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClubId");
+
+                    b.HasIndex("InvitedByUserId");
+
+                    b.HasIndex("InviteeUserId");
+
+                    b.ToTable("GameClubInvites");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.GameClubMember", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ClubId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("JoinedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ClubId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("GameClubMembers");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.GameClubNomination", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("GameId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("NominatedByUserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("RoundId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId");
+
+                    b.HasIndex("NominatedByUserId");
+
+                    b.HasIndex("RoundId", "GameId")
+                        .IsUnique();
+
+                    b.ToTable("GameClubNominations");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.GameClubReview", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("RoundId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Score")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("SubmittedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("RoundId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("GameClubReviews");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.GameClubRound", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ClubId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("GameId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("NominatingDeadline")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("PlayingDeadline")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ReviewingDeadline")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("RoundNumber")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("VotingDeadline")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClubId");
+
+                    b.HasIndex("GameId");
+
+                    b.ToTable("GameClubRounds");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.GameClubVote", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("NominationId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("RoundId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NominationId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("RoundId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("GameClubVotes");
+                });
+
             modelBuilder.Entity("BacklogBasement.Models.GameSuggestion", b =>
                 {
                     b.Property<Guid>("Id")
@@ -287,6 +518,154 @@ namespace BacklogBasement.Migrations
                     b.Navigation("Requester");
                 });
 
+            modelBuilder.Entity("BacklogBasement.Models.GameClub", b =>
+                {
+                    b.HasOne("BacklogBasement.Models.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.GameClubInvite", b =>
+                {
+                    b.HasOne("BacklogBasement.Models.GameClub", "Club")
+                        .WithMany("Invites")
+                        .HasForeignKey("ClubId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BacklogBasement.Models.User", "InvitedByUser")
+                        .WithMany("SentClubInvites")
+                        .HasForeignKey("InvitedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BacklogBasement.Models.User", "Invitee")
+                        .WithMany("ReceivedClubInvites")
+                        .HasForeignKey("InviteeUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Club");
+
+                    b.Navigation("InvitedByUser");
+
+                    b.Navigation("Invitee");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.GameClubMember", b =>
+                {
+                    b.HasOne("BacklogBasement.Models.GameClub", "Club")
+                        .WithMany("Members")
+                        .HasForeignKey("ClubId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BacklogBasement.Models.User", "User")
+                        .WithMany("GameClubMemberships")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Club");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.GameClubNomination", b =>
+                {
+                    b.HasOne("BacklogBasement.Models.Game", "Game")
+                        .WithMany("GameClubNominations")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BacklogBasement.Models.User", "NominatedByUser")
+                        .WithMany()
+                        .HasForeignKey("NominatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BacklogBasement.Models.GameClubRound", "Round")
+                        .WithMany("Nominations")
+                        .HasForeignKey("RoundId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+
+                    b.Navigation("NominatedByUser");
+
+                    b.Navigation("Round");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.GameClubReview", b =>
+                {
+                    b.HasOne("BacklogBasement.Models.GameClubRound", "Round")
+                        .WithMany("Reviews")
+                        .HasForeignKey("RoundId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BacklogBasement.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Round");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.GameClubRound", b =>
+                {
+                    b.HasOne("BacklogBasement.Models.GameClub", "Club")
+                        .WithMany("Rounds")
+                        .HasForeignKey("ClubId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BacklogBasement.Models.Game", "Game")
+                        .WithMany("GameClubRounds")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Club");
+
+                    b.Navigation("Game");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.GameClubVote", b =>
+                {
+                    b.HasOne("BacklogBasement.Models.GameClubNomination", "Nomination")
+                        .WithMany("Votes")
+                        .HasForeignKey("NominationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BacklogBasement.Models.GameClubRound", "Round")
+                        .WithMany("Votes")
+                        .HasForeignKey("RoundId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BacklogBasement.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Nomination");
+
+                    b.Navigation("Round");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("BacklogBasement.Models.GameSuggestion", b =>
                 {
                     b.HasOne("BacklogBasement.Models.Game", "Game")
@@ -357,18 +736,51 @@ namespace BacklogBasement.Migrations
 
             modelBuilder.Entity("BacklogBasement.Models.Game", b =>
                 {
+                    b.Navigation("GameClubNominations");
+
+                    b.Navigation("GameClubRounds");
+
                     b.Navigation("GameSuggestions");
 
                     b.Navigation("UserGames");
                 });
 
+            modelBuilder.Entity("BacklogBasement.Models.GameClub", b =>
+                {
+                    b.Navigation("Invites");
+
+                    b.Navigation("Members");
+
+                    b.Navigation("Rounds");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.GameClubNomination", b =>
+                {
+                    b.Navigation("Votes");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.GameClubRound", b =>
+                {
+                    b.Navigation("Nominations");
+
+                    b.Navigation("Reviews");
+
+                    b.Navigation("Votes");
+                });
+
             modelBuilder.Entity("BacklogBasement.Models.User", b =>
                 {
+                    b.Navigation("GameClubMemberships");
+
                     b.Navigation("Notifications");
+
+                    b.Navigation("ReceivedClubInvites");
 
                     b.Navigation("ReceivedFriendRequests");
 
                     b.Navigation("ReceivedSuggestions");
+
+                    b.Navigation("SentClubInvites");
 
                     b.Navigation("SentFriendRequests");
 

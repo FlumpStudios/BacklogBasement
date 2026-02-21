@@ -7,3 +7,4 @@ export { profileApi } from './profile';
 export { friendsApi } from './friends';
 export { notificationsApi } from './notifications';
 export { suggestionsApi } from './suggestions';
+export { gameClubApi } from './gameclub';

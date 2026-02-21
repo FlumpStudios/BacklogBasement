@@ -50,6 +50,9 @@ export function Layout() {
                   <Link to="/friends" className="nav-link" onClick={closeMenu}>
                     Friends
                   </Link>
+                  <Link to="/clubs" className="nav-link" onClick={closeMenu}>
+                    Clubs
+                  </Link>
                   <div className="user-menu">
                     {user?.avatarUrl && (
                       <img

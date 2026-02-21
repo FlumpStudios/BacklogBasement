@@ -99,6 +99,40 @@
   color: #dc2626;
 }
 
+.game-club-score {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: rgba(var(--color-primary-rgb, 99, 102, 241), 0.08);
+  border: 1px solid rgba(var(--color-primary-rgb, 99, 102, 241), 0.25);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.club-score-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.club-score-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.club-score-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.club-score-meta {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
 .game-playtime {
   display: flex;
   align-items: center;

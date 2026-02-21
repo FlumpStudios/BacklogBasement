@@ -17,6 +17,13 @@ namespace BacklogBasement.Data
         public DbSet<Friendship> Friendships { get; set; } = null!;
         public DbSet<Notification> Notifications { get; set; } = null!;
         public DbSet<GameSuggestion> GameSuggestions { get; set; } = null!;
+        public DbSet<GameClub> GameClubs { get; set; } = null!;
+        public DbSet<GameClubMember> GameClubMembers { get; set; } = null!;
+        public DbSet<GameClubRound> GameClubRounds { get; set; } = null!;
+        public DbSet<GameClubNomination> GameClubNominations { get; set; } = null!;
+        public DbSet<GameClubVote> GameClubVotes { get; set; } = null!;
+        public DbSet<GameClubReview> GameClubReviews { get; set; } = null!;
+        public DbSet<GameClubInvite> GameClubInvites { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -124,6 +131,125 @@ namespace BacklogBasement.Data
 
             modelBuilder.Entity<GameSuggestion>()
                 .HasIndex(gs => new { gs.RecipientUserId, gs.IsDismissed });
+
+            // Configure GameClub entity
+            modelBuilder.Entity<GameClub>()
+                .HasOne(gc => gc.Owner)
+                .WithMany()
+                .HasForeignKey(gc => gc.OwnerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configure GameClubMember entity
+            modelBuilder.Entity<GameClubMember>()
+                .HasIndex(gcm => new { gcm.ClubId, gcm.UserId })
+                .IsUnique();
+
+            modelBuilder.Entity<GameClubMember>()
+                .HasOne(gcm => gcm.Club)
+                .WithMany(gc => gc.Members)
+                .HasForeignKey(gcm => gcm.ClubId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<GameClubMember>()
+                .HasOne(gcm => gcm.User)
+                .WithMany(u => u.GameClubMemberships)
+                .HasForeignKey(gcm => gcm.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure GameClubRound entity
+            modelBuilder.Entity<GameClubRound>()
+                .HasOne(gcr => gcr.Club)
+                .WithMany(gc => gc.Rounds)
+                .HasForeignKey(gcr => gcr.ClubId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<GameClubRound>()
+                .HasOne(gcr => gcr.Game)
+                .WithMany(g => g.GameClubRounds)
+                .HasForeignKey(gcr => gcr.GameId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            // Configure GameClubNomination entity
+            modelBuilder.Entity<GameClubNomination>()
+                .HasIndex(gcn => new { gcn.RoundId, gcn.GameId })
+                .IsUnique();
+
+            modelBuilder.Entity<GameClubNomination>()
+                .HasOne(gcn => gcn.Round)
+                .WithMany(gcr => gcr.Nominations)
+                .HasForeignKey(gcn => gcn.RoundId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<GameClubNomination>()
+                .HasOne(gcn => gcn.NominatedByUser)
+                .WithMany()
+                .HasForeignKey(gcn => gcn.NominatedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<GameClubNomination>()
+                .HasOne(gcn => gcn.Game)
+                .WithMany(g => g.GameClubNominations)
+                .HasForeignKey(gcn => gcn.GameId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configure GameClubVote entity
+            modelBuilder.Entity<GameClubVote>()
+                .HasIndex(gcv => new { gcv.RoundId, gcv.UserId })
+                .IsUnique();
+
+            modelBuilder.Entity<GameClubVote>()
+                .HasOne(gcv => gcv.Round)
+                .WithMany(gcr => gcr.Votes)
+                .HasForeignKey(gcv => gcv.RoundId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<GameClubVote>()
+                .HasOne(gcv => gcv.User)
+                .WithMany()
+                .HasForeignKey(gcv => gcv.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<GameClubVote>()
+                .HasOne(gcv => gcv.Nomination)
+                .WithMany(gcn => gcn.Votes)
+                .HasForeignKey(gcv => gcv.NominationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configure GameClubReview entity
+            modelBuilder.Entity<GameClubReview>()
+                .HasIndex(gcrev => new { gcrev.RoundId, gcrev.UserId })
+                .IsUnique();
+
+            modelBuilder.Entity<GameClubReview>()
+                .HasOne(gcrev => gcrev.Round)
+                .WithMany(gcr => gcr.Reviews)
+                .HasForeignKey(gcrev => gcrev.RoundId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<GameClubReview>()
+                .HasOne(gcrev => gcrev.User)
+                .WithMany()
+                .HasForeignKey(gcrev => gcrev.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configure GameClubInvite entity
+            modelBuilder.Entity<GameClubInvite>()
+                .HasOne(gci => gci.Club)
+                .WithMany(gc => gc.Invites)
+                .HasForeignKey(gci => gci.ClubId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<GameClubInvite>()
+                .HasOne(gci => gci.InvitedByUser)
+                .WithMany(u => u.SentClubInvites)
+                .HasForeignKey(gci => gci.InvitedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<GameClubInvite>()
+                .HasOne(gci => gci.Invitee)
+                .WithMany(u => u.ReceivedClubInvites)
+                .HasForeignKey(gci => gci.InviteeUserId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

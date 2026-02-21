@@ -20,5 +20,8 @@ namespace BacklogBasement.Models
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
         public ICollection<GameSuggestion> SentSuggestions { get; set; } = new List<GameSuggestion>();
         public ICollection<GameSuggestion> ReceivedSuggestions { get; set; } = new List<GameSuggestion>();
+        public ICollection<GameClubMember> GameClubMemberships { get; set; } = new List<GameClubMember>();
+        public ICollection<GameClubInvite> SentClubInvites { get; set; } = new List<GameClubInvite>();
+        public ICollection<GameClubInvite> ReceivedClubInvites { get; set; } = new List<GameClubInvite>();
     }
 }

@@ -1,0 +1,172 @@
+.club-detail-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.club-detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.club-detail-name {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+}
+
+.club-detail-desc {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  margin: 0 0 0.5rem;
+}
+
+.club-detail-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.club-detail-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* ── Sections ── */
+.club-section {
+  margin-bottom: 2.5rem;
+}
+
+.club-section h2 {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  margin: 0 0 0.75rem;
+}
+
+.club-section h3 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 1.25rem 0 0.75rem;
+}
+
+/* ── Nominations ── */
+.club-nominations-section {
+  margin-top: 1rem;
+}
+
+/* ── Reviews ── */
+.club-reviews-section {
+  margin-top: 1rem;
+}
+
+.club-reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.club-review-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.875rem 1rem;
+}
+
+.club-review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+}
+
+.club-review-author {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.club-review-score {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--color-primary);
+}
+
+.club-review-comment {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* ── Past Rounds ── */
+.past-rounds-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.past-round-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.875rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.past-round-row:hover {
+  border-color: var(--color-primary);
+}
+
+.past-round-row.past-round-selected {
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb), 0.04);
+}
+
+.past-round-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.past-round-number {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.past-round-game {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.past-round-game-link {
+  font-size: 0.875rem;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.past-round-game-link:hover {
+  text-decoration: underline;
+}
+
+.past-round-score {
+  font-weight: 700;
+  color: var(--color-primary);
+  font-size: 0.9rem;
+}
+
+/* ── Invite friends list ── */
+.invite-friends-list {
+  min-height: 100px;
+}

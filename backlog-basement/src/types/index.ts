@@ -202,6 +202,114 @@ export interface SendGameSuggestionRequest {
   message?: string;
 }
 
+// Game Club DTOs
+export interface GameClubDto {
+  id: string;
+  name: string;
+  description?: string | null;
+  isPublic: boolean;
+  ownerDisplayName: string;
+  ownerUsername: string;
+  memberCount: number;
+  currentRound?: GameClubRoundDto | null;
+}
+
+export interface GameClubDetailDto extends GameClubDto {
+  members: GameClubMemberDto[];
+  pendingInvites: GameClubInviteDto[];
+  rounds: GameClubRoundDto[];
+  currentUserRole?: string | null;
+}
+
+export interface GameClubRoundDto {
+  id: string;
+  roundNumber: number;
+  status: 'nominating' | 'voting' | 'playing' | 'reviewing' | 'completed';
+  gameId?: string | null;
+  gameName?: string | null;
+  gameCoverUrl?: string | null;
+  nominations: GameClubNominationDto[];
+  userHasVoted: boolean;
+  userHasReviewed: boolean;
+  userVotedNominationId?: string | null;
+  nominatingDeadline?: string | null;
+  votingDeadline?: string | null;
+  playingDeadline?: string | null;
+  reviewingDeadline?: string | null;
+  completedAt?: string | null;
+  averageScore?: number | null;
+}
+
+export interface GameClubNominationDto {
+  id: string;
+  gameId: string;
+  gameName: string;
+  gameCoverUrl?: string | null;
+  nominatedByUserId: string;
+  nominatedByDisplayName: string;
+  voteCount: number;
+  createdAt: string;
+}
+
+export interface GameClubMemberDto {
+  userId: string;
+  displayName: string;
+  username: string;
+  role: 'owner' | 'admin' | 'member';
+  joinedAt: string;
+}
+
+export interface GameClubReviewDto {
+  id: string;
+  userId: string;
+  displayName: string;
+  username: string;
+  score: number;
+  comment?: string | null;
+  submittedAt: string;
+}
+
+export interface GameClubInviteDto {
+  id: string;
+  clubId: string;
+  clubName: string;
+  invitedByUserId: string;
+  invitedByDisplayName: string;
+  inviteeUserId: string;
+  inviteeDisplayName: string;
+  status: 'pending' | 'accepted' | 'declined';
+  createdAt: string;
+}
+
+export interface GameClubScoreDto {
+  gameId: string;
+  averageScore: number;
+  reviewCount: number;
+  roundCount: number;
+}
+
+export interface CreateGameClubRequest {
+  name: string;
+  description?: string;
+  isPublic: boolean;
+}
+
+export interface StartRoundRequest {
+  nominatingDeadline?: string;
+  votingDeadline?: string;
+  playingDeadline?: string;
+  reviewingDeadline?: string;
+}
+
+export interface SubmitReviewRequest {
+  score: number;
+  comment?: string;
+}
+
+export interface RespondToInviteRequest {
+  accept: boolean;
+}
+
 // API Response types
 export interface PaginatedResponse<T> {
   items: T[];

@@ -54,6 +54,7 @@ public class Program
         builder.Services.AddScoped<IFriendshipService, FriendshipService>();
         builder.Services.AddScoped<IProfileService, ProfileService>();
         builder.Services.AddScoped<IGameSuggestionService, GameSuggestionService>();
+        builder.Services.AddScoped<IGameClubService, GameClubService>();
 
         // Configure cookie authentication
         var isDevelopment = builder.Environment.IsDevelopment();
@@ -125,17 +126,17 @@ public class Program
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
+        // Ensure database schema exists on startup (safe to call repeatedly - no-op if already exists)
+        using (var scope = app.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            dbContext.Database.EnsureCreated();
+        }
+
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
             app.UseSwaggerUI();
-
-            // Create database on startup in development
-            using (var scope = app.Services.CreateScope())
-            {
-                var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                dbContext.Database.EnsureCreated();
-            }
         }
 
         // Forward headers from reverse proxy so URLs generate correctly

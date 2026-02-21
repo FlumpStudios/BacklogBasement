@@ -10,6 +10,7 @@ import {
   useDeletePlaySession,
   useSyncSteamPlaytime,
   useUpdateGameStatus,
+  useClubScoreForGame,
 } from '../hooks';
 import { GameStatus } from '../types';
 import { PlaySessionForm, PlaySessionList } from '../features/playtime';
@@ -27,6 +28,7 @@ export function GameDetailPage() {
   const { data: game, isLoading: gameLoading } = useGameDetails(id!);
   const { data: collection } = useCollection();
   const { data: playSessions } = usePlaySessions(id!);
+  const { data: clubScore } = useClubScoreForGame(id);
 
   const addToCollection = useAddToCollection();
   const removeFromCollection = useRemoveFromCollection();
@@ -163,6 +165,18 @@ export function GameDetailPage() {
             <div className={`game-critic-score ${game.criticScore >= 75 ? 'critic-green' : game.criticScore >= 50 ? 'critic-yellow' : 'critic-red'}`}>
               <span className="critic-score-value">{game.criticScore}</span>
               <span className="critic-score-label">Critic Score</span>
+            </div>
+          )}
+
+          {clubScore && (
+            <div className="game-club-score">
+              <span className="club-score-value">{clubScore.averageScore.toFixed(1)}</span>
+              <div className="club-score-info">
+                <span className="club-score-label">Club Score</span>
+                <span className="club-score-meta">
+                  {clubScore.reviewCount} {clubScore.reviewCount === 1 ? 'review' : 'reviews'} across {clubScore.roundCount} {clubScore.roundCount === 1 ? 'round' : 'rounds'}
+                </span>
+              </div>
             </div>
           )}
 

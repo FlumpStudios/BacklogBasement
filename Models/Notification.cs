@@ -10,6 +10,7 @@ namespace BacklogBasement.Models
         public string Message { get; set; } = string.Empty;
         public Guid? RelatedUserId { get; set; }
         public Guid? RelatedGameId { get; set; }
+        public Guid? RelatedClubId { get; set; }
         public bool IsRead { get; set; }
         public DateTime CreatedAt { get; set; }
 

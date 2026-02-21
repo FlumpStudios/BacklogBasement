@@ -10,6 +10,7 @@ namespace BacklogBasement.DTOs
         public Guid? RelatedUserId { get; set; }
         public string? RelatedUsername { get; set; }
         public Guid? RelatedGameId { get; set; }
+        public Guid? RelatedClubId { get; set; }
         public bool IsRead { get; set; }
         public DateTime CreatedAt { get; set; }
     }

@@ -107,6 +107,15 @@ export function NotificationBell() {
                       <span className="notification-message">{notification.message}</span>
                       <span className="notification-time">{timeAgo(notification.createdAt)}</span>
                     </Link>
+                  ) : notification.relatedClubId ? (
+                    <Link
+                      to={`/clubs/${notification.relatedClubId}`}
+                      className="notification-link"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <span className="notification-message">{notification.message}</span>
+                      <span className="notification-time">{timeAgo(notification.createdAt)}</span>
+                    </Link>
                   ) : (
                     <div className="notification-content">
                       <span className="notification-message">{notification.message}</span>

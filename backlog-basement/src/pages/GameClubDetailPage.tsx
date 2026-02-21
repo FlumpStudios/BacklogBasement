@@ -27,6 +27,7 @@ export function GameClubDetailPage() {
   const [showInvite, setShowInvite] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [selectedRoundId, setSelectedRoundId] = useState<string | null>(null);
+  const [playingDeadline, setPlayingDeadline] = useState('');
 
   const startRound = useStartRound(clubId ?? '');
   const inviteMember = useInviteMember(clubId ?? '');
@@ -47,9 +48,12 @@ export function GameClubDetailPage() {
   const handleStartRound = async () => {
     if (!clubId) return;
     try {
-      await startRound.mutateAsync({});
+      await startRound.mutateAsync({
+        playingDeadline: playingDeadline || undefined,
+      });
       showToast('Round started!', 'success');
       setShowStartRound(false);
+      setPlayingDeadline('');
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message ?? 'Failed to start round';
       showToast(msg, 'error');
@@ -289,13 +293,24 @@ export function GameClubDetailPage() {
       {/* Start Round Modal */}
       <Modal
         isOpen={showStartRound}
-        onClose={() => setShowStartRound(false)}
+        onClose={() => { setShowStartRound(false); setPlayingDeadline(''); }}
         title="Start New Round"
       >
         <div className="club-modal-form">
           <p className="club-form-hint" style={{ fontSize: '0.9rem', color: 'inherit', margin: 0 }}>
             This will start a new nominating round. Members will be notified and can start nominating games.
           </p>
+          <div className="club-form-field">
+            <label htmlFor="playing-deadline">Playing deadline (optional)</label>
+            <input
+              id="playing-deadline"
+              type="date"
+              value={playingDeadline}
+              min={new Date().toISOString().split('T')[0]}
+              onChange={(e) => setPlayingDeadline(e.target.value)}
+            />
+            <p className="club-form-hint">Let members know how long they have to finish the game. The round still closes manually.</p>
+          </div>
           <button
             className="btn btn-primary"
             onClick={handleStartRound}

@@ -117,6 +117,7 @@ export interface NotificationDto {
   relatedUserId?: string;
   relatedUsername?: string;
   relatedGameId?: string;
+  relatedClubId?: string;
   isRead: boolean;
   createdAt: string;
 }

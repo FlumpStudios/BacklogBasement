@@ -34,6 +34,7 @@ namespace BacklogBasement.Services
                     Message = n.Message,
                     RelatedUserId = n.RelatedUserId,
                     RelatedGameId = n.RelatedGameId,
+                    RelatedClubId = n.RelatedClubId,
                     IsRead = n.IsRead,
                     CreatedAt = n.CreatedAt
                 })
@@ -90,7 +91,7 @@ namespace BacklogBasement.Services
                 .ExecuteUpdateAsync(s => s.SetProperty(n => n.IsRead, true));
         }
 
-        public async Task CreateNotificationAsync(Guid userId, string type, string message, Guid? relatedUserId = null, Guid? relatedGameId = null)
+        public async Task CreateNotificationAsync(Guid userId, string type, string message, Guid? relatedUserId = null, Guid? relatedGameId = null, Guid? relatedClubId = null)
         {
             var notification = new Notification
             {
@@ -100,6 +101,7 @@ namespace BacklogBasement.Services
                 Message = message,
                 RelatedUserId = relatedUserId,
                 RelatedGameId = relatedGameId,
+                RelatedClubId = relatedClubId,
                 IsRead = false,
                 CreatedAt = DateTime.UtcNow
             };

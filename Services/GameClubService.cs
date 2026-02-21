@@ -286,7 +286,7 @@ namespace BacklogBasement.Services
                 inviteeUserId,
                 "club_invite",
                 $"{inviter!.DisplayName} invited you to join \"{club!.Name}\"",
-                userId);
+                userId, null, clubId);
 
             return new GameClubInviteDto
             {
@@ -520,7 +520,8 @@ namespace BacklogBasement.Services
                 await _notificationService.CreateNotificationAsync(
                     memberId,
                     "club_round_started",
-                    $"Round {round.RoundNumber} has started in \"{club!.Name}\" — nominate your games!");
+                    $"Round {round.RoundNumber} has started in \"{club!.Name}\" — nominate your games!",
+                    null, null, clubId);
             }
 
             return BuildRoundDto(round, userId)!;
@@ -558,16 +559,18 @@ namespace BacklogBasement.Services
                     {
                         await _notificationService.CreateNotificationAsync(
                             memberId, "club_voting_started",
-                            $"Voting is open in \"{club!.Name}\" Round {round.RoundNumber} — cast your vote!");
+                            $"Voting is open in \"{club!.Name}\" Round {round.RoundNumber} — cast your vote!",
+                            null, null, round.ClubId);
                     }
                     break;
 
                 case "voting":
-                    // Resolve votes: pick winner
-                    var winner = round.Nominations
-                        .OrderByDescending(n => n.Votes.Count)
-                        .ThenBy(n => n.CreatedAt)
-                        .FirstOrDefault();
+                    // Resolve votes: pick winner, breaking ties randomly
+                    var maxVotes = round.Nominations.Max(n => n.Votes.Count);
+                    var topNominations = round.Nominations
+                        .Where(n => n.Votes.Count == maxVotes)
+                        .ToList();
+                    var winner = topNominations[Random.Shared.Next(topNominations.Count)];
                     if (winner != null)
                         round.GameId = winner.GameId;
                     round.Status = "playing";
@@ -576,7 +579,7 @@ namespace BacklogBasement.Services
                         await _notificationService.CreateNotificationAsync(
                             memberId, "club_game_selected",
                             $"The game for Round {round.RoundNumber} in \"{club!.Name}\" has been selected: \"{winner?.Game.Name}\"",
-                            null, winner?.GameId);
+                            null, winner?.GameId, round.ClubId);
                     }
                     break;
 
@@ -587,7 +590,7 @@ namespace BacklogBasement.Services
                         await _notificationService.CreateNotificationAsync(
                             memberId, "club_reviewing_started",
                             $"Time to submit your review for Round {round.RoundNumber} in \"{club!.Name}\"!",
-                            null, round.GameId);
+                            null, round.GameId, round.ClubId);
                     }
                     break;
 
@@ -599,7 +602,7 @@ namespace BacklogBasement.Services
                         await _notificationService.CreateNotificationAsync(
                             memberId, "club_round_completed",
                             $"Round {round.RoundNumber} in \"{club!.Name}\" is complete — see the results!",
-                            null, round.GameId);
+                            null, round.GameId, round.ClubId);
                     }
                     break;
 

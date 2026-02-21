@@ -22,7 +22,7 @@ export function SuggestionCard({ suggestion }: SuggestionCardProps) {
 
   return (
     <div className="suggestion-card">
-      <Link to={`/game/${suggestion.gameId}`} className="suggestion-card-link">
+      <Link to={`/games/${suggestion.gameId}`} className="suggestion-card-link">
         {suggestion.coverUrl ? (
           <img src={suggestion.coverUrl} alt="" className="suggestion-cover" />
         ) : (

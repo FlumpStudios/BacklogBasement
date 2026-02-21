@@ -15,21 +15,26 @@ namespace BacklogBasement.Services
         private readonly ApplicationDbContext _context;
         private readonly IFriendshipService _friendshipService;
         private readonly INotificationService _notificationService;
+        private readonly IProfanityService _profanityService;
 
         public GameSuggestionService(
             ApplicationDbContext context,
             IFriendshipService friendshipService,
-            INotificationService notificationService)
+            INotificationService notificationService,
+            IProfanityService profanityService)
         {
             _context = context;
             _friendshipService = friendshipService;
             _notificationService = notificationService;
+            _profanityService = profanityService;
         }
 
         public async Task<GameSuggestionDto> SendSuggestionAsync(Guid senderUserId, SendGameSuggestionRequest request)
         {
             if (senderUserId == request.RecipientUserId)
                 throw new BadRequestException("You cannot suggest a game to yourself.");
+
+            _profanityService.AssertClean(request.Message, "Message");
 
             var friendshipStatus = await _friendshipService.GetFriendshipStatusAsync(senderUserId, request.RecipientUserId);
             if (friendshipStatus.Status != "friends")

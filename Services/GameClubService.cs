@@ -14,11 +14,13 @@ namespace BacklogBasement.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly INotificationService _notificationService;
+        private readonly IProfanityService _profanityService;
 
-        public GameClubService(ApplicationDbContext context, INotificationService notificationService)
+        public GameClubService(ApplicationDbContext context, INotificationService notificationService, IProfanityService profanityService)
         {
             _context = context;
             _notificationService = notificationService;
+            _profanityService = profanityService;
         }
 
         // --- Club Management ---
@@ -27,6 +29,9 @@ namespace BacklogBasement.Services
         {
             if (string.IsNullOrWhiteSpace(request.Name))
                 throw new BadRequestException("Club name is required.");
+
+            _profanityService.AssertClean(request.Name, "Club name");
+            _profanityService.AssertClean(request.Description, "Club description");
 
             var user = await _context.Users.FindAsync(userId)
                 ?? throw new NotFoundException("User not found.");
@@ -721,6 +726,8 @@ namespace BacklogBasement.Services
         {
             if (request.Score < 0 || request.Score > 100)
                 throw new BadRequestException("Score must be between 0 and 100.");
+
+            _profanityService.AssertClean(request.Comment, "Review comment");
 
             var round = await _context.GameClubRounds
                 .Include(r => r.Reviews)

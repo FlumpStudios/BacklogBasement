@@ -55,6 +55,7 @@ public class Program
         builder.Services.AddScoped<IProfileService, ProfileService>();
         builder.Services.AddScoped<IGameSuggestionService, GameSuggestionService>();
         builder.Services.AddScoped<IGameClubService, GameClubService>();
+        builder.Services.AddSingleton<IProfanityService, ProfanityService>();
 
         // Configure cookie authentication
         var isDevelopment = builder.Environment.IsDevelopment();

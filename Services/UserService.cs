@@ -15,11 +15,13 @@ namespace BacklogBasement.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IProfanityService _profanityService;
 
-        public UserService(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
+        public UserService(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor, IProfanityService profanityService)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
+            _profanityService = profanityService;
         }
 
         public async Task<User> GetOrCreateUserAsync(string googleSubjectId, string email, string displayName)
@@ -142,6 +144,7 @@ namespace BacklogBasement.Services
         public async Task<User> SetUsernameAsync(Guid userId, string username)
         {
             ValidateUsername(username);
+            _profanityService.AssertClean(username, "Username");
 
             var user = await _context.Users.FindAsync(userId)
                 ?? throw new NotFoundException("User not found");

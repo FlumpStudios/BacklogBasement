@@ -115,12 +115,36 @@ export function GameClubDetailPage() {
           <h1 className="club-detail-name">{club.name}</h1>
           {club.description && <p className="club-detail-desc">{club.description}</p>}
           <div className="club-detail-meta">
-            <span>by {club.ownerDisplayName}</span>
+            <span>by <Link to={`/profile/${club.ownerUsername}`}>{club.ownerDisplayName}</Link></span>
             <span>·</span>
             <span>{club.memberCount} {club.memberCount === 1 ? 'member' : 'members'}</span>
             <span>·</span>
             <span>{club.isPublic ? 'Public' : 'Private'}</span>
           </div>
+          {(club.discordLink || club.whatsAppLink || club.redditLink || club.youTubeLink) && (
+            <div className="club-social-links">
+              {club.discordLink && (
+                <a href={club.discordLink} target="_blank" rel="noopener noreferrer" className="club-social-link club-social-discord">
+                  Discord
+                </a>
+              )}
+              {club.whatsAppLink && (
+                <a href={club.whatsAppLink} target="_blank" rel="noopener noreferrer" className="club-social-link club-social-whatsapp">
+                  WhatsApp
+                </a>
+              )}
+              {club.redditLink && (
+                <a href={club.redditLink} target="_blank" rel="noopener noreferrer" className="club-social-link club-social-reddit">
+                  Reddit
+                </a>
+              )}
+              {club.youTubeLink && (
+                <a href={club.youTubeLink} target="_blank" rel="noopener noreferrer" className="club-social-link club-social-youtube">
+                  YouTube
+                </a>
+              )}
+            </div>
+          )}
         </div>
 
         {isMember && (
@@ -185,7 +209,7 @@ export function GameClubDetailPage() {
                 {roundReviews.map((review) => (
                   <div key={review.id} className="club-review-card">
                     <div className="club-review-header">
-                      <span className="club-review-author">{review.displayName}</span>
+                      <Link to={`/profile/${review.username}`} className="club-review-author">{review.displayName}</Link>
                       <span className="club-review-score">{review.score}/100</span>
                     </div>
                     {review.comment && (
@@ -244,7 +268,7 @@ export function GameClubDetailPage() {
                 {roundReviews.map((review) => (
                   <div key={review.id} className="club-review-card">
                     <div className="club-review-header">
-                      <span className="club-review-author">{review.displayName}</span>
+                      <Link to={`/profile/${review.username}`} className="club-review-author">{review.displayName}</Link>
                       <span className="club-review-score">{review.score}/100</span>
                     </div>
                     {review.comment && (

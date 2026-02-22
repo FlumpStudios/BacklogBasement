@@ -1,0 +1,323 @@
+.inbox-page {
+  display: flex;
+  height: calc(100vh - 64px - 80px); /* subtract header + footer */
+  gap: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+/* Sidebar */
+.inbox-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.inbox-sidebar-header {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.inbox-sidebar-header h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.inbox-friend-picker {
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface-elevated);
+  padding: var(--spacing-sm) 0;
+}
+
+.inbox-friend-picker-label {
+  margin: 0 0 var(--spacing-xs) 0;
+  padding: 0 var(--spacing-lg);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.inbox-friend-picker-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.inbox-friend-picker-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.inbox-friend-picker-item:hover {
+  background: var(--color-surface);
+}
+
+.inbox-friend-picker-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.inbox-friend-picker-username {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.inbox-friend-picker-empty {
+  margin: 0;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.inbox-empty-sidebar {
+  padding: var(--spacing-xl) var(--spacing-lg);
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.conversation-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.conversation-item {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.conversation-item:hover {
+  background: var(--color-surface-elevated);
+}
+
+.conversation-item.active {
+  background: var(--color-surface-elevated);
+  border-left: 3px solid var(--color-primary);
+}
+
+.conversation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--spacing-sm);
+  margin-bottom: 2px;
+}
+
+.conversation-name {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.conversation-time {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.conversation-preview-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.conversation-preview {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.conversation-unread-badge {
+  background: var(--color-primary);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 1px 6px;
+  flex-shrink: 0;
+}
+
+/* Thread panel */
+.inbox-thread {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.inbox-empty-thread {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+
+.inbox-thread-header {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border);
+  font-weight: 600;
+}
+
+.inbox-thread-friend-link {
+  color: var(--color-text);
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.inbox-thread-friend-link:hover {
+  color: var(--color-primary);
+}
+
+.inbox-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.inbox-no-messages {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  margin: auto;
+}
+
+.message-bubble-wrapper {
+  display: flex;
+}
+
+.message-bubble-wrapper.mine {
+  justify-content: flex-end;
+}
+
+.message-bubble-wrapper.theirs {
+  justify-content: flex-start;
+}
+
+.message-bubble {
+  max-width: 65%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bubble-mine {
+  background: var(--color-primary);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.bubble-theirs {
+  background: var(--color-surface-elevated);
+  color: var(--color-text);
+  border-bottom-left-radius: 4px;
+}
+
+.message-content {
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.message-time {
+  font-size: 0.7rem;
+  opacity: 0.7;
+  align-self: flex-end;
+}
+
+/* Compose area */
+.inbox-compose {
+  display: flex;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+  align-items: flex-end;
+}
+
+.inbox-textarea {
+  flex: 1;
+  resize: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: var(--color-background);
+  color: var(--color-text);
+  min-height: 40px;
+  max-height: 120px;
+  overflow-y: auto;
+  line-height: 1.4;
+}
+
+.inbox-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.inbox-send-btn {
+  flex-shrink: 0;
+  height: 40px;
+  padding: 0 var(--spacing-md);
+}
+
+/* Mobile: single panel */
+@media (max-width: 640px) {
+  .inbox-page {
+    height: calc(100vh - 64px - 60px);
+  }
+
+  .inbox-sidebar {
+    width: 100%;
+    border-right: none;
+  }
+
+  .inbox-thread {
+    display: none;
+  }
+
+  .inbox-page.thread-active .inbox-sidebar {
+    display: none;
+  }
+
+  .inbox-page.thread-active .inbox-thread {
+    display: flex;
+    width: 100%;
+  }
+}

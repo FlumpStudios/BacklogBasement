@@ -144,6 +144,7 @@ export interface SteamImportRequest {
 export interface SteamImportResult {
   totalGames: number;
   importedCount: number;
+  updatedCount: number;
   skippedCount: number;
   failedCount: number;
   importedGames: SteamImportedGameDto[];
@@ -209,6 +210,10 @@ export interface GameClubDto {
   name: string;
   description?: string | null;
   isPublic: boolean;
+  discordLink?: string | null;
+  whatsAppLink?: string | null;
+  redditLink?: string | null;
+  youTubeLink?: string | null;
   ownerDisplayName: string;
   ownerUsername: string;
   memberCount: number;
@@ -248,6 +253,7 @@ export interface GameClubNominationDto {
   gameCoverUrl?: string | null;
   nominatedByUserId: string;
   nominatedByDisplayName: string;
+  nominatedByUsername: string;
   voteCount: number;
   createdAt: string;
 }
@@ -289,10 +295,24 @@ export interface GameClubScoreDto {
   roundCount: number;
 }
 
+export interface GameClubReviewsForGameDto {
+  clubId: string;
+  clubName: string;
+  isPublic: boolean;
+  averageScore: number;
+  reviewCount: number;
+  isCurrentUserMember: boolean;
+  reviews: GameClubReviewDto[];
+}
+
 export interface CreateGameClubRequest {
   name: string;
   description?: string;
   isPublic: boolean;
+  discordLink?: string;
+  whatsAppLink?: string;
+  redditLink?: string;
+  youTubeLink?: string;
 }
 
 export interface StartRoundRequest {
@@ -309,6 +329,34 @@ export interface SubmitReviewRequest {
 
 export interface RespondToInviteRequest {
   accept: boolean;
+}
+
+// Direct Message DTOs
+export interface ConversationDto {
+  friendUserId: string;
+  friendUsername: string;
+  friendDisplayName: string;
+  lastMessageContent: string;
+  lastMessageIsFromMe: boolean;
+  lastMessageAt: string;
+  unreadCount: number;
+}
+
+export interface DirectMessageDto {
+  id: string;
+  senderId: string;
+  senderDisplayName: string;
+  content: string;
+  isRead: boolean;
+  createdAt: string;
+}
+
+export interface SendMessageRequest {
+  content: string;
+}
+
+export interface UnreadMessageCountDto {
+  count: number;
 }
 
 // API Response types

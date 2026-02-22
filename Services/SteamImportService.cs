@@ -60,11 +60,10 @@ namespace BacklogBasement.Services
                 .Where(g => g.SteamAppId.HasValue && steamAppIds.Contains(g.SteamAppId.Value))
                 .ToDictionaryAsync(g => g.SteamAppId!.Value, g => g);
 
-            // Get user's existing collection game IDs
-            var existingCollectionGameIds = await _context.UserGames
+            // Get user's existing collection, mapping GameId -> UserGameId
+            var existingUserGameIds = await _context.UserGames
                 .Where(ug => ug.UserId == userId)
-                .Select(ug => ug.GameId)
-                .ToHashSetAsync();
+                .ToDictionaryAsync(ug => ug.GameId, ug => ug.Id);
 
             foreach (var steamGame in steamGamesList)
             {
@@ -95,15 +94,34 @@ namespace BacklogBasement.Services
                     }
 
                     // Check if already in user's collection
-                    if (existingCollectionGameIds.Contains(game.Id))
+                    if (existingUserGameIds.TryGetValue(game.Id, out var existingUserGameId))
                     {
-                        result.SkippedCount++;
-                        result.SkippedGames.Add(new SteamSkippedGameDto
+                        // Upgrade: sync playtime for games already in the collection
+                        if (includePlaytime && steamGame.PlaytimeForever > 0)
                         {
-                            Name = steamGame.Name,
-                            SteamAppId = steamGame.AppId,
-                            Reason = "Already in collection"
-                        });
+                            var existingSessions = await _context.PlaySessions
+                                .Where(ps => ps.UserGameId == existingUserGameId)
+                                .ToListAsync();
+                            _context.PlaySessions.RemoveRange(existingSessions);
+                            _context.PlaySessions.Add(new PlaySession
+                            {
+                                Id = Guid.NewGuid(),
+                                UserGameId = existingUserGameId,
+                                DurationMinutes = steamGame.PlaytimeForever,
+                                PlayedAt = DateTime.UtcNow
+                            });
+                            result.UpdatedCount++;
+                        }
+                        else
+                        {
+                            result.SkippedCount++;
+                            result.SkippedGames.Add(new SteamSkippedGameDto
+                            {
+                                Name = steamGame.Name,
+                                SteamAppId = steamGame.AppId,
+                                Reason = "Already in collection"
+                            });
+                        }
                         continue;
                     }
 
@@ -118,7 +136,7 @@ namespace BacklogBasement.Services
                     };
 
                     _context.UserGames.Add(userGame);
-                    existingCollectionGameIds.Add(game.Id); // Track for duplicates in same batch
+                    existingUserGameIds[game.Id] = userGame.Id; // Track for duplicates in same batch
 
                     // Import playtime if requested
                     int? importedPlaytime = null;

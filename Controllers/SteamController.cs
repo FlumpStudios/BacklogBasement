@@ -66,6 +66,20 @@ namespace BacklogBasement.Controllers
             }
         }
 
+        [HttpDelete("unlink")]
+        public async Task<IActionResult> UnlinkSteam()
+        {
+            var userId = _userService.GetCurrentUserId();
+            if (userId == null)
+                return Unauthorized();
+
+            var user = await _userService.UnlinkSteamAsync(userId.Value);
+            if (user == null)
+                return NotFound();
+
+            return Ok(new { message = "Steam account unlinked successfully" });
+        }
+
         [HttpPost("{gameId}/sync-playtime")]
         public async Task<ActionResult<SteamPlaytimeSyncResult>> SyncPlaytime(Guid gameId)
         {

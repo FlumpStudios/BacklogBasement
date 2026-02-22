@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { GameClubDto } from '../../types';
 import './GameClub.css';
 
@@ -34,7 +34,7 @@ export function ClubCard({ club, showJoinButton, onJoin, isJoining }: ClubCardPr
       )}
 
       <div className="club-card-meta">
-        <span className="club-card-owner">by {club.ownerDisplayName}</span>
+        <span className="club-card-owner">by <Link to={`/profile/${club.ownerUsername}`} onClick={(e) => e.stopPropagation()}>{club.ownerDisplayName}</Link></span>
         <span className="club-card-members">{club.memberCount} {club.memberCount === 1 ? 'member' : 'members'}</span>
       </div>
 

@@ -12,6 +12,7 @@ namespace BacklogBasement.DTOs
     {
         public int TotalGames { get; set; }
         public int ImportedCount { get; set; }
+        public int UpdatedCount { get; set; }
         public int SkippedCount { get; set; }
         public int FailedCount { get; set; }
         public List<SteamImportedGameDto> ImportedGames { get; set; } = new();

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth';
 import { useProfile, useFriendshipStatus, useSuggestions, useDismissSuggestion } from '../hooks';
 import { GameGrid } from '../features/games';
@@ -11,6 +11,7 @@ import './ProfilePage.css';
 export function ProfilePage() {
   const { username } = useParams<{ username: string }>();
   const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const { data: profile, isLoading, isError } = useProfile(username ?? '');
 
   const [showSuggestModal, setShowSuggestModal] = useState(false);
@@ -62,6 +63,11 @@ export function ProfilePage() {
         )}
         {!isOwnProfile && isAuthenticated && profile.userId && (
           <FriendButton userId={profile.userId} />
+        )}
+        {!isOwnProfile && isAuthenticated && isFriend && (
+          <button className="btn btn-secondary" onClick={() => navigate(`/inbox/${profile.userId}`)}>
+            Send message
+          </button>
         )}
         {!isOwnProfile && isAuthenticated && (
           <Link to={`/profile/${profile.username}/compare`} className="btn btn-secondary">

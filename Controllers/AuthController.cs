@@ -228,19 +228,5 @@ namespace BacklogBasement.Controllers
             }
         }
 
-        [HttpDelete("unlink-steam")]
-        [Authorize]
-        public async Task<IActionResult> UnlinkSteam()
-        {
-            var userId = _userService.GetCurrentUserId();
-            if (userId == null)
-                return Unauthorized();
-
-            var user = await _userService.UnlinkSteamAsync(userId.Value);
-            if (user == null)
-                return NotFound();
-
-            return Ok(new { message = "Steam account unlinked successfully" });
-        }
     }
 }

@@ -33,6 +33,8 @@ namespace BacklogBasement.Services
             _profanityService.AssertClean(request.Name, "Club name");
             _profanityService.AssertClean(request.Description, "Club description");
 
+            ValidateSocialLinks(request.DiscordLink, request.WhatsAppLink, request.RedditLink, request.YouTubeLink);
+
             var user = await _context.Users.FindAsync(userId)
                 ?? throw new NotFoundException("User not found.");
 
@@ -42,6 +44,10 @@ namespace BacklogBasement.Services
                 Name = request.Name.Trim(),
                 Description = request.Description?.Trim(),
                 IsPublic = request.IsPublic,
+                DiscordLink = request.DiscordLink?.Trim() ?? null,
+                WhatsAppLink = request.WhatsAppLink?.Trim() ?? null,
+                RedditLink = request.RedditLink?.Trim() ?? null,
+                YouTubeLink = request.YouTubeLink?.Trim() ?? null,
                 OwnerId = userId,
                 CreatedAt = DateTime.UtcNow
             };
@@ -74,6 +80,10 @@ namespace BacklogBasement.Services
                     Name = gc.Name,
                     Description = gc.Description,
                     IsPublic = gc.IsPublic,
+                    DiscordLink = gc.DiscordLink,
+                    WhatsAppLink = gc.WhatsAppLink,
+                    RedditLink = gc.RedditLink,
+                    YouTubeLink = gc.YouTubeLink,
                     OwnerDisplayName = gc.Owner.DisplayName,
                     OwnerUsername = gc.Owner.Username ?? string.Empty,
                     MemberCount = gc.Members.Count,
@@ -109,6 +119,10 @@ namespace BacklogBasement.Services
                     Name = gcm.Club.Name,
                     Description = gcm.Club.Description,
                     IsPublic = gcm.Club.IsPublic,
+                    DiscordLink = gcm.Club.DiscordLink,
+                    WhatsAppLink = gcm.Club.WhatsAppLink,
+                    RedditLink = gcm.Club.RedditLink,
+                    YouTubeLink = gcm.Club.YouTubeLink,
                     OwnerDisplayName = gcm.Club.Owner.DisplayName,
                     OwnerUsername = gcm.Club.Owner.Username ?? string.Empty,
                     MemberCount = gcm.Club.Members.Count,
@@ -165,6 +179,10 @@ namespace BacklogBasement.Services
                 Name = club.Name,
                 Description = club.Description,
                 IsPublic = club.IsPublic,
+                DiscordLink = club.DiscordLink,
+                WhatsAppLink = club.WhatsAppLink,
+                RedditLink = club.RedditLink,
+                YouTubeLink = club.YouTubeLink,
                 OwnerDisplayName = club.Owner.DisplayName,
                 OwnerUsername = club.Owner.Username ?? string.Empty,
                 MemberCount = club.Members.Count,
@@ -237,6 +255,7 @@ namespace BacklogBasement.Services
                         GameCoverUrl = n.Game.CoverUrl,
                         NominatedByUserId = n.NominatedByUserId,
                         NominatedByDisplayName = n.NominatedByUser.DisplayName,
+                        NominatedByUsername = n.NominatedByUser.Username ?? string.Empty,
                         VoteCount = n.Votes.Count,
                         CreatedAt = n.CreatedAt
                     })
@@ -668,6 +687,7 @@ namespace BacklogBasement.Services
                 GameCoverUrl = game.CoverUrl,
                 NominatedByUserId = userId,
                 NominatedByDisplayName = user!.DisplayName,
+                NominatedByUsername = user.Username ?? string.Empty,
                 VoteCount = 0,
                 CreatedAt = nomination.CreatedAt
             };
@@ -836,7 +856,76 @@ namespace BacklogBasement.Services
             };
         }
 
+        public async Task<List<GameClubReviewsForGameDto>> GetClubReviewsForGameAsync(Guid gameId, Guid? currentUserId)
+        {
+            var rounds = await _context.GameClubRounds
+                .Include(r => r.Club)
+                .Include(r => r.Reviews).ThenInclude(rv => rv.User)
+                .Where(r => r.GameId == gameId && r.Status == "completed")
+                .ToListAsync();
+
+            var result = new List<GameClubReviewsForGameDto>();
+
+            foreach (var group in rounds.GroupBy(r => r.ClubId))
+            {
+                var club = group.First().Club;
+                var allReviews = group.SelectMany(r => r.Reviews).ToList();
+                if (!allReviews.Any()) continue;
+
+                var isCurrentUserMember = currentUserId.HasValue &&
+                    await _context.GameClubMembers
+                        .AnyAsync(m => m.ClubId == group.Key && m.UserId == currentUserId.Value);
+
+                result.Add(new GameClubReviewsForGameDto
+                {
+                    ClubId = club.Id,
+                    ClubName = club.Name,
+                    IsPublic = club.IsPublic,
+                    AverageScore = Math.Round(allReviews.Average(r => (double)r.Score), 1),
+                    ReviewCount = allReviews.Count,
+                    IsCurrentUserMember = isCurrentUserMember,
+                    Reviews = allReviews
+                        .OrderByDescending(r => r.SubmittedAt)
+                        .Select(r => new GameClubReviewDto
+                        {
+                            Id = r.Id,
+                            UserId = r.UserId,
+                            DisplayName = r.User.DisplayName,
+                            Username = r.User.Username ?? string.Empty,
+                            Score = r.Score,
+                            Comment = r.Comment,
+                            SubmittedAt = r.SubmittedAt
+                        })
+                        .ToList()
+                });
+            }
+
+            return result.OrderByDescending(r => r.ReviewCount).ToList();
+        }
+
         // --- Helpers ---
+
+        private static void ValidateSocialLinks(string? discord, string? whatsapp, string? reddit, string? youtube)
+        {
+            if (!string.IsNullOrWhiteSpace(discord) &&
+                !discord.StartsWith("https://discord.gg/", StringComparison.OrdinalIgnoreCase) &&
+                !discord.StartsWith("https://discord.com/invite/", StringComparison.OrdinalIgnoreCase))
+                throw new BadRequestException("Discord link must start with https://discord.gg/ or https://discord.com/invite/");
+
+            if (!string.IsNullOrWhiteSpace(whatsapp) &&
+                !whatsapp.StartsWith("https://chat.whatsapp.com/", StringComparison.OrdinalIgnoreCase))
+                throw new BadRequestException("WhatsApp link must start with https://chat.whatsapp.com/");
+
+            if (!string.IsNullOrWhiteSpace(reddit) &&
+                !reddit.StartsWith("https://www.reddit.com/r/", StringComparison.OrdinalIgnoreCase) &&
+                !reddit.StartsWith("https://reddit.com/r/", StringComparison.OrdinalIgnoreCase))
+                throw new BadRequestException("Reddit link must start with https://reddit.com/r/");
+
+            if (!string.IsNullOrWhiteSpace(youtube) &&
+                !youtube.StartsWith("https://www.youtube.com/", StringComparison.OrdinalIgnoreCase) &&
+                !youtube.StartsWith("https://youtu.be/", StringComparison.OrdinalIgnoreCase))
+                throw new BadRequestException("YouTube link must start with https://www.youtube.com/ or https://youtu.be/");
+        }
 
         private async Task<GameClubMember> GetMemberOrThrowAsync(Guid userId, Guid clubId)
         {

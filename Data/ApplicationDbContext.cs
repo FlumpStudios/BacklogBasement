@@ -24,6 +24,7 @@ namespace BacklogBasement.Data
         public DbSet<GameClubVote> GameClubVotes { get; set; } = null!;
         public DbSet<GameClubReview> GameClubReviews { get; set; } = null!;
         public DbSet<GameClubInvite> GameClubInvites { get; set; } = null!;
+        public DbSet<DirectMessage> DirectMessages { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -250,6 +251,25 @@ namespace BacklogBasement.Data
                 .WithMany(u => u.ReceivedClubInvites)
                 .HasForeignKey(gci => gci.InviteeUserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Configure DirectMessage entity
+            modelBuilder.Entity<DirectMessage>()
+                .HasOne(dm => dm.Sender)
+                .WithMany(u => u.SentMessages)
+                .HasForeignKey(dm => dm.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<DirectMessage>()
+                .HasOne(dm => dm.Recipient)
+                .WithMany(u => u.ReceivedMessages)
+                .HasForeignKey(dm => dm.RecipientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<DirectMessage>()
+                .HasIndex(dm => new { dm.SenderId, dm.RecipientId });
+
+            modelBuilder.Entity<DirectMessage>()
+                .HasIndex(dm => new { dm.RecipientId, dm.IsRead });
         }
     }
 }

@@ -89,7 +89,16 @@ export function NotificationBell() {
                   className={`notification-item ${notification.isRead ? 'read' : 'unread'}`}
                   onClick={() => handleNotificationClick(notification.id, notification.isRead)}
                 >
-                  {notification.type === 'game_suggestion' && notification.relatedGameId ? (
+                  {notification.type === 'direct_message' && notification.relatedUserId ? (
+                    <Link
+                      to={`/inbox/${notification.relatedUserId}`}
+                      className="notification-link"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <span className="notification-message">{notification.message}</span>
+                      <span className="notification-time">{timeAgo(notification.createdAt)}</span>
+                    </Link>
+                  ) : notification.type === 'game_suggestion' && notification.relatedGameId ? (
                     <Link
                       to={`/games/${notification.relatedGameId}`}
                       className="notification-link"

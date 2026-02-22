@@ -17,6 +17,7 @@ import {
   CompareCollectionsPage,
   GameClubsPage,
   GameClubDetailPage,
+  InboxPage,
 } from './pages';
 
 function HomePage() {
@@ -98,6 +99,22 @@ function App() {
           element={
             <ProtectedRoute>
               <GameClubDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/inbox"
+          element={
+            <ProtectedRoute>
+              <InboxPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/inbox/:friendUserId"
+          element={
+            <ProtectedRoute>
+              <InboxPage />
             </ProtectedRoute>
           }
         />

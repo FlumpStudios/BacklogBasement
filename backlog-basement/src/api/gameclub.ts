@@ -7,6 +7,7 @@ import {
   GameClubReviewDto,
   GameClubInviteDto,
   GameClubScoreDto,
+  GameClubReviewsForGameDto,
   CreateGameClubRequest,
   StartRoundRequest,
   SubmitReviewRequest,
@@ -70,6 +71,9 @@ export const gameClubApi = {
 
   getClubScoreForGame: (gameId: string) =>
     api.get<GameClubScoreDto>(`/clubs/score/${gameId}`),
+
+  getClubReviewsForGame: (gameId: string) =>
+    api.get<GameClubReviewsForGameDto[]>(`/clubs/reviews-for-game/${gameId}`),
 
   deleteClub: (clubId: string) =>
     api.delete<void>(`/clubs/${clubId}`),

@@ -35,6 +35,7 @@ namespace BacklogBasement.Services
 
         // Game page integration
         Task<GameClubScoreDto?> GetClubScoreForGameAsync(Guid gameId);
+        Task<List<GameClubReviewsForGameDto>> GetClubReviewsForGameAsync(Guid gameId, Guid? currentUserId);
     }
 
     public class GameClubVoteDto

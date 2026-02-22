@@ -16,6 +16,16 @@
   gap: var(--spacing-xs);
 }
 
+.stat-card-link {
+  text-decoration: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.stat-card-link:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 15%, transparent);
+}
+
 .stat-value {
   font-size: 1.5rem;
   font-weight: 700;

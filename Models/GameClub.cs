@@ -9,6 +9,10 @@ namespace BacklogBasement.Models
         public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }
         public bool IsPublic { get; set; }
+        public string? DiscordLink { get; set; }
+        public string? WhatsAppLink { get; set; }
+        public string? RedditLink { get; set; }
+        public string? YouTubeLink { get; set; }
         public Guid OwnerId { get; set; }
         public DateTime CreatedAt { get; set; }
 

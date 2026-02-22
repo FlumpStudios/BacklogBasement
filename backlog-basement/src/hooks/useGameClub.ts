@@ -12,6 +12,7 @@ export const MY_CLUBS_QUERY_KEY = ['my-clubs'];
 export const CLUB_DETAIL_QUERY_KEY = (clubId: string) => ['club', clubId];
 export const ROUND_REVIEWS_QUERY_KEY = (roundId: string) => ['club-reviews', roundId];
 export const CLUB_SCORE_QUERY_KEY = (gameId: string) => ['club-score', gameId];
+export const CLUB_REVIEWS_FOR_GAME_QUERY_KEY = (gameId: string) => ['club-reviews-for-game', gameId];
 export const MY_CLUB_INVITES_QUERY_KEY = ['my-club-invites'];
 
 export function usePublicClubs() {
@@ -55,6 +56,15 @@ export function useClubScoreForGame(gameId: string | undefined) {
   return useQuery({
     queryKey: CLUB_SCORE_QUERY_KEY(gameId ?? ''),
     queryFn: () => gameClubApi.getClubScoreForGame(gameId!),
+    enabled: !!gameId,
+    retry: false,
+  });
+}
+
+export function useClubReviewsForGame(gameId: string | undefined) {
+  return useQuery({
+    queryKey: CLUB_REVIEWS_FOR_GAME_QUERY_KEY(gameId ?? ''),
+    queryFn: () => gameClubApi.getClubReviewsForGame(gameId!),
     enabled: !!gameId,
     retry: false,
   });

@@ -13,3 +13,4 @@ export { UserCollectionPage } from './UserCollectionPage';
 export { CompareCollectionsPage } from './CompareCollectionsPage';
 export { GameClubsPage } from './GameClubsPage';
 export { GameClubDetailPage } from './GameClubDetailPage';
+export { InboxPage } from './InboxPage';

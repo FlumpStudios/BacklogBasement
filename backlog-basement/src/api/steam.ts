@@ -14,7 +14,7 @@ export const steamApi = {
    * Unlink Steam account from user
    */
   unlink: async (): Promise<void> => {
-    await apiClient.delete(`${AUTH_BASE_URL}/auth/unlink-steam`);
+    await apiClient.delete('/steam/unlink');
   },
 
   /**

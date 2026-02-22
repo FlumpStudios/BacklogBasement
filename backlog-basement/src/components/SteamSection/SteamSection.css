@@ -100,6 +100,27 @@
   margin-left: 0.5rem;
 }
 
+.import-warning {
+  font-size: 0.875rem;
+  color: var(--warning, #b45309);
+  background: var(--warning-bg, #fef3c7);
+  border: 1px solid var(--warning-border, #fde68a);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0;
+}
+
+.import-warning a {
+  color: inherit;
+  font-weight: 600;
+}
+
+.steam-note {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin: 0 0 0.5rem 0;
+}
+
 .steam-actions {
   display: flex;
   gap: 0.75rem;
@@ -246,6 +267,10 @@
 
 .stat-success .stat-value {
   color: var(--success);
+}
+
+.stat-updated .stat-value {
+  color: var(--info, #3b82f6);
 }
 
 .stat-skipped .stat-value {

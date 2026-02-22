@@ -441,6 +441,22 @@ namespace BacklogBasement.Controllers
             }
         }
 
+        [AllowAnonymous]
+        [HttpGet("reviews-for-game/{gameId}")]
+        public async Task<IActionResult> GetClubReviewsForGame(Guid gameId)
+        {
+            try
+            {
+                var userId = _userService.GetCurrentUserId();
+                var result = await _clubService.GetClubReviewsForGameAsync(gameId, userId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
         [HttpGet("score/{gameId}")]
         public async Task<IActionResult> GetClubScoreForGame(Guid gameId)
         {

@@ -5,12 +5,15 @@ import { ThemeToggle } from '../ThemeToggle';
 import { NotificationBell } from '../NotificationBell';
 import { CookieBanner } from '../CookieBanner';
 import { UsernameSetupModal } from '../../features/profile';
+import { useUnreadMessageCount } from '../../hooks';
 import './Layout.css';
 
 export function Layout() {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { data: unreadMsgData } = useUnreadMessageCount(isAuthenticated);
+  const unreadMsgCount = unreadMsgData?.count ?? 0;
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
@@ -49,6 +52,12 @@ export function Layout() {
                   )}
                   <Link to="/friends" className="nav-link" onClick={closeMenu}>
                     Friends
+                  </Link>
+                  <Link to="/inbox" className="nav-link nav-link-badge" onClick={closeMenu}>
+                    Inbox
+                    {unreadMsgCount > 0 && (
+                      <span className="nav-badge">{unreadMsgCount > 99 ? '99+' : unreadMsgCount}</span>
+                    )}
                   </Link>
                   <Link to="/clubs" className="nav-link" onClick={closeMenu}>
                     Clubs

@@ -9,6 +9,10 @@ namespace BacklogBasement.DTOs
         public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }
         public bool IsPublic { get; set; }
+        public string? DiscordLink { get; set; }
+        public string? WhatsAppLink { get; set; }
+        public string? RedditLink { get; set; }
+        public string? YouTubeLink { get; set; }
         public string OwnerDisplayName { get; set; } = string.Empty;
         public string OwnerUsername { get; set; } = string.Empty;
         public int MemberCount { get; set; }
@@ -51,6 +55,7 @@ namespace BacklogBasement.DTOs
         public string? GameCoverUrl { get; set; }
         public Guid NominatedByUserId { get; set; }
         public string NominatedByDisplayName { get; set; } = string.Empty;
+        public string NominatedByUsername { get; set; } = string.Empty;
         public int VoteCount { get; set; }
         public DateTime CreatedAt { get; set; }
     }
@@ -96,12 +101,27 @@ namespace BacklogBasement.DTOs
         public int RoundCount { get; set; }
     }
 
+    public class GameClubReviewsForGameDto
+    {
+        public Guid ClubId { get; set; }
+        public string ClubName { get; set; } = string.Empty;
+        public bool IsPublic { get; set; }
+        public double AverageScore { get; set; }
+        public int ReviewCount { get; set; }
+        public bool IsCurrentUserMember { get; set; }
+        public List<GameClubReviewDto> Reviews { get; set; } = new();
+    }
+
     // Request DTOs
     public class CreateGameClubRequest
     {
         public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }
         public bool IsPublic { get; set; }
+        public string? DiscordLink { get; set; }
+        public string? WhatsAppLink { get; set; }
+        public string? RedditLink { get; set; }
+        public string? YouTubeLink { get; set; }
     }
 
     public class StartRoundRequest

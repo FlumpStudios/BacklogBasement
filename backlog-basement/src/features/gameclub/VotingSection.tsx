@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useToast } from '../../components';
 import { useVote } from '../../hooks';
 import { GameClubNominationDto } from '../../types';
@@ -60,7 +61,7 @@ export function VotingSection({
                   )}
                   <div className="nomination-details">
                     <span className="nomination-game-name">{nomination.gameName}</span>
-                    <span className="nomination-by">nominated by {nomination.nominatedByDisplayName}</span>
+                    <span className="nomination-by">nominated by <Link to={`/profile/${nomination.nominatedByUsername}`}>{nomination.nominatedByDisplayName}</Link></span>
                   </div>
                 </div>
 

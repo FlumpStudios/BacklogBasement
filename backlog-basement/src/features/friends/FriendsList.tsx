@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   useFriends,
   usePendingRequests,
@@ -9,6 +9,7 @@ import { useToast } from '../../components/Toast';
 import './FriendsList.css';
 
 export function FriendsList() {
+  const navigate = useNavigate();
   const { data: friends, isLoading: friendsLoading } = useFriends();
   const { data: requests, isLoading: requestsLoading } = usePendingRequests();
   const acceptRequest = useAcceptFriendRequest();
@@ -105,9 +106,14 @@ export function FriendsList() {
                   <span className="friends-entry-name">{friend.displayName}</span>
                   <span className="friends-entry-username">@{friend.username}</span>
                 </Link>
-                <span className="friends-entry-since">
-                  Friends since {new Date(friend.friendsSince).toLocaleDateString(undefined, { year: 'numeric', month: 'short' })}
-                </span>
+                <div className="friends-entry-actions">
+                  <button
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => navigate(`/inbox/${friend.userId}`)}
+                  >
+                    Message
+                  </button>
+                </div>
               </li>
             ))}
           </ul>

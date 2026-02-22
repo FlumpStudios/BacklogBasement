@@ -36,7 +36,7 @@ export function CollectionPage() {
       setSearchParams(searchParams, { replace: true });
     }
 
-    // Apply status filter from URL
+    // Apply status filter from URL (does not reset other filters — used by other parts of the app)
     const statusParam = searchParams.get('status');
     if (statusParam && ['none', 'backlog', 'playing', 'completed'].includes(statusParam)) {
       setGameStatus(statusParam as GameStatusFilter);
@@ -44,23 +44,41 @@ export function CollectionPage() {
       setSearchParams(searchParams, { replace: true });
     }
 
-    // Apply play status filter from URL
+    // Stat card nav params — reset all filters first, then apply the specific override
+    const resetParam = searchParams.get('reset');
+    if (resetParam === 'true') {
+      setSearchQuery('');
+      setSortBy('name-asc');
+      setPlayStatus('all');
+      setSourceFilter('all');
+      setGameStatus('all');
+      searchParams.delete('reset');
+      setSearchParams(searchParams, { replace: true });
+    }
+
     const playStatusParam = searchParams.get('playStatus');
     if (playStatusParam && ['played', 'unplayed'].includes(playStatusParam)) {
+      setSearchQuery('');
+      setSortBy('name-asc');
       setPlayStatus(playStatusParam as PlayStatusFilter);
+      setSourceFilter('all');
+      setGameStatus('all');
       searchParams.delete('playStatus');
       setSearchParams(searchParams, { replace: true });
     }
 
-    // Apply sort from URL
     const sortParam = searchParams.get('sort');
     const validSorts: SortOption[] = ['name-asc', 'name-desc', 'release-desc', 'release-asc', 'added-desc', 'added-asc', 'playtime-desc', 'playtime-asc', 'score-desc', 'score-asc'];
     if (sortParam && validSorts.includes(sortParam as SortOption)) {
+      setSearchQuery('');
       setSortBy(sortParam as SortOption);
+      setPlayStatus('all');
+      setSourceFilter('all');
+      setGameStatus('all');
       searchParams.delete('sort');
       setSearchParams(searchParams, { replace: true });
     }
-  }, [searchParams, setSearchParams, showToast]);
+  }, [searchParams, setSearchParams, showToast, setSearchQuery]);
 
   // Filter and sort the collection
   const filteredAndSortedCollection = useMemo(() => {
@@ -239,7 +257,7 @@ export function CollectionPage() {
 
       {collection && collection.length > 0 ? (
         <>
-          <CollectionStats collection={collection} />
+          <CollectionStats collection={collection} basePath="/collection" />
           <CollectionFilters
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}

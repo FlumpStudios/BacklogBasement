@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useToast } from '../../components';
+import { Link } from 'react-router-dom';
+import { useToast, FriendButton } from '../../components';
 import { useRemoveMember, useUpdateMemberRole } from '../../hooks';
 import { GameClubMemberDto } from '../../types';
 import './GameClub.css';
@@ -46,7 +47,9 @@ export function ClubMembersList({ clubId, members, currentUserRole, currentUserI
       {members.map((member) => (
         <div key={member.userId} className="club-member-row">
           <div className="club-member-info">
-            <span className="club-member-name">{member.displayName}</span>
+            <Link to={`/profile/${member.username}`} className="club-member-name">
+              {member.displayName}
+            </Link>
             {member.username && (
               <span className="club-member-username">@{member.username}</span>
             )}
@@ -54,6 +57,9 @@ export function ClubMembersList({ clubId, members, currentUserRole, currentUserI
               {member.role}
             </span>
           </div>
+          {member.userId !== currentUserId && (
+            <FriendButton userId={member.userId} />
+          )}
 
           {canManage && member.userId !== currentUserId && member.role !== 'owner' && (
             <div className="club-member-actions">

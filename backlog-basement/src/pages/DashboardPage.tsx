@@ -79,7 +79,7 @@ export function DashboardPage() {
         </div>
       ) : collection && collection.length > 0 ? (
         <>
-          <CollectionStats collection={collection} />
+          <CollectionStats collection={collection} basePath="/collection" />
 
           <SuggestionsSection />
 

@@ -15,6 +15,7 @@ import {
 import { GameStatus } from '../types';
 import { PlaySessionForm, PlaySessionList } from '../features/playtime';
 import { SuggestGameModal } from '../features/suggestions';
+import { GameClubReviewsSection } from '../features/gameclub';
 import { Modal, useToast } from '../components';
 import { useAuth } from '../auth';
 import { formatPlaytime, formatDate } from '../utils';
@@ -88,7 +89,7 @@ export function GameDetailPage() {
       const result = await syncSteamPlaytime.mutateAsync();
       showToast(`Synced ${formatPlaytime(result.playtimeMinutes)} from Steam`, 'success');
     } catch {
-      showToast('Failed to sync playtime from Steam', 'error');
+      showToast('Failed to sync playtime from Steam. Is this game in your Steam library?', 'error');
     }
   };
 
@@ -322,6 +323,8 @@ export function GameDetailPage() {
               </div>
             </div>
           )}
+
+          {id && <GameClubReviewsSection gameId={id} />}
 
           {isInCollection && playSessions && (
             <div className="game-sessions">

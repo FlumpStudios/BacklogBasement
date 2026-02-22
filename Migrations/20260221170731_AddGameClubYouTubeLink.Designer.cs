@@ -3,6 +3,7 @@ using System;
 using BacklogBasement.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,43 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BacklogBasement.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260221170731_AddGameClubYouTubeLink")]
+    partial class AddGameClubYouTubeLink
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.1");
-
-            modelBuilder.Entity("BacklogBasement.Models.DirectMessage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<Guid>("RecipientId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("SenderId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RecipientId", "IsRead");
-
-                    b.HasIndex("SenderId", "RecipientId");
-
-                    b.ToTable("DirectMessages");
-                });
 
             modelBuilder.Entity("BacklogBasement.Models.Friendship", b =>
                 {
@@ -157,9 +129,6 @@ namespace BacklogBasement.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("WhatsAppLink")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("YouTubeLink")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -545,25 +514,6 @@ namespace BacklogBasement.Migrations
                     b.ToTable("UserGames");
                 });
 
-            modelBuilder.Entity("BacklogBasement.Models.DirectMessage", b =>
-                {
-                    b.HasOne("BacklogBasement.Models.User", "Recipient")
-                        .WithMany("ReceivedMessages")
-                        .HasForeignKey("RecipientId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("BacklogBasement.Models.User", "Sender")
-                        .WithMany("SentMessages")
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Recipient");
-
-                    b.Navigation("Sender");
-                });
-
             modelBuilder.Entity("BacklogBasement.Models.Friendship", b =>
                 {
                     b.HasOne("BacklogBasement.Models.User", "Addressee")
@@ -843,15 +793,11 @@ namespace BacklogBasement.Migrations
 
                     b.Navigation("ReceivedFriendRequests");
 
-                    b.Navigation("ReceivedMessages");
-
                     b.Navigation("ReceivedSuggestions");
 
                     b.Navigation("SentClubInvites");
 
                     b.Navigation("SentFriendRequests");
-
-                    b.Navigation("SentMessages");
 
                     b.Navigation("SentSuggestions");
 

@@ -57,6 +57,8 @@ export {
   useMyClubInvites,
   useRoundReviews,
   useClubScoreForGame,
+  useClubReviewsForGame,
+  CLUB_REVIEWS_FOR_GAME_QUERY_KEY,
   useCreateClub,
   useJoinClub,
   useInviteMember,
@@ -71,3 +73,12 @@ export {
   MY_CLUB_INVITES_QUERY_KEY,
   useDeleteClub,
 } from './useGameClub';
+export {
+  useConversations,
+  useMessages,
+  useSendMessage,
+  useUnreadMessageCount,
+  CONVERSATIONS_QUERY_KEY,
+  MESSAGES_QUERY_KEY,
+  UNREAD_MESSAGES_COUNT_QUERY_KEY,
+} from './useMessages';

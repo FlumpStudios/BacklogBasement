@@ -35,7 +35,8 @@
       "Bash(powershell -Command \"Add-Type -Path ''C:\\\\Users\\\\flump\\\\.nuget\\\\packages\\\\profanity.detector\\\\0.1.8\\\\lib\\\\netstandard2.0\\\\ProfanityFilter.dll''; [System.AppDomain]::CurrentDomain.GetAssemblies\\(\\) | Where-Object { $_.GetName\\(\\).Name -eq ''ProfanityFilter'' } | ForEach-Object { $_.GetTypes\\(\\) | Select-Object FullName }\")",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:www.nuget.org)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(tail:*)"
     ]
   }
 }

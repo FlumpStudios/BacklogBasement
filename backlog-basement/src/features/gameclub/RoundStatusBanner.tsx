@@ -84,10 +84,13 @@ export function RoundStatusBanner({ clubId, round, currentUserRole, onNominate, 
       )}
 
       <div className="round-banner-actions">
-        {round.status === 'nominating' && (
+        {round.status === 'nominating' && !round.userHasNominated && (
           <button className="btn btn-primary" onClick={onNominate}>
             Nominate a Game
           </button>
+        )}
+        {round.status === 'nominating' && round.userHasNominated && (
+          <span className="round-banner-already-done">You have already nominated a game this round.</span>
         )}
 
         {round.status === 'reviewing' && !round.userHasReviewed && (

@@ -38,6 +38,7 @@ namespace BacklogBasement.DTOs
         public List<GameClubNominationDto> Nominations { get; set; } = new();
         public bool UserHasVoted { get; set; }
         public bool UserHasReviewed { get; set; }
+        public bool UserHasNominated { get; set; }
         public Guid? UserVotedNominationId { get; set; }
         public DateTime? NominatingDeadline { get; set; }
         public DateTime? VotingDeadline { get; set; }

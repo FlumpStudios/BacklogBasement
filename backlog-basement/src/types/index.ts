@@ -237,6 +237,7 @@ export interface GameClubRoundDto {
   nominations: GameClubNominationDto[];
   userHasVoted: boolean;
   userHasReviewed: boolean;
+  userHasNominated: boolean;
   userVotedNominationId?: string | null;
   nominatingDeadline?: string | null;
   votingDeadline?: string | null;

@@ -238,6 +238,7 @@ namespace BacklogBasement.Services
                 GameCoverUrl = round.Game?.CoverUrl,
                 UserHasVoted = userVote != null,
                 UserHasReviewed = round.Reviews.Any(r => r.UserId == userId),
+                UserHasNominated = round.Nominations.Any(n => n.NominatedByUserId == userId),
                 UserVotedNominationId = userVote?.NominationId,
                 NominatingDeadline = round.NominatingDeadline,
                 VotingDeadline = round.VotingDeadline,
@@ -664,6 +665,10 @@ namespace BacklogBasement.Services
             var alreadyNominated = round.Nominations.Any(n => n.GameId == gameId);
             if (alreadyNominated)
                 throw new BadRequestException("This game has already been nominated for this round.");
+
+            var userAlreadyNominated = round.Nominations.Any(n => n.NominatedByUserId == userId);
+            if (userAlreadyNominated)
+                throw new BadRequestException("You have already nominated a game for this round.");
 
             var nomination = new GameClubNomination
             {

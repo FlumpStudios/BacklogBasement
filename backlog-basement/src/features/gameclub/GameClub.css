@@ -178,6 +178,12 @@
   flex-wrap: wrap;
 }
 
+.round-banner-already-done {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
 /* ── Nominations / Voting ── */
 .nominations-list {
   list-style: none;

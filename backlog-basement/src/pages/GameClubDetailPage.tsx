@@ -71,6 +71,20 @@ export function GameClubDetailPage() {
     }
   };
 
+  const handleShare = async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: club?.name, text: club?.description ?? undefined, url });
+        return;
+      } catch {
+        // User cancelled or share failed — fall through to clipboard
+      }
+    }
+    await navigator.clipboard.writeText(url);
+    showToast('Link copied to clipboard!', 'success');
+  };
+
   const handleDeleteClub = async () => {
     if (!clubId) return;
     try {
@@ -147,34 +161,35 @@ export function GameClubDetailPage() {
           )}
         </div>
 
-        {isMember && (
-          <div className="club-detail-actions">
-            {isAdmin && (
-              <button
-                className="btn btn-secondary"
-                onClick={() => setShowInvite(true)}
-              >
-                Invite Friend
-              </button>
-            )}
-            {isAdmin && !activeRound && (
-              <button
-                className="btn btn-primary"
-                onClick={() => setShowStartRound(true)}
-              >
-                Start Round
-              </button>
-            )}
-            {club.currentUserRole === 'owner' && (
-              <button
-                className="btn btn-danger btn-sm"
-                onClick={() => setShowDeleteConfirm(true)}
-              >
-                Delete Club
-              </button>
-            )}
-          </div>
-        )}
+        <div className="club-detail-actions">
+          <button className="btn btn-secondary" onClick={handleShare}>
+            Share
+          </button>
+          {isMember && isAdmin && (
+            <button
+              className="btn btn-secondary"
+              onClick={() => setShowInvite(true)}
+            >
+              Invite Friend
+            </button>
+          )}
+          {isMember && isAdmin && !activeRound && (
+            <button
+              className="btn btn-primary"
+              onClick={() => setShowStartRound(true)}
+            >
+              Start Round
+            </button>
+          )}
+          {club.currentUserRole === 'owner' && (
+            <button
+              className="btn btn-danger btn-sm"
+              onClick={() => setShowDeleteConfirm(true)}
+            >
+              Delete Club
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Active Round */}

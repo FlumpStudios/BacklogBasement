@@ -114,13 +114,22 @@ namespace BacklogBasement.Services
             if (game == null)
                 return null;
 
-            // Lazy-fetch Metacritic score from Steam if we don't have a score and haven't checked yet
-            if (game.CriticScore == null && !game.CriticScoreChecked && game.SteamAppId.HasValue)
+            // Lazy-fetch score and/or description from Steam on first page load
+            var needsScore = game.CriticScore == null && !game.CriticScoreChecked;
+            var needsSummary = string.IsNullOrEmpty(game.Summary) && !game.SummaryFetched;
+            if (game.SteamAppId.HasValue && (needsScore || needsSummary))
             {
-                var score = await _steamService.GetMetacriticScoreAsync(game.SteamAppId.Value);
-                game.CriticScoreChecked = true;
-                if (score.HasValue)
-                    game.CriticScore = score;
+                var (score, description) = await _steamService.GetSteamAppDetailsAsync(game.SteamAppId.Value);
+                if (needsScore)
+                {
+                    game.CriticScoreChecked = true;
+                    if (score.HasValue) game.CriticScore = score;
+                }
+                if (needsSummary)
+                {
+                    game.SummaryFetched = true;
+                    if (!string.IsNullOrEmpty(description)) game.Summary = description;
+                }
                 await _context.SaveChangesAsync();
             }
 

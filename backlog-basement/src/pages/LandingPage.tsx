@@ -3,7 +3,7 @@ import { useAuth } from '../auth';
 import './LandingPage.css';
 
 export function LandingPage() {
-  const { isAuthenticated, login } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   return (
     <div className="landing-page">
@@ -22,9 +22,9 @@ export function LandingPage() {
               Go to Dashboard
             </Link>
           ) : (
-            <button onClick={login} className="btn btn-primary btn-lg">
-              <span>🎮</span> Get Started with Google
-            </button>
+            <Link to="/login" className="btn btn-primary btn-lg">
+              <span>🎮</span> Get Started
+            </Link>
           )}
         </div>
       </section>

@@ -7,6 +7,7 @@ namespace BacklogBasement.Services
     public interface IUserService
     {
         Task<User> GetOrCreateUserAsync(string googleSubjectId, string email, string displayName);
+        Task<User> GetOrCreateSteamUserAsync(string steamId, string displayName);
         Task<User?> GetCurrentUserAsync();
         Guid? GetCurrentUserId();
         Guid? GetCachedCurrentUserId();

@@ -3,6 +3,7 @@ using System;
 using BacklogBasement.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BacklogBasement.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260222163357_AddSummaryFetched")]
+    partial class AddSummaryFetched
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.1");
@@ -488,6 +491,7 @@ namespace BacklogBasement.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("GoogleSubjectId")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("SteamId")
@@ -500,8 +504,7 @@ namespace BacklogBasement.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("GoogleSubjectId")
-                        .IsUnique()
-                        .HasFilter("[GoogleSubjectId] IS NOT NULL");
+                        .IsUnique();
 
                     b.HasIndex("SteamId")
                         .IsUnique()

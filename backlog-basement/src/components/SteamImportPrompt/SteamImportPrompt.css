@@ -1,0 +1,117 @@
+.import-prompt-desc {
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.import-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.import-options p {
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  padding: 0.75rem;
+  background: var(--color-surface-elevated);
+  border-radius: 8px;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: var(--color-primary);
+}
+
+.import-note {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.import-results {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.import-summary h4 {
+  margin: 0 0 1rem 0;
+  color: var(--color-text);
+}
+
+.import-warning {
+  font-size: 0.875rem;
+  color: var(--color-warning);
+  background: color-mix(in srgb, var(--color-warning) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-warning) 30%, transparent);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0;
+}
+
+.import-warning a {
+  color: inherit;
+  font-weight: 600;
+}
+
+.import-stats {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--color-surface-elevated);
+  border-radius: 8px;
+  min-width: 80px;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+
+.stat-success .stat-value {
+  color: var(--color-success);
+}
+
+.stat-updated .stat-value {
+  color: #3b82f6;
+}
+
+.stat-skipped .stat-value {
+  color: var(--color-warning);
+}
+
+.stat-failed .stat-value {
+  color: var(--color-danger);
+}

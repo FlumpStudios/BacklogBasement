@@ -47,6 +47,17 @@ namespace BacklogBasement.Controllers
             return Challenge(properties, GoogleDefaults.AuthenticationScheme);
         }
 
+        [HttpGet("login/steam")]
+        public IActionResult LoginSteam()
+        {
+            var properties = new AuthenticationProperties
+            {
+                RedirectUri = Url.Action("SteamCallback"),
+                Items = { { "Intent", "login" } }
+            };
+            return Challenge(properties, SteamAuthenticationDefaults.AuthenticationScheme);
+        }
+
         [HttpGet("callback/google")]
         public async Task<IActionResult> GoogleCallback()
         {
@@ -69,7 +80,7 @@ namespace BacklogBasement.Controllers
                         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                         new Claim(ClaimTypes.Email, user.Email),
                         new Claim(ClaimTypes.Name, user.DisplayName),
-                        new Claim("GoogleId", user.GoogleSubjectId)
+                        new Claim("GoogleId", user.GoogleSubjectId!)
                     };
 
                     var identity = new ClaimsIdentity(claims, "Google");
@@ -137,7 +148,7 @@ namespace BacklogBasement.Controllers
             var properties = new AuthenticationProperties
             {
                 RedirectUri = Url.Action("SteamCallback"),
-                Items = { { "UserId", userId } }
+                Items = { { "Intent", "link" }, { "UserId", userId } }
             };
             return Challenge(properties, SteamAuthenticationDefaults.AuthenticationScheme);
         }
@@ -149,7 +160,6 @@ namespace BacklogBasement.Controllers
             {
                 _logger.LogInformation("Steam callback initiated");
 
-                // Authenticate with Steam to get the Steam identity
                 var authenticateResult = await HttpContext.AuthenticateAsync(SteamAuthenticationDefaults.AuthenticationScheme);
 
                 if (!authenticateResult.Succeeded)
@@ -160,11 +170,9 @@ namespace BacklogBasement.Controllers
 
                 _logger.LogInformation("Steam authentication succeeded");
 
-                // Get the Steam ID from the claims
-                // Steam's OpenID returns the Steam ID in the NameIdentifier claim as a URL like:
+                // Steam's OpenID returns the Steam ID as a URL like:
                 // https://steamcommunity.com/openid/id/76561198012345678
                 var steamIdentifier = authenticateResult.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
                 _logger.LogInformation("Steam identifier from claims: {SteamIdentifier}", steamIdentifier ?? "null");
 
                 if (string.IsNullOrEmpty(steamIdentifier))
@@ -173,48 +181,82 @@ namespace BacklogBasement.Controllers
                     return Redirect($"{_frontendUrl}/collection?steam=error&message=no_steam_id");
                 }
 
-                // Extract the Steam ID from the URL (last segment)
                 var steamId = steamIdentifier.Split('/').Last();
                 _logger.LogInformation("Extracted Steam ID: {SteamId}", steamId);
 
-                // Get the current user's ID from the authentication properties
-                var userId = authenticateResult.Properties.Items["UserId"];
-                _logger.LogInformation("User ID from auth properties: {UserId}", userId?.ToString() ?? "null");
+                // Get persona name from claims if available
+                var personaName = authenticateResult.Principal?.FindFirst(ClaimTypes.Name)?.Value ?? "Steam User";
 
-                if (userId == null)
+                var intent = authenticateResult.Properties?.Items.TryGetValue("Intent", out var intentValue) == true
+                    ? intentValue
+                    : null;
+
+                if (intent == "login")
                 {
-                    _logger.LogWarning("User not logged in during Steam callback");
-                    return Redirect($"{_frontendUrl}/collection?steam=error&message=not_logged_in");
+                    // Steam standalone login
+                    var user = await _userService.GetOrCreateSteamUserAsync(steamId, personaName);
+                    _logger.LogInformation("Steam login for user {UserId}", user.Id);
+
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                        new Claim(ClaimTypes.Email, user.Email),
+                        new Claim(ClaimTypes.Name, user.DisplayName)
+                    };
+                    if (!string.IsNullOrEmpty(user.GoogleSubjectId))
+                        claims.Add(new Claim("GoogleId", user.GoogleSubjectId));
+
+                    var identity = new ClaimsIdentity(claims, "Steam");
+                    var principal = new ClaimsPrincipal(identity);
+
+                    await HttpContext.SignInAsync("Cookies", principal);
+                    _logger.LogInformation("Signed in user {UserId} via Steam login", user.Id);
+
+                    return Redirect($"{_frontendUrl}/?auth=success");
                 }
-
-                // Link the Steam account to the user
-                var user = await _userService.LinkSteamAsync(new Guid(userId), steamId);
-
-                if (user == null)
+                else
                 {
-                    _logger.LogWarning("User {UserId} not found during Steam linking", userId);
-                    return Redirect($"{_frontendUrl}/collection?steam=error&message=user_not_found");
+                    // Steam account linking flow
+                    var userId = authenticateResult.Properties?.Items.TryGetValue("UserId", out var userIdValue) == true
+                        ? userIdValue
+                        : null;
+
+                    _logger.LogInformation("User ID from auth properties: {UserId}", userId ?? "null");
+
+                    if (userId == null)
+                    {
+                        _logger.LogWarning("User not logged in during Steam link callback");
+                        return Redirect($"{_frontendUrl}/collection?steam=error&message=not_logged_in");
+                    }
+
+                    var user = await _userService.LinkSteamAsync(new Guid(userId), steamId);
+
+                    if (user == null)
+                    {
+                        _logger.LogWarning("User {UserId} not found during Steam linking", userId);
+                        return Redirect($"{_frontendUrl}/collection?steam=error&message=user_not_found");
+                    }
+
+                    _logger.LogInformation("Successfully linked Steam ID {SteamId} to user {UserId}", steamId, userId);
+
+                    // Re-sign in to refresh the cookie after Steam auth replaced it
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                        new Claim(ClaimTypes.Email, user.Email),
+                        new Claim(ClaimTypes.Name, user.DisplayName)
+                    };
+                    if (!string.IsNullOrEmpty(user.GoogleSubjectId))
+                        claims.Add(new Claim("GoogleId", user.GoogleSubjectId));
+
+                    var identity = new ClaimsIdentity(claims, "Google");
+                    var principal = new ClaimsPrincipal(identity);
+
+                    await HttpContext.SignInAsync("Cookies", principal);
+                    _logger.LogInformation("Re-signed in user {UserId} after Steam linking", userId);
+
+                    return Redirect($"{_frontendUrl}/collection?steam=linked");
                 }
-
-                _logger.LogInformation("Successfully linked Steam ID {SteamId} to user {UserId}", steamId, userId);
-
-                // Re-sign in the user with their original Google credentials
-                // This is necessary because Steam auth replaced the cookie
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(ClaimTypes.Email, user.Email),
-                    new Claim(ClaimTypes.Name, user.DisplayName),
-                    new Claim("GoogleId", user.GoogleSubjectId)
-                };
-
-                var identity = new ClaimsIdentity(claims, "Google");
-                var principal = new ClaimsPrincipal(identity);
-
-                await HttpContext.SignInAsync("Cookies", principal);
-                _logger.LogInformation("Re-signed in user {UserId} after Steam linking", userId);
-
-                return Redirect($"{_frontendUrl}/collection?steam=linked");
             }
             catch (InvalidOperationException ex)
             {

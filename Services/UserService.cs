@@ -47,6 +47,28 @@ namespace BacklogBasement.Services
             return user;
         }
 
+        public async Task<User> GetOrCreateSteamUserAsync(string steamId, string displayName)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.SteamId == steamId);
+
+            if (user != null)
+                return user;
+
+            user = new User
+            {
+                Id = Guid.NewGuid(),
+                GoogleSubjectId = null,
+                SteamId = steamId,
+                Email = string.Empty,
+                DisplayName = displayName,
+                CreatedAt = DateTime.UtcNow
+            };
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+            return user;
+        }
+
         public async Task<User?> GetCurrentUserAsync()
         {
             var userId = GetCurrentUserId();

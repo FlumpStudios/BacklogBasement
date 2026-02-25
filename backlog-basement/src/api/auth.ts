@@ -32,6 +32,11 @@ export const authApi = {
   getLoginUrl: () => `${AUTH_BASE_URL}/auth/login/google`,
 
   /**
+   * Get the Steam OpenID login URL
+   */
+  getSteamLoginUrl: () => `${AUTH_BASE_URL}/auth/login/steam`,
+
+  /**
    * Logout the current user
    */
   logout: async (): Promise<void> => {

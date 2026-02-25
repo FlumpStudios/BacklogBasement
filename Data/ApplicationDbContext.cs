@@ -33,7 +33,8 @@ namespace BacklogBasement.Data
             // Configure User entity
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.GoogleSubjectId)
-                .IsUnique();
+                .IsUnique()
+                .HasFilter("[GoogleSubjectId] IS NOT NULL");
 
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.SteamId)

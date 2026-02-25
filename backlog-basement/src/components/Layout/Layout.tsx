@@ -1,18 +1,34 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth';
 import { ThemeToggle } from '../ThemeToggle';
 import { NotificationBell } from '../NotificationBell';
 import { InboxBell } from '../InboxBell';
 import { CookieBanner } from '../CookieBanner';
+import { SteamImportPrompt } from '../SteamImportPrompt/SteamImportPrompt';
 import { UsernameSetupModal } from '../../features/profile';
 import './Layout.css';
 
 
 export function Layout() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, isLoading, logout } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [onboardingActive, setOnboardingActive] = useState(false);
+  const [showImportPrompt, setShowImportPrompt] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated && !isLoading && !user?.username) {
+      setOnboardingActive(true);
+    }
+  }, [isAuthenticated, isLoading, user?.username]);
+
+  useEffect(() => {
+    if (user?.username && localStorage.getItem('backlog_onboarding') === 'import') {
+      localStorage.removeItem('backlog_onboarding');
+      setShowImportPrompt(true);
+    }
+  }, [user?.username]);
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
@@ -120,7 +136,8 @@ export function Layout() {
       </footer>
 
       <CookieBanner />
-      {isAuthenticated && !user?.username && <UsernameSetupModal />}
+      {onboardingActive && <UsernameSetupModal onComplete={() => setOnboardingActive(false)} />}
+      {showImportPrompt && <SteamImportPrompt onClose={() => setShowImportPrompt(false)} />}
     </div>
   );
 }

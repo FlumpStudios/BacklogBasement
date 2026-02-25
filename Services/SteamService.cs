@@ -110,6 +110,12 @@ namespace BacklogBasement.Services
 
         public async Task<int?> GetMetacriticScoreAsync(long steamAppId)
         {
+            var (score, _) = await GetSteamAppDetailsAsync(steamAppId);
+            return score;
+        }
+
+        public async Task<(int? MetacriticScore, string? Description)> GetSteamAppDetailsAsync(long steamAppId)
+        {
             try
             {
                 var url = $"https://store.steampowered.com/api/appdetails?appids={steamAppId}";
@@ -117,26 +123,34 @@ namespace BacklogBasement.Services
                 var content = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
-                    return null;
+                    return (null, null);
 
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                 using var doc = JsonDocument.Parse(content);
                 var appData = doc.RootElement.GetProperty(steamAppId.ToString());
 
                 if (!appData.GetProperty("success").GetBoolean())
-                    return null;
+                    return (null, null);
 
-                if (appData.GetProperty("data").TryGetProperty("metacritic", out var metacritic))
+                var data = appData.GetProperty("data");
+
+                int? score = null;
+                if (data.TryGetProperty("metacritic", out var metacritic))
+                    score = metacritic.GetProperty("score").GetInt32();
+
+                string? description = null;
+                if (data.TryGetProperty("short_description", out var descProp))
                 {
-                    return metacritic.GetProperty("score").GetInt32();
+                    var raw = descProp.GetString();
+                    if (!string.IsNullOrWhiteSpace(raw))
+                        description = raw;
                 }
 
-                return null;
+                return (score, description);
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to fetch Metacritic score for Steam app {AppId}", steamAppId);
-                return null;
+                _logger.LogWarning(ex, "Failed to fetch Steam app details for app {AppId}", steamAppId);
+                return (null, null);
             }
         }
     }

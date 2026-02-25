@@ -8,6 +8,7 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: () => void;
+  loginWithSteam: () => void;
   logout: () => Promise<void>;
 }
 
@@ -29,6 +30,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     window.location.href = authApi.getLoginUrl();
   };
 
+  const loginWithSteam = () => {
+    window.location.href = authApi.getSteamLoginUrl();
+  };
+
   const logout = async () => {
     await authApi.logout();
     queryClient.setQueryData(AUTH_QUERY_KEY, null);
@@ -40,6 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isLoading,
     isAuthenticated: !!user,
     login,
+    loginWithSteam,
     logout,
   };
 

@@ -34,4 +34,10 @@ namespace BacklogBasement.DTOs
         public string DisplayName { get; set; } = string.Empty;
         public int TotalGames { get; set; }
     }
+
+    public class SteamFriendSuggestionsDto
+    {
+        public bool IsPrivate { get; set; }
+        public List<PlayerSearchResultDto> Suggestions { get; set; } = new();
+    }
 }

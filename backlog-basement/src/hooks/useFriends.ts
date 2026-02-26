@@ -93,3 +93,14 @@ export function usePendingRequests() {
     queryFn: () => friendsApi.getPendingRequests(),
   });
 }
+
+export const STEAM_SUGGESTIONS_QUERY_KEY = ['steam-friend-suggestions'];
+
+export function useSteamFriendSuggestions() {
+  return useQuery({
+    queryKey: STEAM_SUGGESTIONS_QUERY_KEY,
+    queryFn: () => friendsApi.getSteamSuggestions(),
+    enabled: false,
+    retry: false,
+  });
+}

@@ -9,12 +9,12 @@ export function LandingPage() {
     <div className="landing-page">
       <section className="hero">
         <h1 className="hero-title">
-          Your Gaming Backlog,
-          <span className="hero-title-accent">Organized</span>
+          Your Gaming Life,
+          <span className="hero-title-accent">Levelled Up</span>
         </h1>
         <p className="hero-subtitle">
-          Track your game collection, log your playtime, and finally tackle that
-          backlog. Powered by the IGDB database.
+          Manage your backlog, connect with friends, and game together.
+          The social hub for every gamer's collection.
         </p>
         <div className="hero-actions">
           {isAuthenticated ? (
@@ -31,29 +31,26 @@ export function LandingPage() {
 
       <section className="features">
         <div className="feature-card">
-          <span className="feature-icon">🔍</span>
-          <h3 className="feature-title">Discover Games</h3>
-          <p className="feature-description">
-            Search through thousands of games using the IGDB database. Find that
-            hidden gem you've been looking for.
-          </p>
-        </div>
-
-        <div className="feature-card">
           <span className="feature-icon">📚</span>
-          <h3 className="feature-title">Build Your Collection</h3>
+          <h3 className="feature-title">Manage Your Backlog</h3>
           <p className="feature-description">
-            Keep track of all the games you own or want to play. Your personal
-            gaming library, always accessible.
+            Track every game you own, want to play, or have completed. Log playtime, set statuses, and finally make a dent in that pile.
           </p>
         </div>
 
         <div className="feature-card">
-          <span className="feature-icon">⏱️</span>
-          <h3 className="feature-title">Log Playtime</h3>
+          <span className="feature-icon">👥</span>
+          <h3 className="feature-title">Social 1up</h3>
           <p className="feature-description">
-            Record your gaming sessions and see how much time you've invested in
-            each title.
+            Add friends, swap game recommendations, and see what your crew is playing. Gaming is better together.
+          </p>
+        </div>
+
+        <div className="feature-card">
+          <span className="feature-icon">🎲</span>
+          <h3 className="feature-title">Game Clubs</h3>
+          <p className="feature-description">
+            Vote on what to play next, track your progress together, and review games as a group.
           </p>
         </div>
       </section>

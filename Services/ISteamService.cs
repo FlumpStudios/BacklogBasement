@@ -9,6 +9,7 @@ namespace BacklogBasement.Services
         Task<int?> GetGamePlaytimeAsync(string steamId, long steamAppId);
         Task<int?> GetMetacriticScoreAsync(long steamAppId);
         Task<(int? MetacriticScore, string? Description)> GetSteamAppDetailsAsync(long steamAppId);
+        Task<List<string>?> GetSteamFriendsAsync(string steamId);
     }
 
     public class SteamGame
@@ -20,6 +21,21 @@ namespace BacklogBasement.Services
         public string? ImgIconUrl { get; set; }
         public string? ImgLogoUrl { get; set; }
         public string? HeaderUrl { get; set; } // Steam CDN header image (460x215)
+    }
+
+    public class SteamFriendListResponse
+    {
+        public SteamFriendListInner? Friendslist { get; set; }
+    }
+
+    public class SteamFriendListInner
+    {
+        public List<SteamFriendEntry>? Friends { get; set; }
+    }
+
+    public class SteamFriendEntry
+    {
+        public string Steamid { get; set; } = string.Empty;
     }
 
     public class SteamOwnedGamesResponse

@@ -34,8 +34,10 @@ export {
   useRemoveFriend,
   useFriends,
   usePendingRequests,
+  useSteamFriendSuggestions,
   FRIENDS_QUERY_KEY,
   FRIEND_REQUESTS_QUERY_KEY,
+  STEAM_SUGGESTIONS_QUERY_KEY,
 } from './useFriends';
 export {
   useNotifications,

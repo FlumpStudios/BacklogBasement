@@ -174,6 +174,28 @@ namespace BacklogBasement.Controllers
             }
         }
 
+        [HttpGet("steam-suggestions")]
+        public async Task<IActionResult> GetSteamFriendSuggestions()
+        {
+            try
+            {
+                var userId = _userService.GetCurrentUserId();
+                if (userId == null)
+                    return Unauthorized(new { error = "User not found" });
+
+                var result = await _friendshipService.GetSteamFriendSuggestionsAsync(userId.Value);
+                return Ok(result);
+            }
+            catch (BadRequestException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "An error occurred while fetching Steam friend suggestions", details = ex.Message });
+            }
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> RemoveFriend(Guid id)
         {

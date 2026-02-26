@@ -15,15 +15,18 @@ namespace BacklogBasement.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly INotificationService _notificationService;
+        private readonly ISteamService _steamService;
         private readonly ILogger<FriendshipService> _logger;
 
         public FriendshipService(
             ApplicationDbContext context,
             INotificationService notificationService,
+            ISteamService steamService,
             ILogger<FriendshipService> logger)
         {
             _context = context;
             _notificationService = notificationService;
+            _steamService = steamService;
             _logger = logger;
         }
 
@@ -217,6 +220,42 @@ namespace BacklogBasement.Services
                     Direction = f.RequesterId == userId ? "outgoing" : "incoming"
                 })
                 .ToListAsync();
+        }
+
+        public async Task<SteamFriendSuggestionsDto> GetSteamFriendSuggestionsAsync(Guid currentUserId)
+        {
+            var user = await _context.Users.FindAsync(currentUserId);
+            if (user == null || string.IsNullOrEmpty(user.SteamId))
+                throw new BadRequestException("Steam account not linked.");
+
+            var friendSteamIds = await _steamService.GetSteamFriendsAsync(user.SteamId);
+            if (friendSteamIds == null)
+                return new SteamFriendSuggestionsDto { IsPrivate = true };
+
+            if (friendSteamIds.Count == 0)
+                return new SteamFriendSuggestionsDto { IsPrivate = false };
+
+            // Get existing friendship user IDs to exclude
+            var existingFriendshipUserIds = await _context.Friendships
+                .Where(f => f.RequesterId == currentUserId || f.AddresseeId == currentUserId)
+                .Select(f => f.RequesterId == currentUserId ? f.AddresseeId : f.RequesterId)
+                .ToListAsync();
+
+            var suggestions = await _context.Users
+                .Where(u => u.SteamId != null
+                    && friendSteamIds.Contains(u.SteamId)
+                    && u.Id != currentUserId
+                    && !existingFriendshipUserIds.Contains(u.Id))
+                .Select(u => new PlayerSearchResultDto
+                {
+                    UserId = u.Id,
+                    Username = u.Username!,
+                    DisplayName = u.DisplayName,
+                    TotalGames = u.UserGames.Count
+                })
+                .ToListAsync();
+
+            return new SteamFriendSuggestionsDto { IsPrivate = false, Suggestions = suggestions };
         }
     }
 }

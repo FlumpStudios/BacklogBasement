@@ -22,10 +22,11 @@ export function usePublicClubs() {
   });
 }
 
-export function useMyClubs() {
+export function useMyClubs(enabled = true) {
   return useQuery({
     queryKey: MY_CLUBS_QUERY_KEY,
     queryFn: () => gameClubApi.getMyClubs(),
+    enabled,
   });
 }
 

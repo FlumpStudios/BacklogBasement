@@ -128,7 +128,7 @@ namespace BacklogBasement.Controllers
             {
                 id = user.Id.ToString(),
                 email = user.Email ?? string.Empty,
-                name = user.DisplayName,
+                displayName = user.DisplayName,
                 googleId = user.GoogleSubjectId,
                 steamId = user.SteamId,
                 hasSteamLinked = !string.IsNullOrEmpty(user.SteamId),

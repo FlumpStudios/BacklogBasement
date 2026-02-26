@@ -114,6 +114,42 @@ namespace BacklogBasement.Services
             return score;
         }
 
+        public async Task<List<string>?> GetSteamFriendsAsync(string steamId)
+        {
+            try
+            {
+                var url = $"{SteamApiBaseUrl}/ISteamUser/GetFriendList/v0001/" +
+                          $"?key={_apiKey}" +
+                          $"&steamid={steamId}" +
+                          "&relationship=friend";
+
+                _logger.LogInformation("Fetching Steam friends list for Steam ID: {SteamId}", steamId);
+
+                var response = await _httpClient.GetAsync(url);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    _logger.LogWarning("Steam friends list returned {StatusCode} for Steam ID: {SteamId} (profile may be private)", response.StatusCode, steamId);
+                    return null;
+                }
+
+                var content = await response.Content.ReadAsStringAsync();
+
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var result = JsonSerializer.Deserialize<SteamFriendListResponse>(content, options);
+
+                if (result?.Friendslist?.Friends == null)
+                    return null;
+
+                return result.Friendslist.Friends.Select(f => f.Steamid).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to fetch Steam friends for Steam ID: {SteamId}", steamId);
+                return null;
+            }
+        }
+
         public async Task<(int? MetacriticScore, string? Description)> GetSteamAppDetailsAsync(long steamAppId)
         {
             try

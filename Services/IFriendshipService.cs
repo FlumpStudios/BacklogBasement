@@ -15,5 +15,6 @@ namespace BacklogBasement.Services
         Task RemoveFriendAsync(Guid currentUserId, Guid friendshipId);
         Task<List<FriendDto>> GetFriendsAsync(Guid userId);
         Task<List<FriendRequestDto>> GetPendingRequestsAsync(Guid userId);
+        Task<SteamFriendSuggestionsDto> GetSteamFriendSuggestionsAsync(Guid currentUserId);
     }
 }

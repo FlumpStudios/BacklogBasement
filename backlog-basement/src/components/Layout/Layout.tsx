@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth';
+import { useMyClubs } from '../../hooks';
 import { ThemeToggle } from '../ThemeToggle';
 import { NotificationBell } from '../NotificationBell';
 import { InboxBell } from '../InboxBell';
@@ -14,6 +15,14 @@ export function Layout() {
   const { user, isAuthenticated, isLoading, logout } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { data: myClubs } = useMyClubs(isAuthenticated);
+  const hasClubAction = myClubs?.some(c => {
+    const r = c.currentRound;
+    if (!r) return false;
+    return (r.status === 'voting' && !r.userHasVoted) ||
+      (r.status === 'reviewing' && !r.userHasReviewed) ||
+      (r.status === 'nominating' && !r.userHasNominated);
+  }) ?? false;
   const [onboardingActive, setOnboardingActive] = useState(false);
   const [showImportPrompt, setShowImportPrompt] = useState(false);
 
@@ -68,9 +77,12 @@ export function Layout() {
                   <Link to="/friends" className="nav-link" onClick={closeMenu}>
                     Friends
                   </Link>
-                  <Link to="/clubs" className="nav-link" onClick={closeMenu}>
-                    Clubs
-                  </Link>
+                  <span className="nav-link-wrapper">
+                    <Link to="/clubs" className="nav-link" onClick={closeMenu}>
+                      Clubs
+                    </Link>
+                    {hasClubAction && <span className="nav-badge-dot" />}
+                  </span>
                   <div className="user-menu">
                     {user?.avatarUrl && (
                       <img
@@ -79,7 +91,7 @@ export function Layout() {
                         className="user-avatar"
                       />
                     )}
-                    <span className="user-name">{user?.displayName}</span>
+                    <span className="user-name">{user?.username ?? user?.displayName}</span>
                     <button onClick={handleLogout} className="btn btn-secondary btn-sm">
                       Logout
                     </button>

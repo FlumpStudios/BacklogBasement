@@ -109,6 +109,11 @@ export interface PlayerSearchResultDto {
   totalGames: number;
 }
 
+export interface SteamFriendSuggestionsDto {
+  isPrivate: boolean;
+  suggestions: PlayerSearchResultDto[];
+}
+
 // Notification DTOs
 export interface NotificationDto {
   id: string;

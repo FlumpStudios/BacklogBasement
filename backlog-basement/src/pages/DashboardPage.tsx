@@ -1,16 +1,27 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../auth';
-import { useCollection, useUpdateGameStatus } from '../hooks';
+import { useCollection, useUpdateGameStatus, useMyClubs } from '../hooks';
 import { CollectionStats } from '../features/collection';
 import { GameGrid } from '../features/games';
 import { SuggestionsSection } from '../features/suggestions';
 import { EmptyState, useToast } from '../components';
-import { CollectionItemDto } from '../types';
+import { CollectionItemDto, GameClubDto } from '../types';
 import './DashboardPage.css';
+
+function getClubCta(club: GameClubDto) {
+  const r = club.currentRound;
+  if (!r) return null;
+  if (r.status === 'voting' && !r.userHasVoted) return { type: 'vote', label: '🗳️ Vote Now' };
+  if (r.status === 'reviewing' && !r.userHasReviewed) return { type: 'review', label: '✍️ Write Review' };
+  if (r.status === 'nominating' && !r.userHasNominated) return { type: 'nominate', label: '🎮 Nominate a Game' };
+  if (r.status === 'playing') return { type: 'playing', label: r.gameName ?? 'Currently Playing' };
+  return null;
+}
 
 export function DashboardPage() {
   const { user } = useAuth();
   const { data: collection, isLoading } = useCollection();
+  const { data: myClubs } = useMyClubs();
   const updateGameStatus = useUpdateGameStatus();
   const { showToast } = useToast();
 
@@ -68,7 +79,7 @@ export function DashboardPage() {
   return (
     <div className="dashboard-page">
       <header className="dashboard-header">
-        <h1>Welcome back, {user?.displayName?.split(' ')[0] ?? 'Gamer'}!</h1>
+        <h1>Welcome back, {user?.username ?? user?.displayName?.split(' ')[0] ?? 'Gamer'}!</h1>
         <p className="dashboard-subtitle">Here's your gaming overview</p>
       </header>
 
@@ -82,6 +93,36 @@ export function DashboardPage() {
           <CollectionStats collection={collection} basePath="/collection" />
 
           <SuggestionsSection />
+
+          {myClubs && myClubs.length > 0 && (
+            <section className="dashboard-section">
+              <div className="section-header">
+                <h2>Your Clubs</h2>
+                <Link to="/clubs" className="btn btn-secondary btn-sm">
+                  View All Clubs →
+                </Link>
+              </div>
+              <div className="club-dashboard-cards">
+                {myClubs.slice(0, 3).map(club => {
+                  const cta = getClubCta(club);
+                  return (
+                    <Link key={club.id} to={`/clubs/${club.id}`} className="club-dashboard-card">
+                      <span className="club-dashboard-card-name">{club.name}</span>
+                      {cta ? (
+                        <span className={`club-dashboard-card-action club-action-${cta.type}`}>
+                          {cta.label}{cta.type === 'playing' ? ' · Currently Playing' : ''}
+                        </span>
+                      ) : (
+                        <span className="club-dashboard-card-action club-action-view">
+                          View Club →
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
+            </section>
+          )}
 
           {currentlyPlaying.length > 0 && (
             <section className="dashboard-section">

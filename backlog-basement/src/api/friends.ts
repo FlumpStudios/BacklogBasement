@@ -4,6 +4,7 @@ import {
   FriendRequestDto,
   FriendshipStatusDto,
   PlayerSearchResultDto,
+  SteamFriendSuggestionsDto,
 } from '../types';
 
 export const friendsApi = {
@@ -30,4 +31,7 @@ export const friendsApi = {
 
   getPendingRequests: () =>
     api.get<FriendRequestDto[]>('/friends/requests'),
+
+  getSteamSuggestions: () =>
+    api.get<SteamFriendSuggestionsDto>('/friends/steam-suggestions'),
 };

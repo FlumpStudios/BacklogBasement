@@ -95,6 +95,18 @@
   color: var(--color-text-secondary);
 }
 
+.nav-level-badge {
+  display: inline-block;
+  margin-left: var(--spacing-xs);
+  padding: 1px 6px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  vertical-align: middle;
+}
+
 .main {
   flex: 1;
   max-width: var(--max-width);

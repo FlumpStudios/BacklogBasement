@@ -14,11 +14,13 @@ namespace BacklogBasement.Controllers
     {
         private readonly IFriendshipService _friendshipService;
         private readonly IUserService _userService;
+        private readonly IXpService _xpService;
 
-        public FriendshipController(IFriendshipService friendshipService, IUserService userService)
+        public FriendshipController(IFriendshipService friendshipService, IUserService userService, IXpService xpService)
         {
             _friendshipService = friendshipService;
             _userService = userService;
+            _xpService = xpService;
         }
 
         [HttpGet]
@@ -106,6 +108,8 @@ namespace BacklogBasement.Controllers
                     return Unauthorized(new { error = "User not found" });
 
                 var result = await _friendshipService.SendFriendRequestAsync(currentUserId.Value, userId);
+                if (await _xpService.TryGrantAsync(currentUserId.Value, "send_friend_request", "initial", IXpService.XP_SEND_FRIEND_REQUEST))
+                    Response.Headers.Append("X-XP-Awarded", IXpService.XP_SEND_FRIEND_REQUEST.ToString());
                 return Ok(result);
             }
             catch (NotFoundException ex)
@@ -132,6 +136,8 @@ namespace BacklogBasement.Controllers
                     return Unauthorized(new { error = "User not found" });
 
                 await _friendshipService.AcceptFriendRequestAsync(userId.Value, id);
+                if (await _xpService.TryGrantAsync(userId.Value, "accept_friend_request", "initial", IXpService.XP_ACCEPT_FRIEND_REQUEST))
+                    Response.Headers.Append("X-XP-Awarded", IXpService.XP_ACCEPT_FRIEND_REQUEST.ToString());
                 return Ok(new { message = "Friend request accepted" });
             }
             catch (NotFoundException ex)

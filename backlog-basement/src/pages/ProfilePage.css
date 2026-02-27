@@ -44,6 +44,60 @@
   letter-spacing: 0.05em;
 }
 
+.profile-xp-section {
+  margin-bottom: var(--spacing-lg);
+}
+
+.profile-xp-level {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
+}
+
+.profile-xp-level-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+}
+
+.profile-xp-level-name {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.profile-xp-total {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  margin-left: auto;
+}
+
+.profile-xp-bar-track {
+  height: 10px;
+  background: var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-bottom: var(--spacing-xs);
+}
+
+.profile-xp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+  border-radius: var(--radius-sm);
+  transition: width 0.6s ease;
+}
+
+.profile-xp-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
 .profile-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));

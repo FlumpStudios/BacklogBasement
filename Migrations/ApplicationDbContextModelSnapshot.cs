@@ -17,6 +17,80 @@ namespace BacklogBasement.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.1");
 
+            modelBuilder.Entity("BacklogBasement.Models.DailyPoll", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PollDate")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PollDate")
+                        .IsUnique();
+
+                    b.ToTable("DailyPolls");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.DailyPollGame", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("GameId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("PollId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId");
+
+                    b.HasIndex("PollId");
+
+                    b.ToTable("DailyPollGames");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.DailyPollVote", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("PollId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("VotedGameId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("PollId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("DailyPollVotes");
+                });
+
             modelBuilder.Entity("BacklogBasement.Models.DirectMessage", b =>
                 {
                     b.Property<Guid>("Id")
@@ -497,6 +571,9 @@ namespace BacklogBasement.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("XpTotal")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.HasIndex("GoogleSubjectId")
@@ -546,6 +623,77 @@ namespace BacklogBasement.Migrations
                         .IsUnique();
 
                     b.ToTable("UserGames");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.XpGrant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("GrantedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ReferenceId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("XpAwarded")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId", "Reason", "ReferenceId")
+                        .IsUnique();
+
+                    b.ToTable("XpGrants");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.DailyPollGame", b =>
+                {
+                    b.HasOne("BacklogBasement.Models.Game", "Game")
+                        .WithMany()
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BacklogBasement.Models.DailyPoll", "Poll")
+                        .WithMany("Games")
+                        .HasForeignKey("PollId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+
+                    b.Navigation("Poll");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.DailyPollVote", b =>
+                {
+                    b.HasOne("BacklogBasement.Models.DailyPoll", "Poll")
+                        .WithMany("Votes")
+                        .HasForeignKey("PollId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BacklogBasement.Models.User", "User")
+                        .WithMany("PollVotes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Poll");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BacklogBasement.Models.DirectMessage", b =>
@@ -802,6 +950,24 @@ namespace BacklogBasement.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("BacklogBasement.Models.XpGrant", b =>
+                {
+                    b.HasOne("BacklogBasement.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.DailyPoll", b =>
+                {
+                    b.Navigation("Games");
+
+                    b.Navigation("Votes");
+                });
+
             modelBuilder.Entity("BacklogBasement.Models.Game", b =>
                 {
                     b.Navigation("GameClubNominations");
@@ -841,6 +1007,8 @@ namespace BacklogBasement.Migrations
                     b.Navigation("GameClubMemberships");
 
                     b.Navigation("Notifications");
+
+                    b.Navigation("PollVotes");
 
                     b.Navigation("ReceivedClubInvites");
 

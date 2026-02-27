@@ -29,6 +29,14 @@ export async function request<T>(config: AxiosRequestConfig): Promise<T> {
   return response.data;
 }
 
+// Request that also returns the X-XP-Awarded header value
+export async function requestWithXp<T>(config: AxiosRequestConfig): Promise<{ data: T; xpAwarded: number }> {
+  const response = await apiClient.request<T>(config);
+  const raw = response.headers['x-xp-awarded'];
+  const xpAwarded = raw ? parseInt(raw, 10) : 0;
+  return { data: response.data, xpAwarded: isNaN(xpAwarded) ? 0 : xpAwarded };
+}
+
 // Convenience methods
 export const api = {
   get: <T>(url: string, config?: AxiosRequestConfig) =>
@@ -37,11 +45,17 @@ export const api = {
   post: <T>(url: string, data?: unknown, config?: AxiosRequestConfig) =>
     request<T>({ ...config, method: 'POST', url, data }),
 
+  postWithXp: <T>(url: string, data?: unknown, config?: AxiosRequestConfig) =>
+    requestWithXp<T>({ ...config, method: 'POST', url, data }),
+
   put: <T>(url: string, data?: unknown, config?: AxiosRequestConfig) =>
     request<T>({ ...config, method: 'PUT', url, data }),
 
   patch: <T>(url: string, data?: unknown, config?: AxiosRequestConfig) =>
     request<T>({ ...config, method: 'PATCH', url, data }),
+
+  patchWithXp: <T>(url: string, data?: unknown, config?: AxiosRequestConfig) =>
+    requestWithXp<T>({ ...config, method: 'PATCH', url, data }),
 
   delete: <T>(url: string, config?: AxiosRequestConfig) =>
     request<T>({ ...config, method: 'DELETE', url }),

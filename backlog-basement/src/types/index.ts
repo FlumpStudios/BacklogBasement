@@ -47,6 +47,20 @@ export interface CreatePlaySessionDto {
   datePlayed: string;
 }
 
+// XP / Level DTOs
+export interface XpInfoDto {
+  level: number;
+  levelName: string;
+  nextLevelName: string;
+  xpTotal: number;
+  xpForCurrentLevel: number;
+  xpForNextLevel: number;
+  xpIntoCurrentLevel: number;
+  xpNeededForNextLevel: number;
+  progressPercent: number;
+  isMaxLevel: boolean;
+}
+
 // User DTOs
 export interface UserDto {
   id: string;
@@ -56,6 +70,7 @@ export interface UserDto {
   steamId?: string | null;
   hasSteamLinked?: boolean;
   username?: string | null;
+  xpInfo?: XpInfoDto;
 }
 
 // Profile DTOs
@@ -69,6 +84,7 @@ export interface ProfileDto {
   backlog: CollectionItemDto[];
   collection: CollectionItemDto[];
   friends: FriendDto[];
+  xpInfo: XpInfoDto;
 }
 
 export interface ProfileStatsDto {
@@ -363,6 +379,28 @@ export interface SendMessageRequest {
 
 export interface UnreadMessageCountDto {
   count: number;
+}
+
+// Daily Poll DTOs
+export interface DailyPollGameDto {
+  gameId: string;
+  name: string;
+  coverUrl?: string | null;
+}
+
+export interface PollResultDto {
+  gameId: string;
+  voteCount: number;
+  percentage: number;
+}
+
+export interface DailyPollDto {
+  pollId: string;
+  date: string;
+  category: string;
+  games: DailyPollGameDto[];
+  userVotedGameId?: string | null;
+  results?: PollResultDto[] | null;
 }
 
 // API Response types

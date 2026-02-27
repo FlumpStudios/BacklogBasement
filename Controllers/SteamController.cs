@@ -12,11 +12,13 @@ namespace BacklogBasement.Controllers
     {
         private readonly ISteamImportService _steamImportService;
         private readonly IUserService _userService;
+        private readonly IXpService _xpService;
 
-        public SteamController(ISteamImportService steamImportService, IUserService userService)
+        public SteamController(ISteamImportService steamImportService, IUserService userService, IXpService xpService)
         {
             _steamImportService = steamImportService;
             _userService = userService;
+            _xpService = xpService;
         }
 
         [HttpGet("status")]
@@ -40,6 +42,8 @@ namespace BacklogBasement.Controllers
             try
             {
                 var result = await _steamImportService.ImportLibraryAsync(userId.Value, request.IncludePlaytime);
+                if (await _xpService.TryGrantAsync(userId.Value, "steam_import", "initial", IXpService.XP_STEAM_IMPORT))
+                    Response.Headers.Append("X-XP-Awarded", IXpService.XP_STEAM_IMPORT.ToString());
                 return Ok(result);
             }
             catch (InvalidOperationException ex)

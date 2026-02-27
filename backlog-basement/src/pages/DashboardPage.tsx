@@ -4,7 +4,7 @@ import { useCollection, useUpdateGameStatus, useMyClubs } from '../hooks';
 import { CollectionStats } from '../features/collection';
 import { GameGrid } from '../features/games';
 import { SuggestionsSection } from '../features/suggestions';
-import { EmptyState, useToast } from '../components';
+import { EmptyState, useToast, DailyPoll } from '../components';
 import { CollectionItemDto, GameClubDto } from '../types';
 import './DashboardPage.css';
 
@@ -82,6 +82,8 @@ export function DashboardPage() {
         <h1>Welcome back, {user?.username ?? user?.displayName?.split(' ')[0] ?? 'Gamer'}!</h1>
         <p className="dashboard-subtitle">Here's your gaming overview</p>
       </header>
+
+      <DailyPoll />
 
       {isLoading ? (
         <div className="loading-container">

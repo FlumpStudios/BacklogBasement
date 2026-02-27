@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { gameClubApi } from '../api';
+import { useToast } from '../components';
 import {
   CreateGameClubRequest,
   StartRoundRequest,
@@ -73,11 +74,13 @@ export function useClubReviewsForGame(gameId: string | undefined) {
 
 export function useCreateClub() {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: (request: CreateGameClubRequest) => gameClubApi.createClub(request),
-    onSuccess: () => {
+    onSuccess: ({ xpAwarded }) => {
       queryClient.invalidateQueries({ queryKey: MY_CLUBS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: PUBLIC_CLUBS_QUERY_KEY });
+      if (xpAwarded > 0) showToast(`+${xpAwarded} XP`, 'success');
     },
   });
 }
@@ -160,22 +163,26 @@ export function useAdvanceRound(clubId: string) {
 
 export function useNominateGame(clubId: string) {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: ({ roundId, gameId }: { roundId: string; gameId: string }) =>
       gameClubApi.nominateGame(clubId, roundId, gameId),
-    onSuccess: () => {
+    onSuccess: ({ xpAwarded }) => {
       queryClient.invalidateQueries({ queryKey: CLUB_DETAIL_QUERY_KEY(clubId) });
+      if (xpAwarded > 0) showToast(`+${xpAwarded} XP`, 'success');
     },
   });
 }
 
 export function useVote(clubId: string) {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: ({ roundId, nominationId }: { roundId: string; nominationId: string }) =>
       gameClubApi.vote(clubId, roundId, nominationId),
-    onSuccess: () => {
+    onSuccess: ({ xpAwarded }) => {
       queryClient.invalidateQueries({ queryKey: CLUB_DETAIL_QUERY_KEY(clubId) });
+      if (xpAwarded > 0) showToast(`+${xpAwarded} XP`, 'success');
     },
   });
 }
@@ -193,12 +200,14 @@ export function useDeleteClub() {
 
 export function useSubmitReview(clubId: string) {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: ({ roundId, request }: { roundId: string; request: SubmitReviewRequest }) =>
       gameClubApi.submitReview(clubId, roundId, request),
-    onSuccess: (_, { roundId }) => {
+    onSuccess: ({ xpAwarded }, { roundId }) => {
       queryClient.invalidateQueries({ queryKey: CLUB_DETAIL_QUERY_KEY(clubId) });
       queryClient.invalidateQueries({ queryKey: ROUND_REVIEWS_QUERY_KEY(roundId) });
+      if (xpAwarded > 0) showToast(`+${xpAwarded} XP`, 'success');
     },
   });
 }

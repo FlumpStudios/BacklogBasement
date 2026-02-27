@@ -15,10 +15,10 @@ export const friendsApi = {
     api.get<FriendshipStatusDto>(`/friends/status/${userId}`),
 
   sendRequest: (userId: string) =>
-    api.post<FriendRequestDto>(`/friends/request/${userId}`),
+    api.postWithXp<FriendRequestDto>(`/friends/request/${userId}`),
 
   acceptRequest: (id: string) =>
-    api.post<{ message: string }>(`/friends/${id}/accept`),
+    api.postWithXp<{ message: string }>(`/friends/${id}/accept`),
 
   declineRequest: (id: string) =>
     api.post<{ message: string }>(`/friends/${id}/decline`),

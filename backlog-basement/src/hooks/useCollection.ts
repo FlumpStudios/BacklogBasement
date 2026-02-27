@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { collectionApi } from '../api';
+import { useToast } from '../components';
 import { CreatePlaySessionDto, GameStatus } from '../types';
 
 export const COLLECTION_QUERY_KEY = ['collection'];
@@ -13,11 +14,13 @@ export function useCollection() {
 
 export function useAddToCollection() {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
 
   return useMutation({
     mutationFn: (gameId: string) => collectionApi.addGame(gameId),
-    onSuccess: () => {
+    onSuccess: ({ xpAwarded }) => {
       queryClient.invalidateQueries({ queryKey: COLLECTION_QUERY_KEY });
+      if (xpAwarded > 0) showToast(`+${xpAwarded} XP`, 'success');
     },
   });
 }
@@ -43,16 +46,18 @@ export function usePlaySessions(gameId: string) {
 
 export function useAddPlaySession(gameId: string) {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
 
   return useMutation({
     mutationFn: (session: CreatePlaySessionDto) =>
       collectionApi.addPlaySession(gameId, session),
-    onSuccess: () => {
+    onSuccess: ({ xpAwarded }) => {
       queryClient.invalidateQueries({
         queryKey: [...COLLECTION_QUERY_KEY, gameId, 'play-sessions'],
       });
       queryClient.invalidateQueries({ queryKey: COLLECTION_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: ['games', gameId] });
+      if (xpAwarded > 0) showToast(`+${xpAwarded} XP`, 'success');
     },
   });
 }
@@ -74,12 +79,14 @@ export function useDeletePlaySession(gameId: string) {
 
 export function useUpdateGameStatus() {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
 
   return useMutation({
     mutationFn: ({ gameId, status }: { gameId: string; status: GameStatus }) =>
       collectionApi.updateStatus(gameId, status),
-    onSuccess: () => {
+    onSuccess: ({ xpAwarded }) => {
       queryClient.invalidateQueries({ queryKey: COLLECTION_QUERY_KEY });
+      if (xpAwarded > 0) showToast(`+${xpAwarded} XP`, 'success');
     },
   });
 }

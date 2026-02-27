@@ -28,9 +28,11 @@ export const steamApi = {
   /**
    * Import Steam library
    */
-  importLibrary: async (request: SteamImportRequest): Promise<SteamImportResult> => {
+  importLibrary: async (request: SteamImportRequest): Promise<{ data: SteamImportResult; xpAwarded: number }> => {
     const response = await apiClient.post<SteamImportResult>('/steam/import', request);
-    return response.data;
+    const raw = response.headers['x-xp-awarded'];
+    const xpAwarded = raw ? parseInt(raw, 10) : 0;
+    return { data: response.data, xpAwarded: isNaN(xpAwarded) ? 0 : xpAwarded };
   },
 
   /**

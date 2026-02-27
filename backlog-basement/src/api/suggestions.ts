@@ -3,7 +3,7 @@ import { GameSuggestionDto, SendGameSuggestionRequest } from '../types';
 
 export const suggestionsApi = {
   send: (request: SendGameSuggestionRequest) =>
-    api.post<GameSuggestionDto>('/suggestions', request),
+    api.postWithXp<GameSuggestionDto>('/suggestions', request),
 
   getReceived: () =>
     api.get<GameSuggestionDto[]>('/suggestions'),

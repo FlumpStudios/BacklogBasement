@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { friendsApi } from '../api';
+import { useToast } from '../components';
 import { useDebounce } from './useDebounce';
 
 export const FRIENDS_QUERY_KEY = ['friends'];
@@ -26,29 +27,33 @@ export function useFriendshipStatus(userId: string | undefined) {
 
 export function useSendFriendRequest() {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
 
   return useMutation({
     mutationFn: (userId: string) => friendsApi.sendRequest(userId),
-    onSuccess: () => {
+    onSuccess: ({ xpAwarded }) => {
       queryClient.invalidateQueries({ queryKey: FRIENDS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: FRIEND_REQUESTS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: NOTIFICATIONS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: ['friendship-status'] });
+      if (xpAwarded > 0) showToast(`+${xpAwarded} XP`, 'success');
     },
   });
 }
 
 export function useAcceptFriendRequest() {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
 
   return useMutation({
     mutationFn: (id: string) => friendsApi.acceptRequest(id),
-    onSuccess: () => {
+    onSuccess: ({ xpAwarded }) => {
       queryClient.invalidateQueries({ queryKey: FRIENDS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: FRIEND_REQUESTS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: NOTIFICATIONS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: ['friendship-status'] });
       queryClient.invalidateQueries({ queryKey: ['profile'] });
+      if (xpAwarded > 0) showToast(`+${xpAwarded} XP`, 'success');
     },
   });
 }

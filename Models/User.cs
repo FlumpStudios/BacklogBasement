@@ -12,6 +12,7 @@ namespace BacklogBasement.Models
         public string Email { get; set; } = string.Empty;
         public string DisplayName { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
+        public int XpTotal { get; set; }
 
         // Navigation properties
         public ICollection<UserGame> UserGames { get; set; } = new List<UserGame>();
@@ -25,5 +26,6 @@ namespace BacklogBasement.Models
         public ICollection<GameClubInvite> ReceivedClubInvites { get; set; } = new List<GameClubInvite>();
         public ICollection<DirectMessage> SentMessages { get; set; } = new List<DirectMessage>();
         public ICollection<DirectMessage> ReceivedMessages { get; set; } = new List<DirectMessage>();
+        public ICollection<DailyPollVote> PollVotes { get; set; } = new List<DailyPollVote>();
     }
 }

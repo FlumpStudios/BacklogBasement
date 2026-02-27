@@ -1,6 +1,7 @@
-import { createContext, useContext, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useRef, ReactNode } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { authApi } from '../api';
+import { useToast } from '../components';
 import { UserDto } from '../types';
 
 interface AuthContextType {
@@ -18,13 +19,24 @@ export const AUTH_QUERY_KEY = ['auth', 'user'];
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  const shownLoginXpToast = useRef(false);
 
-  const { data: user, isLoading } = useQuery({
+  const { data: authResult, isLoading } = useQuery({
     queryKey: AUTH_QUERY_KEY,
     queryFn: authApi.getCurrentUser,
     retry: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
+
+  const user = authResult?.data ?? null;
+
+  useEffect(() => {
+    if (authResult?.xpAwarded && authResult.xpAwarded > 0 && !shownLoginXpToast.current) {
+      shownLoginXpToast.current = true;
+      showToast(`+${authResult.xpAwarded} XP — Daily login!`, 'success');
+    }
+  }, [authResult?.xpAwarded]);
 
   const login = () => {
     window.location.href = authApi.getLoginUrl();
@@ -41,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const value: AuthContextType = {
-    user: user ?? null,
+    user,
     isLoading,
     isAuthenticated: !!user,
     login,

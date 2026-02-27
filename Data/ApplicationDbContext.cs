@@ -25,6 +25,10 @@ namespace BacklogBasement.Data
         public DbSet<GameClubReview> GameClubReviews { get; set; } = null!;
         public DbSet<GameClubInvite> GameClubInvites { get; set; } = null!;
         public DbSet<DirectMessage> DirectMessages { get; set; } = null!;
+        public DbSet<XpGrant> XpGrants { get; set; } = null!;
+        public DbSet<DailyPoll> DailyPolls { get; set; } = null!;
+        public DbSet<DailyPollGame> DailyPollGames { get; set; } = null!;
+        public DbSet<DailyPollVote> DailyPollVotes { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -271,6 +275,55 @@ namespace BacklogBasement.Data
 
             modelBuilder.Entity<DirectMessage>()
                 .HasIndex(dm => new { dm.RecipientId, dm.IsRead });
+
+            // Configure XpGrant entity
+            modelBuilder.Entity<XpGrant>()
+                .HasOne(xg => xg.User)
+                .WithMany()
+                .HasForeignKey(xg => xg.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<XpGrant>()
+                .HasIndex(xg => new { xg.UserId, xg.Reason, xg.ReferenceId })
+                .IsUnique();
+
+            modelBuilder.Entity<XpGrant>()
+                .HasIndex(xg => xg.UserId);
+
+            // Configure DailyPoll entity
+            modelBuilder.Entity<DailyPoll>()
+                .HasIndex(dp => dp.PollDate)
+                .IsUnique();
+
+            // Configure DailyPollGame entity
+            modelBuilder.Entity<DailyPollGame>()
+                .HasOne(dpg => dpg.Poll)
+                .WithMany(dp => dp.Games)
+                .HasForeignKey(dpg => dpg.PollId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<DailyPollGame>()
+                .HasOne(dpg => dpg.Game)
+                .WithMany()
+                .HasForeignKey(dpg => dpg.GameId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configure DailyPollVote entity
+            modelBuilder.Entity<DailyPollVote>()
+                .HasIndex(dpv => new { dpv.PollId, dpv.UserId })
+                .IsUnique();
+
+            modelBuilder.Entity<DailyPollVote>()
+                .HasOne(dpv => dpv.Poll)
+                .WithMany(dp => dp.Votes)
+                .HasForeignKey(dpv => dpv.PollId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<DailyPollVote>()
+                .HasOne(dpv => dpv.User)
+                .WithMany(u => u.PollVotes)
+                .HasForeignKey(dpv => dpv.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

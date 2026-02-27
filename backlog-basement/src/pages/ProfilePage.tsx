@@ -81,6 +81,28 @@ export function ProfilePage() {
         )}
       </header>
 
+      {profile.xpInfo && (
+        <div className="profile-xp-section">
+          <div className="profile-xp-level">
+            <span className="profile-xp-level-badge">Level {profile.xpInfo.level}</span>
+            <span className="profile-xp-level-name">{profile.xpInfo.levelName}</span>
+            <span className="profile-xp-total">{profile.xpInfo.xpTotal.toLocaleString()} XP</span>
+          </div>
+          <div className="profile-xp-bar-track">
+            <div className="profile-xp-bar-fill" style={{ width: `${profile.xpInfo.progressPercent}%` }} />
+          </div>
+          <div className="profile-xp-bar-labels">
+            {profile.xpInfo.isMaxLevel
+              ? <span>Maximum level reached</span>
+              : <>
+                  <span>{profile.xpInfo.xpIntoCurrentLevel} / {profile.xpInfo.xpNeededForNextLevel} XP</span>
+                  <span>Next: {profile.xpInfo.nextLevelName}</span>
+                </>
+            }
+          </div>
+        </div>
+      )}
+
       <div className="profile-stats">
         <div className="stat-card">
           <span className="stat-value">{profile.stats.totalGames}</span>

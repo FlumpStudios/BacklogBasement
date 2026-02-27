@@ -17,12 +17,14 @@ namespace BacklogBasement.Controllers
         private readonly IPlaySessionService _playSessionService;
         private readonly IUserService _userService;
         private readonly ICollectionService _collectionService;
+        private readonly IXpService _xpService;
 
-        public PlaySessionsController(IPlaySessionService playSessionService, IUserService userService, ICollectionService collectionService)
+        public PlaySessionsController(IPlaySessionService playSessionService, IUserService userService, ICollectionService collectionService, IXpService xpService)
         {
             _playSessionService = playSessionService;
             _userService = userService;
             _collectionService = collectionService;
+            _xpService = xpService;
         }
 
         [HttpGet]
@@ -79,6 +81,8 @@ namespace BacklogBasement.Controllers
                 }
 
                 var result = await _playSessionService.AddPlaySessionAsync(userId.Value, gameId, request);
+                if (await _xpService.TryGrantAsync(userId.Value, "first_session", gameId.ToString(), IXpService.XP_FIRST_SESSION))
+                    Response.Headers.Append("X-XP-Awarded", IXpService.XP_FIRST_SESSION.ToString());
                 return Ok(result);
             }
             catch (NotFoundException ex)

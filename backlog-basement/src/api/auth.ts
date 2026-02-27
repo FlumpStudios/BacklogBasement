@@ -20,9 +20,11 @@ export const authApi = {
   /**
    * Get the current authenticated user
    */
-  getCurrentUser: async (): Promise<UserDto> => {
+  getCurrentUser: async (): Promise<{ data: UserDto; xpAwarded: number }> => {
     const response = await authClient.get<UserDto>('/auth/me');
-    return response.data;
+    const raw = response.headers['x-xp-awarded'];
+    const xpAwarded = raw ? parseInt(raw, 10) : 0;
+    return { data: response.data, xpAwarded: isNaN(xpAwarded) ? 0 : xpAwarded };
   },
 
   /**

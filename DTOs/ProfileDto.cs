@@ -14,6 +14,7 @@ namespace BacklogBasement.DTOs
         public List<CollectionItemDto> Backlog { get; set; } = new();
         public List<CollectionItemDto> Collection { get; set; } = new();
         public List<FriendDto> Friends { get; set; } = new();
+        public XpInfoDto XpInfo { get; set; } = new();
     }
 
     public class ProfileStatsDto

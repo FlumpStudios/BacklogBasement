@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { steamApi } from '../api';
+import { useToast } from '../components';
 import { SteamImportRequest } from '../types';
 import { COLLECTION_QUERY_KEY } from './useCollection';
 
@@ -35,12 +36,13 @@ export function useSteamUnlink() {
 
 export function useSteamImport() {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
 
   return useMutation({
     mutationFn: (request: SteamImportRequest) => steamApi.importLibrary(request),
-    onSuccess: () => {
-      // Invalidate collection to show newly imported games
+    onSuccess: ({ xpAwarded }) => {
       queryClient.invalidateQueries({ queryKey: COLLECTION_QUERY_KEY });
+      if (xpAwarded > 0) showToast(`+${xpAwarded} XP — Steam library imported!`, 'success');
     },
   });
 }

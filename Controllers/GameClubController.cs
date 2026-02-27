@@ -15,11 +15,13 @@ namespace BacklogBasement.Controllers
     {
         private readonly IGameClubService _clubService;
         private readonly IUserService _userService;
+        private readonly IXpService _xpService;
 
-        public GameClubController(IGameClubService clubService, IUserService userService)
+        public GameClubController(IGameClubService clubService, IUserService userService, IXpService xpService)
         {
             _clubService = clubService;
             _userService = userService;
+            _xpService = xpService;
         }
 
         [HttpGet]
@@ -62,6 +64,8 @@ namespace BacklogBasement.Controllers
             try
             {
                 var club = await _clubService.CreateClubAsync(userId.Value, request);
+                if (await _xpService.TryGrantAsync(userId.Value, "create_club", "initial", IXpService.XP_CREATE_CLUB))
+                    Response.Headers.Append("X-XP-Awarded", IXpService.XP_CREATE_CLUB.ToString());
                 return Ok(club);
             }
             catch (BadRequestException ex)
@@ -350,6 +354,8 @@ namespace BacklogBasement.Controllers
             try
             {
                 var nomination = await _clubService.NominateGameAsync(userId.Value, roundId, request.GameId);
+                if (await _xpService.TryGrantAsync(userId.Value, "club_nominate", nomination.Id.ToString(), IXpService.XP_CLUB_NOMINATE))
+                    Response.Headers.Append("X-XP-Awarded", IXpService.XP_CLUB_NOMINATE.ToString());
                 return Ok(nomination);
             }
             catch (BadRequestException ex)
@@ -375,6 +381,8 @@ namespace BacklogBasement.Controllers
             try
             {
                 var vote = await _clubService.VoteAsync(userId.Value, roundId, request.NominationId);
+                if (await _xpService.TryGrantAsync(userId.Value, "club_vote", vote.Id.ToString(), IXpService.XP_CLUB_VOTE))
+                    Response.Headers.Append("X-XP-Awarded", IXpService.XP_CLUB_VOTE.ToString());
                 return Ok(vote);
             }
             catch (BadRequestException ex)
@@ -400,6 +408,8 @@ namespace BacklogBasement.Controllers
             try
             {
                 var review = await _clubService.SubmitReviewAsync(userId.Value, roundId, request);
+                if (await _xpService.TryGrantAsync(userId.Value, "club_review", Guid.NewGuid().ToString(), IXpService.XP_CLUB_REVIEW))
+                    Response.Headers.Append("X-XP-Awarded", IXpService.XP_CLUB_REVIEW.ToString());
                 return Ok(review);
             }
             catch (BadRequestException ex)

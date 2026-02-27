@@ -16,11 +16,13 @@ namespace BacklogBasement.Controllers
     {
         private readonly ICollectionService _collectionService;
         private readonly IUserService _userService;
+        private readonly IXpService _xpService;
 
-        public CollectionController(ICollectionService collectionService, IUserService userService)
+        public CollectionController(ICollectionService collectionService, IUserService userService, IXpService xpService)
         {
             _collectionService = collectionService;
             _userService = userService;
+            _xpService = xpService;
         }
 
         [HttpGet]
@@ -73,6 +75,13 @@ namespace BacklogBasement.Controllers
                 }
 
                 var result = await _collectionService.AddGameToCollectionAsync(userId.Value, request);
+                var xpAwarded = 0;
+                if (await _xpService.TryGrantAsync(userId.Value, "add_game", gameId.ToString(), IXpService.XP_ADD_GAME))
+                    xpAwarded += IXpService.XP_ADD_GAME;
+                if (result.Status == "backlog" && await _xpService.TryGrantAsync(userId.Value, "add_to_backlog", "initial", IXpService.XP_ADD_TO_BACKLOG))
+                    xpAwarded += IXpService.XP_ADD_TO_BACKLOG;
+                if (xpAwarded > 0)
+                    Response.Headers.Append("X-XP-Awarded", xpAwarded.ToString());
                 return Ok(result);
             }
             catch (NotFoundException ex)
@@ -126,6 +135,13 @@ namespace BacklogBasement.Controllers
                 }
 
                 var result = await _collectionService.UpdateGameStatusAsync(userId.Value, gameId, request.Status);
+                var xpAwarded = 0;
+                if (request.Status == "completed" && await _xpService.TryGrantAsync(userId.Value, "complete_game", gameId.ToString(), IXpService.XP_COMPLETE_GAME))
+                    xpAwarded += IXpService.XP_COMPLETE_GAME;
+                if (request.Status == "backlog" && await _xpService.TryGrantAsync(userId.Value, "add_to_backlog", "initial", IXpService.XP_ADD_TO_BACKLOG))
+                    xpAwarded += IXpService.XP_ADD_TO_BACKLOG;
+                if (xpAwarded > 0)
+                    Response.Headers.Append("X-XP-Awarded", xpAwarded.ToString());
                 return Ok(result);
             }
             catch (NotFoundException ex)

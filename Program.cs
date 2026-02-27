@@ -29,7 +29,8 @@ public class Program
                 policy.WithOrigins(frontendUrl)
                       .AllowAnyHeader()
                       .AllowAnyMethod()
-                      .AllowCredentials(); // Important for cookies/authentication
+                      .AllowCredentials() // Important for cookies/authentication
+                      .WithExposedHeaders("X-XP-Awarded");
             });
         });
 
@@ -56,6 +57,8 @@ public class Program
         builder.Services.AddScoped<IGameSuggestionService, GameSuggestionService>();
         builder.Services.AddScoped<IGameClubService, GameClubService>();
         builder.Services.AddScoped<IMessageService, MessageService>();
+        builder.Services.AddScoped<IXpService, XpService>();
+        builder.Services.AddScoped<IDailyPollService, DailyPollService>();
         builder.Services.AddSingleton<IProfanityService, ProfanityService>();
 
         // Configure cookie authentication

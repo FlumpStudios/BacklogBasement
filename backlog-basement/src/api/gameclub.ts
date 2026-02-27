@@ -25,7 +25,7 @@ export const gameClubApi = {
     api.get<GameClubDetailDto>(`/clubs/${clubId}`),
 
   createClub: (request: CreateGameClubRequest) =>
-    api.post<GameClubDetailDto>('/clubs', request),
+    api.postWithXp<GameClubDetailDto>('/clubs', request),
 
   joinClub: (clubId: string) =>
     api.post<{ message: string }>(`/clubs/${clubId}/join`),
@@ -55,16 +55,16 @@ export const gameClubApi = {
     api.post<GameClubRoundDto>(`/clubs/${clubId}/rounds/${roundId}/advance`),
 
   nominateGame: (clubId: string, roundId: string, gameId: string) =>
-    api.post<GameClubNominationDto>(`/clubs/${clubId}/rounds/${roundId}/nominate`, { gameId }),
+    api.postWithXp<GameClubNominationDto>(`/clubs/${clubId}/rounds/${roundId}/nominate`, { gameId }),
 
   vote: (clubId: string, roundId: string, nominationId: string) =>
-    api.post<{ id: string; nominationId: string; createdAt: string }>(
+    api.postWithXp<{ id: string; nominationId: string; createdAt: string }>(
       `/clubs/${clubId}/rounds/${roundId}/vote`,
       { nominationId }
     ),
 
   submitReview: (clubId: string, roundId: string, request: SubmitReviewRequest) =>
-    api.post<GameClubReviewDto>(`/clubs/${clubId}/rounds/${roundId}/review`, request),
+    api.postWithXp<GameClubReviewDto>(`/clubs/${clubId}/rounds/${roundId}/review`, request),
 
   getRoundReviews: (clubId: string, roundId: string) =>
     api.get<GameClubReviewDto[]>(`/clubs/${clubId}/rounds/${roundId}/reviews`),

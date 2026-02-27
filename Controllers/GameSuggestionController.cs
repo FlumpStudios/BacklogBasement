@@ -15,11 +15,13 @@ namespace BacklogBasement.Controllers
     {
         private readonly IGameSuggestionService _suggestionService;
         private readonly IUserService _userService;
+        private readonly IXpService _xpService;
 
-        public GameSuggestionController(IGameSuggestionService suggestionService, IUserService userService)
+        public GameSuggestionController(IGameSuggestionService suggestionService, IUserService userService, IXpService xpService)
         {
             _suggestionService = suggestionService;
             _userService = userService;
+            _xpService = xpService;
         }
 
         [HttpPost]
@@ -32,6 +34,8 @@ namespace BacklogBasement.Controllers
                     return Unauthorized(new { error = "User not found" });
 
                 var result = await _suggestionService.SendSuggestionAsync(userId.Value, request);
+                if (await _xpService.TryGrantAsync(userId.Value, "send_suggestion", "initial", IXpService.XP_SEND_SUGGESTION))
+                    Response.Headers.Append("X-XP-Awarded", IXpService.XP_SEND_SUGGESTION.ToString());
                 return Ok(result);
             }
             catch (NotFoundException ex)

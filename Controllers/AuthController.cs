@@ -1,3 +1,4 @@
+using System;
 using AspNet.Security.OpenId.Steam;
 using BacklogBasement.Models;
 using BacklogBasement.Services;
@@ -17,12 +18,14 @@ namespace BacklogBasement.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IXpService _xpService;
         private readonly ILogger<AuthController> _logger;
         private readonly string _frontendUrl;
 
-        public AuthController(IUserService userService, ILogger<AuthController> logger, IConfiguration configuration)
+        public AuthController(IUserService userService, IXpService xpService, ILogger<AuthController> logger, IConfiguration configuration)
         {
             _userService = userService;
+            _xpService = xpService;
             _logger = logger;
             _frontendUrl = configuration["FrontendUrl"]?.TrimEnd('/') ?? "http://localhost:5173";
         }
@@ -124,6 +127,10 @@ namespace BacklogBasement.Controllers
             if (user == null)
                 return Forbid();
 
+            var today = DateTime.UtcNow.ToString("yyyy-MM-dd");
+            if (await _xpService.TryGrantAsync(user.Id, "daily_login", today, IXpService.XP_DAILY_LOGIN))
+                Response.Headers.Append("X-XP-Awarded", IXpService.XP_DAILY_LOGIN.ToString());
+
             return Ok(new
             {
                 id = user.Id.ToString(),
@@ -132,7 +139,8 @@ namespace BacklogBasement.Controllers
                 googleId = user.GoogleSubjectId,
                 steamId = user.SteamId,
                 hasSteamLinked = !string.IsNullOrEmpty(user.SteamId),
-                username = user.Username
+                username = user.Username,
+                xpInfo = _xpService.ComputeLevel(user.XpTotal)
             });
         }
 

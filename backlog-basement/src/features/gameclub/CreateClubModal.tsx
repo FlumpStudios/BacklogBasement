@@ -44,7 +44,7 @@ export function CreateClubModal({ isOpen, onClose, onCreated }: CreateClubModalP
     if (!name.trim() || hasErrors) return;
 
     try {
-      const club = await createClub.mutateAsync({
+      const { data: club } = await createClub.mutateAsync({
         name: name.trim(),
         description: description.trim() || undefined,
         isPublic,

@@ -32,8 +32,8 @@ export function SteamSection() {
 
   const handleImport = async () => {
     setImportResult(null);
-    const result = await importMutation.mutateAsync({ includePlaytime });
-    setImportResult(result);
+    const { data } = await importMutation.mutateAsync({ includePlaytime });
+    setImportResult(data);
   };
 
   const handleSyncAllPlaytime = async () => {

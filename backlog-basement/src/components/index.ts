@@ -12,3 +12,4 @@ export { NotificationBell } from './NotificationBell';
 export { FriendButton } from './FriendButton';
 export { InboxBell } from './InboxBell';
 export { SteamImportPrompt } from './SteamImportPrompt/SteamImportPrompt';
+export { DailyPoll } from './DailyPoll/DailyPoll';

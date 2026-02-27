@@ -1,6 +1,11 @@
 import { api } from './client';
 import { CollectionItemDto, CreatePlaySessionDto, GameStatus } from '../types';
 
+export interface WithXp<T> {
+  data: T;
+  xpAwarded: number;
+}
+
 export const collectionApi = {
   /**
    * Get all games in the user's collection
@@ -11,7 +16,7 @@ export const collectionApi = {
    * Add a game to the user's collection
    */
   addGame: (gameId: string) =>
-    api.post<CollectionItemDto>(`/collection/${gameId}`, {}),
+    api.postWithXp<CollectionItemDto>(`/collection/${gameId}`, {}),
 
   /**
    * Remove a game from the user's collection
@@ -42,16 +47,19 @@ export const collectionApi = {
       durationMinutes: session.durationMinutes,
       playedAt: new Date(session.datePlayed) // Map datePlayed to playedAt
     };
-    
-    const response = await api.post<any>(`/collection/${gameId}/play-sessions`, backendSession);
-    
+
+    const result = await api.postWithXp<any>(`/collection/${gameId}/play-sessions`, backendSession);
+
     // Transform backend response to match frontend types
     return {
-      id: response.id,
-      collectionItemId: response.userGameId,
-      durationMinutes: response.durationMinutes,
-      datePlayed: new Date(response.playedAt).toISOString(),
-      createdAt: new Date(response.playedAt).toISOString(),
+      data: {
+        id: result.data.id,
+        collectionItemId: result.data.userGameId,
+        durationMinutes: result.data.durationMinutes,
+        datePlayed: new Date(result.data.playedAt).toISOString(),
+        createdAt: new Date(result.data.playedAt).toISOString(),
+      },
+      xpAwarded: result.xpAwarded,
     };
   },
 
@@ -65,5 +73,5 @@ export const collectionApi = {
    * Update the status of a game in the collection
    */
   updateStatus: (gameId: string, status: GameStatus) =>
-    api.patch<CollectionItemDto>(`/collection/${gameId}/status`, { status }),
+    api.patchWithXp<CollectionItemDto>(`/collection/${gameId}/status`, { status }),
 };

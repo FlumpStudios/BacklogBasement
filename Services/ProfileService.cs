@@ -10,11 +10,13 @@ namespace BacklogBasement.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IFriendshipService _friendshipService;
+        private readonly IXpService _xpService;
 
-        public ProfileService(ApplicationDbContext context, IFriendshipService friendshipService)
+        public ProfileService(ApplicationDbContext context, IFriendshipService friendshipService, IXpService xpService)
         {
             _context = context;
             _friendshipService = friendshipService;
+            _xpService = xpService;
         }
 
         public async Task<ProfileDto?> GetProfileByUsernameAsync(string username)
@@ -70,7 +72,8 @@ namespace BacklogBasement.Services
                 CurrentlyPlaying = currentlyPlaying,
                 Backlog = backlog,
                 Collection = collection,
-                Friends = friends
+                Friends = friends,
+                XpInfo = _xpService.ComputeLevel(user.XpTotal)
             };
         }
     }

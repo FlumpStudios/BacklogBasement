@@ -91,7 +91,14 @@ export function Layout() {
                         className="user-avatar"
                       />
                     )}
-                    <span className="user-name">{user?.username ?? user?.displayName}</span>
+                    <span className="user-name">
+                      {user?.username ?? user?.displayName}
+                      {user?.xpInfo && (
+                        <span className="nav-level-badge" title={user.xpInfo.levelName}>
+                          Lv.{user.xpInfo.level}
+                        </span>
+                      )}
+                    </span>
                     <button onClick={handleLogout} className="btn btn-secondary btn-sm">
                       Logout
                     </button>

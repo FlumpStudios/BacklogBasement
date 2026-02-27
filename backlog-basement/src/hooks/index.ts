@@ -75,6 +75,7 @@ export {
   MY_CLUB_INVITES_QUERY_KEY,
   useDeleteClub,
 } from './useGameClub';
+export { useDailyPoll, usePreviousPoll, useVotePoll, DAILY_POLL_QUERY_KEY, PREVIOUS_POLL_QUERY_KEY } from './useDailyPoll';
 export {
   useConversations,
   useMessages,

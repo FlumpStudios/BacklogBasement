@@ -403,6 +403,43 @@ export interface DailyPollDto {
   results?: PollResultDto[] | null;
 }
 
+// Daily Quiz DTOs
+export interface DailyQuizOptionDto {
+  optionId: string;
+  text: string;
+  coverUrl?: string | null;
+}
+
+export interface DailyQuizResultDto {
+  optionId: string;
+  answerCount: number;
+  percentage: number;
+  isCorrect: boolean;
+}
+
+export interface DailyQuizDto {
+  quizId: string;
+  date: string;
+  questionType: string;
+  questionText: string;
+  options: DailyQuizOptionDto[];
+  userSelectedOptionId?: string | null;
+  userWasCorrect?: boolean | null;
+  results?: DailyQuizResultDto[] | null;
+}
+
+// Leaderboard DTOs
+export interface LeaderboardEntryDto {
+  rank: number;
+  userId: string;
+  username?: string | null;
+  displayName: string;
+  xpTotal: number;
+  level: number;
+  levelName: string;
+  isCurrentUser: boolean;
+}
+
 // API Response types
 export interface PaginatedResponse<T> {
   items: T[];

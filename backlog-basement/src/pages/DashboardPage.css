@@ -3,6 +3,24 @@
   margin: 0 auto;
 }
 
+.community-widgets {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.community-widgets .poll-section,
+.community-widgets .quiz-section {
+  margin-bottom: 0;
+}
+
+@media (max-width: 700px) {
+  .community-widgets {
+    grid-template-columns: 1fr;
+  }
+}
+
 .dashboard-header {
   margin-bottom: var(--spacing-xl);
 }

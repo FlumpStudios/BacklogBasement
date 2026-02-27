@@ -20,6 +20,8 @@ namespace BacklogBasement.Services
         const int XP_ACCEPT_FRIEND_REQUEST = 20;
         const int XP_ADD_TO_BACKLOG        = 25;
         const int XP_DAILY_POLL            = 20;
+        const int XP_QUIZ_CORRECT          = 30;
+        const int XP_QUIZ_INCORRECT        = 5;
 
         Task<bool> TryGrantAsync(Guid userId, string reason, string referenceId, int amount);
         XpInfoDto ComputeLevel(int xpTotal);

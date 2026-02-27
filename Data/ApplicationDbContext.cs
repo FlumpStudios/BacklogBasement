@@ -29,6 +29,9 @@ namespace BacklogBasement.Data
         public DbSet<DailyPoll> DailyPolls { get; set; } = null!;
         public DbSet<DailyPollGame> DailyPollGames { get; set; } = null!;
         public DbSet<DailyPollVote> DailyPollVotes { get; set; } = null!;
+        public DbSet<DailyQuiz> DailyQuizzes { get; set; } = null!;
+        public DbSet<DailyQuizOption> DailyQuizOptions { get; set; } = null!;
+        public DbSet<DailyQuizAnswer> DailyQuizAnswers { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -323,6 +326,35 @@ namespace BacklogBasement.Data
                 .HasOne(dpv => dpv.User)
                 .WithMany(u => u.PollVotes)
                 .HasForeignKey(dpv => dpv.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure DailyQuiz entity
+            modelBuilder.Entity<DailyQuiz>()
+                .HasIndex(dq => dq.QuizDate)
+                .IsUnique();
+
+            // Configure DailyQuizOption entity
+            modelBuilder.Entity<DailyQuizOption>()
+                .HasOne(dqo => dqo.Quiz)
+                .WithMany(dq => dq.Options)
+                .HasForeignKey(dqo => dqo.QuizId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure DailyQuizAnswer entity
+            modelBuilder.Entity<DailyQuizAnswer>()
+                .HasIndex(dqa => new { dqa.QuizId, dqa.UserId })
+                .IsUnique();
+
+            modelBuilder.Entity<DailyQuizAnswer>()
+                .HasOne(dqa => dqa.Quiz)
+                .WithMany(dq => dq.Answers)
+                .HasForeignKey(dqa => dqa.QuizId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<DailyQuizAnswer>()
+                .HasOne(dqa => dqa.User)
+                .WithMany(u => u.QuizAnswers)
+                .HasForeignKey(dqa => dqa.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

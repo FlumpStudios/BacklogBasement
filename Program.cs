@@ -59,6 +59,8 @@ public class Program
         builder.Services.AddScoped<IMessageService, MessageService>();
         builder.Services.AddScoped<IXpService, XpService>();
         builder.Services.AddScoped<IDailyPollService, DailyPollService>();
+        builder.Services.AddScoped<IDailyQuizService, DailyQuizService>();
+        builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
         builder.Services.AddSingleton<IProfanityService, ProfanityService>();
 
         // Configure cookie authentication

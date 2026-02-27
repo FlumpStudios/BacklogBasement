@@ -10,3 +10,5 @@ export { suggestionsApi } from './suggestions';
 export { gameClubApi } from './gameclub';
 export { messagesApi } from './messages';
 export { pollApi } from './poll';
+export { quizApi } from './quiz';
+export { leaderboardApi } from './leaderboard';

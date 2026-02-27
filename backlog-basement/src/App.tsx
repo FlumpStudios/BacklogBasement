@@ -18,6 +18,7 @@ import {
   GameClubsPage,
   GameClubDetailPage,
   InboxPage,
+  LeaderboardPage,
 } from './pages';
 
 function HomePage() {
@@ -115,6 +116,14 @@ function App() {
           element={
             <ProtectedRoute>
               <InboxPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/leaderboard"
+          element={
+            <ProtectedRoute>
+              <LeaderboardPage />
             </ProtectedRoute>
           }
         />

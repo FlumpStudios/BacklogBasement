@@ -13,3 +13,5 @@ export { FriendButton } from './FriendButton';
 export { InboxBell } from './InboxBell';
 export { SteamImportPrompt } from './SteamImportPrompt/SteamImportPrompt';
 export { DailyPoll } from './DailyPoll/DailyPoll';
+export { DailyQuiz } from './DailyQuiz/DailyQuiz';
+export { LeaderboardWidget } from './LeaderboardWidget/LeaderboardWidget';

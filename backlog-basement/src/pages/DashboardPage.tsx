@@ -4,7 +4,7 @@ import { useCollection, useUpdateGameStatus, useMyClubs } from '../hooks';
 import { CollectionStats } from '../features/collection';
 import { GameGrid } from '../features/games';
 import { SuggestionsSection } from '../features/suggestions';
-import { EmptyState, useToast, DailyPoll } from '../components';
+import { EmptyState, useToast, DailyPoll, DailyQuiz, LeaderboardWidget } from '../components';
 import { CollectionItemDto, GameClubDto } from '../types';
 import './DashboardPage.css';
 
@@ -83,7 +83,12 @@ export function DashboardPage() {
         <p className="dashboard-subtitle">Here's your gaming overview</p>
       </header>
 
-      <DailyPoll />
+      <div className="community-widgets">
+        <DailyPoll />
+        <DailyQuiz />
+      </div>
+
+      <LeaderboardWidget />
 
       {isLoading ? (
         <div className="loading-container">

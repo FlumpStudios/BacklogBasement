@@ -77,6 +77,9 @@ export function Layout() {
                   <Link to="/friends" className="nav-link" onClick={closeMenu}>
                     Friends
                   </Link>
+                  <Link to="/leaderboard" className="nav-link" onClick={closeMenu}>
+                    Leaderboard
+                  </Link>
                   <span className="nav-link-wrapper">
                     <Link to="/clubs" className="nav-link" onClick={closeMenu}>
                       Clubs

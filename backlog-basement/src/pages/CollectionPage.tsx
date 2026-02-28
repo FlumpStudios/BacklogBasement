@@ -1,27 +1,73 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { useCollection, useRemoveFromCollection, useUpdateGameStatus } from '../hooks';
+import { useInfiniteCollection, useCollectionStats, useRemoveFromCollection, useUpdateGameStatus } from '../hooks';
 import { CollectionStats, CollectionFilters, SortOption, PlayStatusFilter, SourceFilter, GameStatusFilter } from '../features/collection';
 import { GameGrid } from '../features/games';
-import { EmptyState, useToast, SteamSection, RetroArchSection } from '../components';
+import { EmptyState, useToast, SteamSection, RetroArchSection, TwitchSection } from '../components';
 import { CollectionItemDto } from '../types';
+import { useDebounce } from '../hooks';
 import './CollectionPage.css';
 
+function sortOptionToParams(sort: SortOption): { sortBy: string; sortDir: string } {
+  const lastDash = sort.lastIndexOf('-');
+  return {
+    sortBy: sort.slice(0, lastDash),
+    sortDir: sort.slice(lastDash + 1),
+  };
+}
+
 export function CollectionPage() {
-  const { data: collection, isLoading } = useCollection();
   const removeFromCollection = useRemoveFromCollection();
   const updateGameStatus = useUpdateGameStatus();
   const { showToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Filter and sort state
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState<SortOption>('name-asc');
+  const [sortBy, setSortBy] = useState<SortOption>('added-desc');
   const [playStatus, setPlayStatus] = useState<PlayStatusFilter>('all');
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>('all');
   const [gameStatus, setGameStatus] = useState<GameStatusFilter>('all');
 
-  // Handle Steam linking callback and URL-based status filter
+  const debouncedSearch = useDebounce(searchQuery, 300);
+  const { sortBy: serverSortBy, sortDir } = sortOptionToParams(sortBy);
+
+  const filters = {
+    search: debouncedSearch || undefined,
+    status: gameStatus === 'all' ? undefined : gameStatus,
+    source: sourceFilter === 'all' ? undefined : sourceFilter,
+    playStatus: playStatus === 'all' ? undefined : playStatus,
+    sortBy: serverSortBy,
+    sortDir,
+  };
+
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteCollection(filters);
+
+  const { data: stats } = useCollectionStats();
+
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { rootMargin: '200px' }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  // Handle URL params (Steam/Twitch linking callbacks, stat card nav links)
   useEffect(() => {
     const steamStatus = searchParams.get('steam');
     if (steamStatus === 'linked') {
@@ -36,7 +82,19 @@ export function CollectionPage() {
       setSearchParams(searchParams, { replace: true });
     }
 
-    // Apply status filter from URL (does not reset other filters — used by other parts of the app)
+    const twitchStatus = searchParams.get('twitch');
+    if (twitchStatus === 'linked') {
+      showToast('Twitch account linked successfully!', 'success');
+      searchParams.delete('twitch');
+      setSearchParams(searchParams, { replace: true });
+    } else if (twitchStatus === 'error') {
+      const message = searchParams.get('message');
+      showToast(`Failed to link Twitch account: ${message || 'Unknown error'}`, 'error');
+      searchParams.delete('twitch');
+      searchParams.delete('message');
+      setSearchParams(searchParams, { replace: true });
+    }
+
     const statusParam = searchParams.get('status');
     if (statusParam && ['none', 'backlog', 'playing', 'completed'].includes(statusParam)) {
       setGameStatus(statusParam as GameStatusFilter);
@@ -44,26 +102,14 @@ export function CollectionPage() {
       setSearchParams(searchParams, { replace: true });
     }
 
-    // Stat card nav params — reset all filters first, then apply the specific override
     const resetParam = searchParams.get('reset');
     if (resetParam === 'true') {
       setSearchQuery('');
-      setSortBy('name-asc');
+      setSortBy('added-desc');
       setPlayStatus('all');
       setSourceFilter('all');
       setGameStatus('all');
       searchParams.delete('reset');
-      setSearchParams(searchParams, { replace: true });
-    }
-
-    const playStatusParam = searchParams.get('playStatus');
-    if (playStatusParam && ['played', 'unplayed'].includes(playStatusParam)) {
-      setSearchQuery('');
-      setSortBy('name-asc');
-      setPlayStatus(playStatusParam as PlayStatusFilter);
-      setSourceFilter('all');
-      setGameStatus('all');
-      searchParams.delete('playStatus');
       setSearchParams(searchParams, { replace: true });
     }
 
@@ -72,95 +118,16 @@ export function CollectionPage() {
     if (sortParam && validSorts.includes(sortParam as SortOption)) {
       setSearchQuery('');
       setSortBy(sortParam as SortOption);
-      setPlayStatus('all');
       setSourceFilter('all');
       setGameStatus('all');
       searchParams.delete('sort');
       setSearchParams(searchParams, { replace: true });
     }
-  }, [searchParams, setSearchParams, showToast, setSearchQuery]);
+  }, [searchParams, setSearchParams, showToast]);
 
-  // Filter and sort the collection
-  const filteredAndSortedCollection = useMemo(() => {
-    if (!collection) return [];
-
-    let result = [...collection];
-
-    // Apply search filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase().trim();
-      result = result.filter((item) =>
-        item.gameName.toLowerCase().includes(query)
-      );
-    }
-
-    // Apply play status filter
-    if (playStatus === 'played') {
-      result = result.filter((item) => (item.totalPlayTimeMinutes || 0) > 0);
-    } else if (playStatus === 'unplayed') {
-      result = result.filter((item) => (item.totalPlayTimeMinutes || 0) === 0);
-    }
-
-    // Apply source filter
-    if (sourceFilter === 'steam') {
-      result = result.filter((item) => item.source === 'steam');
-    } else if (sourceFilter === 'manual') {
-      result = result.filter((item) => item.source === 'manual');
-    }
-
-    // Apply game status filter
-    if (gameStatus === 'none') {
-      result = result.filter((item) => !item.status);
-    } else if (gameStatus === 'backlog') {
-      result = result.filter((item) => item.status === 'backlog');
-    } else if (gameStatus === 'playing') {
-      result = result.filter((item) => item.status === 'playing');
-    } else if (gameStatus === 'completed') {
-      result = result.filter((item) => item.status === 'completed');
-    }
-
-    // Apply sorting
-    result.sort((a, b) => {
-      switch (sortBy) {
-        case 'name-asc':
-          return a.gameName.localeCompare(b.gameName);
-        case 'name-desc':
-          return b.gameName.localeCompare(a.gameName);
-        case 'release-desc': {
-          const dateA = a.releaseDate ? new Date(a.releaseDate).getTime() : 0;
-          const dateB = b.releaseDate ? new Date(b.releaseDate).getTime() : 0;
-          return dateB - dateA;
-        }
-        case 'release-asc': {
-          const dateA = a.releaseDate ? new Date(a.releaseDate).getTime() : Infinity;
-          const dateB = b.releaseDate ? new Date(b.releaseDate).getTime() : Infinity;
-          return dateA - dateB;
-        }
-        case 'added-desc':
-          return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
-        case 'added-asc':
-          return new Date(a.dateAdded).getTime() - new Date(b.dateAdded).getTime();
-        case 'playtime-desc':
-          return (b.totalPlayTimeMinutes || 0) - (a.totalPlayTimeMinutes || 0);
-        case 'playtime-asc':
-          return (a.totalPlayTimeMinutes || 0) - (b.totalPlayTimeMinutes || 0);
-        case 'score-desc': {
-          const scoreA = a.criticScore ?? -1;
-          const scoreB = b.criticScore ?? -1;
-          return scoreB - scoreA;
-        }
-        case 'score-asc': {
-          const scoreA = a.criticScore ?? 101;
-          const scoreB = b.criticScore ?? 101;
-          return scoreA - scoreB;
-        }
-        default:
-          return 0;
-      }
-    });
-
-    return result;
-  }, [collection, searchQuery, sortBy, playStatus, sourceFilter, gameStatus]);
+  const allItems = data?.pages.flatMap(p => p.items) ?? [];
+  const totalFiltered = data?.pages[0]?.total ?? 0;
+  const totalGames = stats?.totalGames ?? 0;
 
   const handleRemove = async (gameId: string, gameName: string) => {
     try {
@@ -244,6 +211,8 @@ export function CollectionPage() {
     );
   }
 
+  const isFiltered = !!debouncedSearch || playStatus !== 'all' || sourceFilter !== 'all' || gameStatus !== 'all';
+
   return (
     <div className="collection-page">
       <header className="collection-header">
@@ -254,11 +223,12 @@ export function CollectionPage() {
       </header>
 
       <SteamSection />
+      <TwitchSection />
       <RetroArchSection />
 
-      {collection && collection.length > 0 ? (
+      {totalGames > 0 ? (
         <>
-          <CollectionStats collection={collection} basePath="/collection" />
+          <CollectionStats stats={stats} basePath="/collection" />
           <CollectionFilters
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -270,15 +240,23 @@ export function CollectionPage() {
             onSourceFilterChange={setSourceFilter}
             gameStatus={gameStatus}
             onGameStatusChange={setGameStatus}
-            resultCount={filteredAndSortedCollection.length}
-            totalCount={collection.length}
+            resultCount={isFiltered ? totalFiltered : totalGames}
+            totalCount={totalGames}
           />
-          {filteredAndSortedCollection.length > 0 ? (
-            <GameGrid
-              games={filteredAndSortedCollection}
-              showPlaytime
-              renderActions={(item) => renderActions(item as CollectionItemDto)}
-            />
+          {allItems.length > 0 ? (
+            <>
+              <GameGrid
+                games={allItems}
+                showPlaytime
+                renderActions={(item) => renderActions(item as CollectionItemDto)}
+              />
+              <div ref={sentinelRef} style={{ height: 1 }} />
+              {isFetchingNextPage && (
+                <div className="loading-container" style={{ padding: '1rem' }}>
+                  <div className="loading-spinner" />
+                </div>
+              )}
+            </>
           ) : (
             <div className="no-results">
               <p>No games match your filters.</p>

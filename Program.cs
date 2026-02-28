@@ -130,6 +130,9 @@ public class Program
         builder.Services.AddHttpClient<ISteamService, SteamService>();
         builder.Services.AddScoped<ISteamImportService, SteamImportService>();
 
+        // Register Twitch service
+        builder.Services.AddHttpClient<ITwitchService, TwitchService>();
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.

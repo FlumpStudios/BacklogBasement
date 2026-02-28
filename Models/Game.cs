@@ -15,6 +15,7 @@ namespace BacklogBasement.Models
         public int? CriticScore { get; set; }
         public bool CriticScoreChecked { get; set; }
         public bool SummaryFetched { get; set; }
+        public bool IgdbIdChecked { get; set; }
         public DateTime CreatedAt { get; set; }
 
         // Navigation properties

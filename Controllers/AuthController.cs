@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http;
 using AspNet.Security.OpenId.Steam;
 using BacklogBasement.Models;
 using BacklogBasement.Services;
@@ -21,13 +22,17 @@ namespace BacklogBasement.Controllers
         private readonly IXpService _xpService;
         private readonly ILogger<AuthController> _logger;
         private readonly string _frontendUrl;
+        private readonly IConfiguration _configuration;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public AuthController(IUserService userService, IXpService xpService, ILogger<AuthController> logger, IConfiguration configuration)
+        public AuthController(IUserService userService, IXpService xpService, ILogger<AuthController> logger, IConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
             _userService = userService;
             _xpService = xpService;
             _logger = logger;
+            _configuration = configuration;
             _frontendUrl = configuration["FrontendUrl"]?.TrimEnd('/') ?? "http://localhost:5173";
+            _httpClientFactory = httpClientFactory;
         }
 
         [HttpGet("login")]
@@ -139,6 +144,8 @@ namespace BacklogBasement.Controllers
                 googleId = user.GoogleSubjectId,
                 steamId = user.SteamId,
                 hasSteamLinked = !string.IsNullOrEmpty(user.SteamId),
+                twitchId = user.TwitchId,
+                hasTwitchLinked = !string.IsNullOrEmpty(user.TwitchId),
                 username = user.Username,
                 xpInfo = _xpService.ComputeLevel(user.XpTotal)
             });
@@ -278,5 +285,179 @@ namespace BacklogBasement.Controllers
             }
         }
 
+        [HttpGet("login/twitch")]
+        public IActionResult LoginTwitch()
+        {
+            var state = Guid.NewGuid().ToString("N");
+            SetTwitchStateCookie($"{state}:login:");
+            return Redirect(BuildTwitchAuthUrl(state));
+        }
+
+        [HttpGet("link-twitch")]
+        [Authorize]
+        public IActionResult LinkTwitch()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var state = Guid.NewGuid().ToString("N");
+            SetTwitchStateCookie($"{state}:link:{userId}");
+            return Redirect(BuildTwitchAuthUrl(state));
+        }
+
+        [HttpGet("callback/twitch")]
+        public async Task<IActionResult> TwitchCallback([FromQuery] string? code, [FromQuery] string? state, [FromQuery] string? error)
+        {
+            if (!string.IsNullOrEmpty(error))
+                return Redirect($"{_frontendUrl}/?auth=error&message=twitch_denied");
+
+            if (string.IsNullOrEmpty(code) || string.IsNullOrEmpty(state))
+                return Redirect($"{_frontendUrl}/?auth=error&message=missing_params");
+
+            var stateCookie = Request.Cookies["twitch_state"];
+            if (string.IsNullOrEmpty(stateCookie))
+                return Redirect($"{_frontendUrl}/?auth=error&message=invalid_state");
+
+            var parts = stateCookie.Split(':', 3);
+            if (parts.Length < 3 || parts[0] != state)
+                return Redirect($"{_frontendUrl}/?auth=error&message=invalid_state");
+
+            var intent = parts[1];
+            var storedUserId = parts[2];
+
+            Response.Cookies.Delete("twitch_state");
+
+            var clientId = _configuration["Igdb:ClientId"]!;
+            var clientSecret = _configuration["Igdb:ClientSecret"]!;
+            var redirectUri = Url.Action("TwitchCallback", "Auth", null, Request.Scheme)!;
+
+            var tokenResponse = await ExchangeTwitchCodeAsync(code, clientId, clientSecret, redirectUri);
+            if (tokenResponse == null)
+                return Redirect($"{_frontendUrl}/?auth=error&message=token_exchange_failed");
+
+            var twitchUser = await GetTwitchUserAsync(tokenResponse.AccessToken, clientId);
+            if (twitchUser == null)
+                return Redirect($"{_frontendUrl}/?auth=error&message=user_fetch_failed");
+
+            if (intent == "login")
+            {
+                var user = await _userService.GetOrCreateTwitchUserAsync(twitchUser.Id, twitchUser.DisplayName, twitchUser.Email);
+                var claims = BuildClaims(user);
+                await HttpContext.SignInAsync("Cookies", new ClaimsPrincipal(new ClaimsIdentity(claims, "Twitch")));
+                return Redirect($"{_frontendUrl}/?auth=success");
+            }
+            else
+            {
+                if (!Guid.TryParse(storedUserId, out var userId))
+                    return Redirect($"{_frontendUrl}/collection?twitch=error&message=invalid_user");
+
+                try
+                {
+                    var user = await _userService.LinkTwitchAsync(userId, twitchUser.Id);
+                    if (user == null)
+                        return Redirect($"{_frontendUrl}/collection?twitch=error&message=user_not_found");
+
+                    var claims = BuildClaims(user);
+                    await HttpContext.SignInAsync("Cookies", new ClaimsPrincipal(new ClaimsIdentity(claims, "Twitch")));
+                    return Redirect($"{_frontendUrl}/collection?twitch=linked");
+                }
+                catch (InvalidOperationException)
+                {
+                    return Redirect($"{_frontendUrl}/collection?twitch=error&message=already_linked");
+                }
+            }
+        }
+
+        [HttpPost("unlink-twitch")]
+        [Authorize]
+        public async Task<IActionResult> UnlinkTwitch()
+        {
+            var userId = _userService.GetCurrentUserId();
+            if (userId == null) return Unauthorized();
+            await _userService.UnlinkTwitchAsync(userId.Value);
+            return Ok();
+        }
+
+        private string BuildTwitchAuthUrl(string state)
+        {
+            var clientId = _configuration["Igdb:ClientId"]!;
+            var redirectUri = Url.Action("TwitchCallback", "Auth", null, Request.Scheme)!;
+            var scope = "user:read:email";
+            return $"https://id.twitch.tv/oauth2/authorize" +
+                   $"?client_id={Uri.EscapeDataString(clientId)}" +
+                   $"&redirect_uri={Uri.EscapeDataString(redirectUri)}" +
+                   $"&response_type=code" +
+                   $"&scope={Uri.EscapeDataString(scope)}" +
+                   $"&state={state}";
+        }
+
+        private void SetTwitchStateCookie(string value)
+        {
+            Response.Cookies.Append("twitch_state", value, new CookieOptions
+            {
+                HttpOnly = true,
+                SameSite = SameSiteMode.Lax,
+                MaxAge = TimeSpan.FromMinutes(10)
+            });
+        }
+
+        private static List<Claim> BuildClaims(User user)
+        {
+            var claims = new List<Claim>
+            {
+                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new(ClaimTypes.Email, user.Email),
+                new(ClaimTypes.Name, user.DisplayName)
+            };
+            if (!string.IsNullOrEmpty(user.GoogleSubjectId))
+                claims.Add(new("GoogleId", user.GoogleSubjectId));
+            return claims;
+        }
+
+        private async Task<TwitchTokenResponse?> ExchangeTwitchCodeAsync(string code, string clientId, string clientSecret, string redirectUri)
+        {
+            using var client = _httpClientFactory.CreateClient();
+            var response = await client.PostAsync("https://id.twitch.tv/oauth2/token",
+                new FormUrlEncodedContent(new Dictionary<string, string>
+                {
+                    ["client_id"] = clientId,
+                    ["client_secret"] = clientSecret,
+                    ["code"] = code,
+                    ["grant_type"] = "authorization_code",
+                    ["redirect_uri"] = redirectUri
+                }));
+            if (!response.IsSuccessStatusCode) return null;
+            var json = await response.Content.ReadAsStringAsync();
+            return System.Text.Json.JsonSerializer.Deserialize<TwitchTokenResponse>(json,
+                new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
+        private async Task<TwitchUserInfo?> GetTwitchUserAsync(string accessToken, string clientId)
+        {
+            using var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+            client.DefaultRequestHeaders.Add("Client-Id", clientId);
+            var response = await client.GetAsync("https://api.twitch.tv/helix/users");
+            if (!response.IsSuccessStatusCode) return null;
+            var json = await response.Content.ReadAsStringAsync();
+            using var doc = System.Text.Json.JsonDocument.Parse(json);
+            var data = doc.RootElement.GetProperty("data");
+            if (data.GetArrayLength() == 0) return null;
+            var first = data[0];
+            return new TwitchUserInfo(
+                first.GetProperty("id").GetString() ?? "",
+                first.GetProperty("display_name").GetString() ?? "",
+                first.TryGetProperty("email", out var emailEl) ? emailEl.GetString() : null
+            );
+        }
+
+        private sealed class TwitchTokenResponse
+        {
+            [System.Text.Json.Serialization.JsonPropertyName("access_token")]
+            public string AccessToken { get; set; } = "";
+        }
+
+        private record TwitchUserInfo(string Id, string DisplayName, string? Email);
     }
 }

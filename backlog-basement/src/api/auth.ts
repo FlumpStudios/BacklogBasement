@@ -39,6 +39,23 @@ export const authApi = {
   getSteamLoginUrl: () => `${AUTH_BASE_URL}/auth/login/steam`,
 
   /**
+   * Get the Twitch OAuth login URL
+   */
+  getTwitchLoginUrl: () => `${AUTH_BASE_URL}/auth/login/twitch`,
+
+  /**
+   * Get the Twitch OAuth link URL (for linking to an existing account)
+   */
+  getTwitchLinkUrl: () => `${AUTH_BASE_URL}/auth/link-twitch`,
+
+  /**
+   * Unlink Twitch account from the current user
+   */
+  unlinkTwitch: async (): Promise<void> => {
+    await authClient.post('/auth/unlink-twitch');
+  },
+
+  /**
    * Logout the current user
    */
   logout: async (): Promise<void> => {

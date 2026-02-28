@@ -125,6 +125,49 @@ namespace BacklogBasement.Services
             return user;
         }
 
+        public async Task<User> GetOrCreateTwitchUserAsync(string twitchId, string displayName, string? email)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.TwitchId == twitchId);
+            if (user != null) return user;
+
+            user = new User
+            {
+                Id = Guid.NewGuid(),
+                TwitchId = twitchId,
+                Email = email ?? string.Empty,
+                DisplayName = displayName,
+                CreatedAt = DateTime.UtcNow
+            };
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+            return user;
+        }
+
+        public async Task<User?> LinkTwitchAsync(Guid userId, string twitchId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return null;
+
+            var existingUser = await _context.Users
+                .FirstOrDefaultAsync(u => u.TwitchId == twitchId && u.Id != userId);
+            if (existingUser != null)
+                throw new InvalidOperationException("This Twitch account is already linked to another user");
+
+            user.TwitchId = twitchId;
+            await _context.SaveChangesAsync();
+            return user;
+        }
+
+        public async Task<User?> UnlinkTwitchAsync(Guid userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return null;
+
+            user.TwitchId = null;
+            await _context.SaveChangesAsync();
+            return user;
+        }
+
         private static readonly HashSet<string> ReservedUsernames = new(StringComparer.OrdinalIgnoreCase)
         {
             "admin", "api", "auth", "profile", "dashboard", "collection",

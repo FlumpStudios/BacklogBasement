@@ -133,6 +133,15 @@ namespace BacklogBasement.Services
                 await _context.SaveChangesAsync();
             }
 
+            // Lazy-fetch IGDB ID for Steam-imported games (enables Twitch stream lookup)
+            if (game.SteamAppId.HasValue && game.IgdbId == null && !game.IgdbIdChecked)
+            {
+                game.IgdbIdChecked = true;
+                var igdbId = await _igdbService.FindIgdbIdBySteamIdAsync(game.SteamAppId.Value);
+                if (igdbId.HasValue) game.IgdbId = igdbId;
+                await _context.SaveChangesAsync();
+            }
+
             return new GameDto
             {
                 Id = game.Id,

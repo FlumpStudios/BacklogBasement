@@ -1,0 +1,105 @@
+.twitch-section {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: var(--spacing-lg);
+}
+
+.twitch-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--color-surface);
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.twitch-header:hover {
+  background: var(--color-surface-hover);
+}
+
+.twitch-header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.twitch-header h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.twitch-header-status {
+  font-size: 0.8rem;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.twitch-header-linked {
+  background: rgba(var(--color-success-rgb, 34, 197, 94), 0.15);
+  color: var(--color-success, #22c55e);
+}
+
+.twitch-header-not-linked {
+  background: var(--color-surface-secondary);
+  color: var(--color-text-muted);
+}
+
+.twitch-status-icon {
+  margin-right: 4px;
+}
+
+.twitch-chevron {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  transition: transform var(--transition-fast);
+}
+
+.twitch-chevron.open {
+  transform: rotate(180deg);
+}
+
+.twitch-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.twitch-body.open {
+  max-height: 300px;
+}
+
+.twitch-body-inner {
+  padding: var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-background);
+}
+
+.twitch-linked p,
+.twitch-not-linked p {
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.btn-twitch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  background: #9147ff;
+  color: white;
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.btn-twitch:hover {
+  background: #7c2fe8;
+}

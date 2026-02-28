@@ -8,6 +8,7 @@ namespace BacklogBasement.Services
         Task<IEnumerable<IgdbGame>> SearchGamesAsync(string query);
         Task<IgdbGame?> GetGameAsync(long igdbId);
         Task<Dictionary<string, IgdbGame>> BatchSearchGamesAsync(IEnumerable<string> names);
+        Task<long?> FindIgdbIdBySteamIdAsync(long steamAppId);
     }
 
     public class IgdbGame

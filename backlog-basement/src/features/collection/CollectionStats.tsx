@@ -1,27 +1,22 @@
 import { Link } from 'react-router-dom';
-import { CollectionItemDto } from '../../types';
-import { formatPlaytime } from '../../utils';
+import { CollectionItemDto, CollectionStatsDto } from '../../types';
 import './CollectionStats.css';
 
 interface CollectionStatsProps {
-  collection: CollectionItemDto[];
+  collection?: CollectionItemDto[];
+  stats?: CollectionStatsDto;
   basePath?: string;
 }
 
-export function CollectionStats({ collection, basePath }: CollectionStatsProps) {
-  const totalGames = collection.length;
-  const totalPlaytime = collection.reduce(
-    (sum, item) => sum + (item.totalPlayTimeMinutes || 0),
-    0
-  );
-  const gamesPlayed = collection.filter(
-    (item) => (item.totalPlayTimeMinutes || 0) > 0
-  ).length;
+export function CollectionStats({ collection, stats, basePath }: CollectionStatsProps) {
+  const totalGames = stats?.totalGames ?? collection?.length ?? 0;
+  const gamesBacklog = stats?.gamesBacklog ?? collection?.filter(i => i.status === 'backlog').length ?? 0;
+  const gamesCompleted = stats?.gamesCompleted ?? collection?.filter(i => i.status === 'completed').length ?? 0;
 
   const cards = [
     { value: totalGames, label: 'Games', to: basePath ? `${basePath}?reset=true` : null },
-    { value: gamesPlayed, label: 'Played', to: basePath ? `${basePath}?playStatus=played` : null },
-    { value: formatPlaytime(totalPlaytime), label: 'Total Time', to: basePath ? `${basePath}?sort=playtime-desc` : null },
+    { value: gamesBacklog, label: 'Backlog', to: basePath ? `${basePath}?status=backlog` : null },
+    { value: gamesCompleted, label: 'Completed', to: basePath ? `${basePath}?status=completed` : null },
   ];
 
   return (

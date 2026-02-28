@@ -1,7 +1,36 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { collectionApi } from '../api';
 import { useToast } from '../components';
 import { CreatePlaySessionDto, GameStatus } from '../types';
+
+const PAGE_SIZE = 50;
+
+export interface CollectionQueryFilters {
+  search?: string;
+  status?: string;
+  source?: string;
+  playStatus?: string;
+  sortBy?: string;
+  sortDir?: string;
+}
+
+export function useInfiniteCollection(filters: CollectionQueryFilters) {
+  return useInfiniteQuery({
+    queryKey: ['collection', 'paged', filters],
+    queryFn: ({ pageParam }) =>
+      collectionApi.getPaged({ skip: pageParam as number, take: PAGE_SIZE, ...filters }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.hasMore ? allPages.length * PAGE_SIZE : undefined,
+  });
+}
+
+export function useCollectionStats() {
+  return useQuery({
+    queryKey: ['collection', 'stats'],
+    queryFn: collectionApi.getStats,
+  });
+}
 
 export const COLLECTION_QUERY_KEY = ['collection'];
 

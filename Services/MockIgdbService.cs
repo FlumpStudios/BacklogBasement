@@ -53,6 +53,9 @@ namespace BacklogBasement.Services
             return Task.FromResult(game);
         }
 
+        public Task<long?> FindIgdbIdBySteamIdAsync(long steamAppId)
+            => Task.FromResult<long?>(null);
+
         public Task<Dictionary<string, IgdbGame>> BatchSearchGamesAsync(IEnumerable<string> names)
         {
             var result = new Dictionary<string, IgdbGame>(StringComparer.OrdinalIgnoreCase);

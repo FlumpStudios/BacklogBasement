@@ -295,6 +295,28 @@ namespace BacklogBasement.Services
             return games?.FirstOrDefault();
         }
 
+        public async Task<long?> FindIgdbIdBySteamIdAsync(long steamAppId)
+        {
+            try
+            {
+                await EnsureAccessTokenAsync();
+                var query = $@"fields game; where uid = ""{steamAppId}"" & category = 1; limit 1;";
+                var results = await PostAsync<ExternalGame[]>("external_games", query);
+                return results?.FirstOrDefault()?.Game;
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Failed to find IGDB ID for Steam App ID {SteamAppId}", steamAppId);
+                return null;
+            }
+        }
+
+        private class ExternalGame
+        {
+            [JsonPropertyName("game")]
+            public long Game { get; set; }
+        }
+
         private async Task EnsureAccessTokenAsync()
         {
             if (!string.IsNullOrEmpty(_accessToken) && _tokenExpiry > DateTime.UtcNow.AddMinutes(5))

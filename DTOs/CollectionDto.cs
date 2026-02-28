@@ -34,4 +34,19 @@ namespace BacklogBasement.DTOs
     {
         public List<Guid> GameIds { get; set; } = new();
     }
+
+    public class PagedCollectionDto
+    {
+        public List<CollectionItemDto> Items { get; set; } = new();
+        public int Total { get; set; }
+        public bool HasMore { get; set; }
+    }
+
+    public class CollectionStatsDto
+    {
+        public int TotalGames { get; set; }
+        public int GamesBacklog { get; set; }
+        public int GamesPlaying { get; set; }
+        public int GamesCompleted { get; set; }
+    }
 }

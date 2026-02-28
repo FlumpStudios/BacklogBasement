@@ -10,6 +10,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: () => void;
   loginWithSteam: () => void;
+  loginWithTwitch: () => void;
   logout: () => Promise<void>;
 }
 
@@ -46,6 +47,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     window.location.href = authApi.getSteamLoginUrl();
   };
 
+  const loginWithTwitch = () => {
+    window.location.href = authApi.getTwitchLoginUrl();
+  };
+
   const logout = async () => {
     await authApi.logout();
     queryClient.setQueryData(AUTH_QUERY_KEY, null);
@@ -58,6 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAuthenticated: !!user,
     login,
     loginWithSteam,
+    loginWithTwitch,
     logout,
   };
 

@@ -69,6 +69,8 @@ export interface UserDto {
   avatarUrl?: string;
   steamId?: string | null;
   hasSteamLinked?: boolean;
+  twitchId?: string | null;
+  hasTwitchLinked?: boolean;
   username?: string | null;
   xpInfo?: XpInfoDto;
 }
@@ -438,6 +440,19 @@ export interface LeaderboardEntryDto {
   level: number;
   levelName: string;
   isCurrentUser: boolean;
+}
+
+export interface PagedCollectionResult {
+  items: CollectionItemDto[];
+  total: number;
+  hasMore: boolean;
+}
+
+export interface CollectionStatsDto {
+  totalGames: number;
+  gamesBacklog: number;
+  gamesPlaying: number;
+  gamesCompleted: number;
 }
 
 // API Response types

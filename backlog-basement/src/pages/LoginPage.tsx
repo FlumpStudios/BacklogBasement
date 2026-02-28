@@ -4,7 +4,7 @@ import { useAuth } from '../auth';
 import './LoginPage.css';
 
 export function LoginPage() {
-  const { isAuthenticated, isLoading, login, loginWithSteam } = useAuth();
+  const { isAuthenticated, isLoading, login, loginWithSteam, loginWithTwitch } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -41,6 +41,13 @@ export function LoginPage() {
             <path fill="currentColor" d="M12 2a10 10 0 0 0-9.96 9.04l5.35 2.21a2.83 2.83 0 0 1 1.6-.49l2.39-3.47v-.05a3.77 3.77 0 1 1 3.77 3.77h-.09l-3.41 2.43a2.84 2.84 0 0 1-5.65.36l-3.83-1.58A10 10 0 1 0 12 2zm-4.99 15.57l-1.22-.5a2.13 2.13 0 0 0 3.87.57 2.13 2.13 0 0 0-1.14-2.78l1.26.52a1.56 1.56 0 1 1-2.77 2.19zm8.63-5.56a2.51 2.51 0 1 0-2.51-2.51 2.51 2.51 0 0 0 2.51 2.51z"/>
           </svg>
           Sign in with Steam
+        </button>
+
+        <button onClick={loginWithTwitch} className="btn btn-twitch">
+          <svg viewBox="0 0 24 24" width="20" height="20">
+            <path fill="currentColor" d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/>
+          </svg>
+          Sign in with Twitch
         </button>
 
         <div className="login-divider">or</div>

@@ -1,6 +1,8 @@
 export { useDebounce } from './useDebounce';
 export {
   useCollection,
+  useInfiniteCollection,
+  useCollectionStats,
   useAddToCollection,
   useRemoveFromCollection,
   usePlaySessions,
@@ -9,6 +11,7 @@ export {
   useUpdateGameStatus,
   COLLECTION_QUERY_KEY,
 } from './useCollection';
+export type { CollectionQueryFilters } from './useCollection';
 export { useGameSearch, useGameDetails } from './useGames';
 export {
   useProfile,

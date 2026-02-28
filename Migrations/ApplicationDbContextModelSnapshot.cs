@@ -91,6 +91,95 @@ namespace BacklogBasement.Migrations
                     b.ToTable("DailyPollVotes");
                 });
 
+            modelBuilder.Entity("BacklogBasement.Models.DailyQuiz", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("QuestionText")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("QuestionType")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("QuizDate")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuizDate")
+                        .IsUnique();
+
+                    b.ToTable("DailyQuizzes");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.DailyQuizAnswer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("QuizId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("SelectedOptionId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("QuizId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("DailyQuizAnswers");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.DailyQuizOption", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CoverUrl")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("QuizId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuizId");
+
+                    b.ToTable("DailyQuizOptions");
+                });
+
             modelBuilder.Entity("BacklogBasement.Models.DirectMessage", b =>
                 {
                     b.Property<Guid>("Id")
@@ -173,6 +262,9 @@ namespace BacklogBasement.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<long?>("IgdbId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IgdbIdChecked")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
@@ -567,6 +659,9 @@ namespace BacklogBasement.Migrations
                     b.Property<string>("SteamId")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("TwitchId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Username")
                         .HasMaxLength(30)
                         .HasColumnType("TEXT");
@@ -694,6 +789,36 @@ namespace BacklogBasement.Migrations
                     b.Navigation("Poll");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.DailyQuizAnswer", b =>
+                {
+                    b.HasOne("BacklogBasement.Models.DailyQuiz", "Quiz")
+                        .WithMany("Answers")
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BacklogBasement.Models.User", "User")
+                        .WithMany("QuizAnswers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Quiz");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.DailyQuizOption", b =>
+                {
+                    b.HasOne("BacklogBasement.Models.DailyQuiz", "Quiz")
+                        .WithMany("Options")
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Quiz");
                 });
 
             modelBuilder.Entity("BacklogBasement.Models.DirectMessage", b =>
@@ -968,6 +1093,13 @@ namespace BacklogBasement.Migrations
                     b.Navigation("Votes");
                 });
 
+            modelBuilder.Entity("BacklogBasement.Models.DailyQuiz", b =>
+                {
+                    b.Navigation("Answers");
+
+                    b.Navigation("Options");
+                });
+
             modelBuilder.Entity("BacklogBasement.Models.Game", b =>
                 {
                     b.Navigation("GameClubNominations");
@@ -1009,6 +1141,8 @@ namespace BacklogBasement.Migrations
                     b.Navigation("Notifications");
 
                     b.Navigation("PollVotes");
+
+                    b.Navigation("QuizAnswers");
 
                     b.Navigation("ReceivedClubInvites");
 

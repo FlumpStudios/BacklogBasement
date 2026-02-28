@@ -230,14 +230,94 @@ namespace BacklogBasement.Services
                     Id = Guid.NewGuid(),
                     UserId = userId,
                     GameId = gameId,
-                    DateAdded = DateTime.UtcNow,
-                    Status = "backlog"
+                    DateAdded = DateTime.UtcNow
                 });
             }
 
             await _context.SaveChangesAsync();
 
             return (toAdd.Count, ownedIds.Count);
+        }
+
+        public async Task<CollectionStatsDto> GetCollectionStatsAsync(Guid userId)
+        {
+            var query = _context.UserGames.Where(ug => ug.UserId == userId);
+            return new CollectionStatsDto
+            {
+                TotalGames = await query.CountAsync(),
+                GamesBacklog = await query.CountAsync(ug => ug.Status == "backlog"),
+                GamesPlaying = await query.CountAsync(ug => ug.Status == "playing"),
+                GamesCompleted = await query.CountAsync(ug => ug.Status == "completed"),
+            };
+        }
+
+        public async Task<PagedCollectionDto> GetPagedCollectionAsync(
+            Guid userId, int skip, int take, string? search, string? status, string? source, string? playStatus, string sortBy, string sortDir)
+        {
+            var query = _context.UserGames
+                .Where(ug => ug.UserId == userId)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+                query = query.Where(ug => ug.Game.Name.ToLower().Contains(search.ToLower()));
+
+            if (status == "none")
+                query = query.Where(ug => ug.Status == null);
+            else if (!string.IsNullOrWhiteSpace(status) && status != "all")
+                query = query.Where(ug => ug.Status == status);
+
+            if (source == "steam")
+                query = query.Where(ug => ug.Game.SteamAppId != null);
+            else if (source == "manual")
+                query = query.Where(ug => ug.Game.SteamAppId == null);
+
+            if (playStatus == "played")
+                query = query.Where(ug => ug.PlaySessions.Any());
+            else if (playStatus == "unplayed")
+                query = query.Where(ug => !ug.PlaySessions.Any());
+
+            var total = await query.CountAsync();
+
+            IOrderedQueryable<UserGame> ordered = (sortBy, sortDir) switch
+            {
+                ("name", "asc") => query.OrderBy(ug => ug.Game.Name),
+                ("name", "desc") => query.OrderByDescending(ug => ug.Game.Name),
+                ("release", "desc") => query.OrderByDescending(ug => ug.Game.ReleaseDate),
+                ("release", "asc") => query.OrderBy(ug => ug.Game.ReleaseDate),
+                ("added", "asc") => query.OrderBy(ug => ug.DateAdded),
+                ("playtime", "desc") => query.OrderByDescending(ug => ug.PlaySessions.Sum(ps => ps.DurationMinutes)),
+                ("playtime", "asc") => query.OrderBy(ug => ug.PlaySessions.Sum(ps => ps.DurationMinutes)),
+                ("score", "desc") => query.OrderByDescending(ug => ug.Game.CriticScore),
+                ("score", "asc") => query.OrderBy(ug => ug.Game.CriticScore),
+                _ => query.OrderByDescending(ug => ug.DateAdded),
+            };
+
+            var items = await ordered
+                .Skip(skip)
+                .Take(take)
+                .Select(ug => new CollectionItemDto
+                {
+                    Id = ug.Id,
+                    GameId = ug.GameId,
+                    GameName = ug.Game.Name,
+                    ReleaseDate = ug.Game.ReleaseDate,
+                    CoverUrl = ug.Game.CoverUrl,
+                    DateAdded = ug.DateAdded,
+                    Notes = ug.Notes,
+                    TotalPlayTimeMinutes = ug.PlaySessions.Sum(ps => ps.DurationMinutes),
+                    Source = ug.Game.SteamAppId.HasValue ? "steam" : "manual",
+                    Status = ug.Status,
+                    DateCompleted = ug.DateCompleted,
+                    CriticScore = ug.Game.CriticScore,
+                })
+                .ToListAsync();
+
+            return new PagedCollectionDto
+            {
+                Items = items,
+                Total = total,
+                HasMore = skip + take < total,
+            };
         }
     }
 }

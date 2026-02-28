@@ -1,5 +1,5 @@
 import { api } from './client';
-import { CollectionItemDto, CreatePlaySessionDto, GameStatus } from '../types';
+import { CollectionItemDto, CreatePlaySessionDto, GameStatus, PagedCollectionResult, CollectionStatsDto } from '../types';
 
 export interface WithXp<T> {
   data: T;
@@ -80,4 +80,34 @@ export const collectionApi = {
    */
   updateStatus: (gameId: string, status: GameStatus) =>
     api.patchWithXp<CollectionItemDto>(`/collection/${gameId}/status`, { status }),
+
+  /**
+   * Get a paginated/filtered page of the collection
+   */
+  getPaged: (params: {
+    skip: number;
+    take: number;
+    search?: string;
+    status?: string;
+    source?: string;
+    playStatus?: string;
+    sortBy?: string;
+    sortDir?: string;
+  }): Promise<PagedCollectionResult> => {
+    const query = new URLSearchParams();
+    query.set('skip', String(params.skip));
+    query.set('take', String(params.take));
+    if (params.search) query.set('search', params.search);
+    if (params.status) query.set('status', params.status);
+    if (params.source) query.set('source', params.source);
+    if (params.playStatus) query.set('playStatus', params.playStatus);
+    if (params.sortBy) query.set('sortBy', params.sortBy);
+    if (params.sortDir) query.set('sortDir', params.sortDir);
+    return api.get<PagedCollectionResult>(`/collection/paged?${query}`);
+  },
+
+  /**
+   * Get collection counts for stat display
+   */
+  getStats: (): Promise<CollectionStatsDto> => api.get<CollectionStatsDto>('/collection/stats'),
 };

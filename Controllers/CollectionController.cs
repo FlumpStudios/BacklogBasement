@@ -98,6 +98,40 @@ namespace BacklogBasement.Controllers
             }
         }
 
+        [HttpGet("stats")]
+        public async Task<IActionResult> GetCollectionStats()
+        {
+            var userId = _userService.GetCurrentUserId();
+            if (userId == null) return Unauthorized(new { error = "User not found" });
+            var stats = await _collectionService.GetCollectionStatsAsync(userId.Value);
+            return Ok(stats);
+        }
+
+        [HttpGet("paged")]
+        public async Task<IActionResult> GetPagedCollection(
+            [FromQuery] int skip = 0,
+            [FromQuery] int take = 50,
+            [FromQuery] string? search = null,
+            [FromQuery] string? status = null,
+            [FromQuery] string? source = null,
+            [FromQuery] string? playStatus = null,
+            [FromQuery] string sortBy = "added",
+            [FromQuery] string sortDir = "desc")
+        {
+            try
+            {
+                var userId = _userService.GetCurrentUserId();
+                if (userId == null) return Unauthorized(new { error = "User not found" });
+                take = Math.Clamp(take, 1, 200);
+                var result = await _collectionService.GetPagedCollectionAsync(userId.Value, skip, take, search, status, source, playStatus, sortBy, sortDir);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "An error occurred while retrieving collection", details = ex.Message });
+            }
+        }
+
         [HttpPost("bulk-add")]
         public async Task<IActionResult> BulkAddToCollection([FromBody] BulkAddRequest request)
         {

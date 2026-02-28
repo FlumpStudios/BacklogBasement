@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace BacklogBasement.DTOs
 {
@@ -27,5 +28,10 @@ namespace BacklogBasement.DTOs
     public class UpdateGameStatusRequest
     {
         public string? Status { get; set; } // null, "backlog", "playing", "completed"
+    }
+
+    public class BulkAddRequest
+    {
+        public List<Guid> GameIds { get; set; } = new();
     }
 }

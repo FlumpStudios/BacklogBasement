@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using BacklogBasement.DTOs;
 using BacklogBasement.Services;
 using BacklogBasement.Exceptions;
 
@@ -13,10 +15,12 @@ namespace BacklogBasement.Controllers
     public class GamesController : ControllerBase
     {
         private readonly IGameService _gameService;
+        private readonly ILogger<GamesController> _logger;
 
-        public GamesController(IGameService gameService)
+        public GamesController(IGameService gameService, ILogger<GamesController> logger)
         {
             _gameService = gameService;
+            _logger = logger;
         }
 
         [HttpGet("search")]
@@ -35,6 +39,26 @@ namespace BacklogBasement.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { error = "An error occurred while searching for games", details = ex.Message });
+            }
+        }
+
+        [HttpPost("match-retroarch")]
+        [Authorize]
+        public async Task<IActionResult> MatchRetroArch([FromBody] RetroArchMatchRequestDto request)
+        {
+            if (request?.Entries == null || request.Entries.Count == 0)
+                return BadRequest(new { error = "Entries are required" });
+
+
+            try
+            {
+                var results = await _gameService.MatchRetroArchGamesAsync(request.Entries);
+                return Ok(results);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "RetroArch match failed for {Count} entries", request.Entries.Count);
+                return StatusCode(500, new { error = "An error occurred while matching games", details = ex.Message });
             }
         }
 

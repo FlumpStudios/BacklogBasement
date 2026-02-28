@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useCollection, useRemoveFromCollection, useUpdateGameStatus } from '../hooks';
 import { CollectionStats, CollectionFilters, SortOption, PlayStatusFilter, SourceFilter, GameStatusFilter } from '../features/collection';
 import { GameGrid } from '../features/games';
-import { EmptyState, useToast, SteamSection } from '../components';
+import { EmptyState, useToast, SteamSection, RetroArchSection } from '../components';
 import { CollectionItemDto } from '../types';
 import './CollectionPage.css';
 
@@ -254,6 +254,7 @@ export function CollectionPage() {
       </header>
 
       <SteamSection />
+      <RetroArchSection />
 
       {collection && collection.length > 0 ? (
         <>

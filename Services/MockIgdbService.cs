@@ -52,5 +52,16 @@ namespace BacklogBasement.Services
             var game = _mockGames.FirstOrDefault(g => g.Id == igdbId);
             return Task.FromResult(game);
         }
+
+        public Task<Dictionary<string, IgdbGame>> BatchSearchGamesAsync(IEnumerable<string> names)
+        {
+            var result = new Dictionary<string, IgdbGame>(StringComparer.OrdinalIgnoreCase);
+            foreach (var name in names)
+            {
+                var game = _mockGames.FirstOrDefault(g => g.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                if (game != null) result[name] = game;
+            }
+            return Task.FromResult(result);
+        }
     }
 }

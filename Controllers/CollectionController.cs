@@ -76,8 +76,8 @@ namespace BacklogBasement.Controllers
 
                 var result = await _collectionService.AddGameToCollectionAsync(userId.Value, request);
                 var xpAwarded = 0;
-                if (await _xpService.TryGrantAsync(userId.Value, "add_game", gameId.ToString(), IXpService.XP_ADD_GAME))
-                    xpAwarded += IXpService.XP_ADD_GAME;
+                if (await _xpService.TryGrantAsync(userId.Value, "first_game_added", "initial", IXpService.XP_FIRST_GAME))
+                    xpAwarded += IXpService.XP_FIRST_GAME;
                 if (result.Status == "backlog" && await _xpService.TryGrantAsync(userId.Value, "add_to_backlog", "initial", IXpService.XP_ADD_TO_BACKLOG))
                     xpAwarded += IXpService.XP_ADD_TO_BACKLOG;
                 if (xpAwarded > 0)
@@ -95,6 +95,32 @@ namespace BacklogBasement.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { error = "An error occurred while adding to collection", details = ex.Message });
+            }
+        }
+
+        [HttpPost("bulk-add")]
+        public async Task<IActionResult> BulkAddToCollection([FromBody] BulkAddRequest request)
+        {
+            var userId = _userService.GetCurrentUserId();
+            if (userId == null) return Unauthorized(new { error = "User not found" });
+            if (request?.GameIds == null || request.GameIds.Count == 0)
+                return BadRequest(new { error = "GameIds are required" });
+
+            try
+            {
+                var (added, alreadyOwned) = await _collectionService.BulkAddGamesAsync(userId.Value, request.GameIds);
+
+                var xpAwarded = 0;
+                if (await _xpService.TryGrantAsync(userId.Value, "retroarch_import", "initial", IXpService.XP_RETROARCH_IMPORT))
+                    xpAwarded += IXpService.XP_RETROARCH_IMPORT;
+                if (xpAwarded > 0)
+                    Response.Headers.Append("X-XP-Awarded", xpAwarded.ToString());
+
+                return Ok(new { added, alreadyOwned });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "An error occurred during bulk add", details = ex.Message });
             }
         }
 

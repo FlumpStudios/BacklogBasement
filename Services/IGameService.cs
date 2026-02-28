@@ -10,5 +10,6 @@ namespace BacklogBasement.Services
         Task<IEnumerable<GameSummaryDto>> SearchGamesAsync(string query);
         Task<GameDto?> GetGameAsync(Guid id);
         Task<GameDto> GetOrFetchGameFromIgdbAsync(long igdbId);
+        Task<IEnumerable<RetroArchMatchResultDto>> MatchRetroArchGamesAsync(IEnumerable<RetroArchEntryDto> entries);
     }
 }

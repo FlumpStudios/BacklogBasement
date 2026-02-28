@@ -41,7 +41,8 @@
       "Bash(ls C:/Projects/BacklogBasement/*.db 2>/dev/null || ls C:/Projects/BacklogBasement/bin/Debug/net9.0/*.db 2>/dev/null)",
       "Bash(powershell.exe:*)",
       "Bash(cd /tmp/dbmigrate && dotnet run 2>&1)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(curl:*)"
     ]
   }
 }

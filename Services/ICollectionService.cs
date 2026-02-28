@@ -12,5 +12,6 @@ namespace BacklogBasement.Services
         Task<bool> RemoveGameFromCollectionAsync(Guid userId, Guid gameId);
         Task<CollectionItemDto?> GetCollectionItemAsync(Guid userId, Guid gameId);
         Task<CollectionItemDto?> UpdateGameStatusAsync(Guid userId, Guid gameId, string? status);
+        Task<(int Added, int AlreadyOwned)> BulkAddGamesAsync(Guid userId, IEnumerable<Guid> gameIds);
     }
 }

@@ -15,3 +15,4 @@ export { SteamImportPrompt } from './SteamImportPrompt/SteamImportPrompt';
 export { DailyPoll } from './DailyPoll/DailyPoll';
 export { DailyQuiz } from './DailyQuiz/DailyQuiz';
 export { LeaderboardWidget } from './LeaderboardWidget/LeaderboardWidget';
+export { RetroArchSection } from './RetroArchSection';

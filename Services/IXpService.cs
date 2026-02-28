@@ -7,7 +7,8 @@ namespace BacklogBasement.Services
     public interface IXpService
     {
         const int XP_DAILY_LOGIN   = 10;
-        const int XP_ADD_GAME      = 15;
+        const int XP_FIRST_GAME        = 20;
+        const int XP_RETROARCH_IMPORT  = 50;
         const int XP_FIRST_SESSION = 20;
         const int XP_COMPLETE_GAME = 50;
         const int XP_CLUB_NOMINATE  = 10;

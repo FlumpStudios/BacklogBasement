@@ -201,5 +201,43 @@ namespace BacklogBasement.Services
                 CriticScore = userGame.Game.CriticScore
             };
         }
+
+        public async Task<(int Added, int AlreadyOwned)> BulkAddGamesAsync(Guid userId, IEnumerable<Guid> gameIds)
+        {
+            var idList = gameIds.Distinct().ToList();
+            if (!idList.Any()) return (0, 0);
+
+            // Load already-owned game IDs in one query
+            var ownedIds = await _context.UserGames
+                .Where(ug => ug.UserId == userId && idList.Contains(ug.GameId))
+                .Select(ug => ug.GameId)
+                .ToHashSetAsync();
+
+            // Load valid game IDs in one query
+            var validIds = await _context.Games
+                .Where(g => idList.Contains(g.Id))
+                .Select(g => g.Id)
+                .ToHashSetAsync();
+
+            var toAdd = idList
+                .Where(id => validIds.Contains(id) && !ownedIds.Contains(id))
+                .ToList();
+
+            foreach (var gameId in toAdd)
+            {
+                _context.UserGames.Add(new UserGame
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = userId,
+                    GameId = gameId,
+                    DateAdded = DateTime.UtcNow,
+                    Status = "backlog"
+                });
+            }
+
+            await _context.SaveChangesAsync();
+
+            return (toAdd.Count, ownedIds.Count);
+        }
     }
 }

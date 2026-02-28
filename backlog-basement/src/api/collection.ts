@@ -64,6 +64,12 @@ export const collectionApi = {
   },
 
   /**
+   * Bulk add games to collection, skipping duplicates
+   */
+  bulkAddGames: (gameIds: string[]) =>
+    api.post<{ added: number; alreadyOwned: number }>('/collection/bulk-add', { gameIds }),
+
+  /**
    * Delete a play session
    */
   deletePlaySession: (gameId: string, sessionId: string) =>

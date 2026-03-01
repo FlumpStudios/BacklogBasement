@@ -1,6 +1,7 @@
+import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../auth';
-import { useCollection, useUpdateGameStatus, useMyClubs } from '../hooks';
+import { useCollection, useUpdateGameStatus, useMyClubs, useTwitchSync } from '../hooks';
 import { CollectionStats } from '../features/collection';
 import { GameGrid } from '../features/games';
 import { SuggestionsSection } from '../features/suggestions';
@@ -24,6 +25,21 @@ export function DashboardPage() {
   const { data: myClubs } = useMyClubs();
   const updateGameStatus = useUpdateGameStatus();
   const { showToast } = useToast();
+  const twitchSync = useTwitchSync();
+  const syncedRef = useRef(false);
+
+  // Auto-sync Twitch live status once per dashboard visit
+  useEffect(() => {
+    if (!user?.hasTwitchLinked || syncedRef.current) return;
+    syncedRef.current = true;
+    twitchSync.mutate(undefined, {
+      onSuccess: (data) => {
+        if (data.updatedPlayingStatus && data.gameName) {
+          showToast(`You're live on Twitch — marked "${data.gameName}" as Playing`, 'success');
+        }
+      },
+    });
+  }, [user?.hasTwitchLinked]);
 
   const completedGames = collection?.filter(g => g.status === 'completed').slice(0, 4) ?? [];
   const currentlyPlaying = collection?.filter(g => g.status === 'playing') ?? [];

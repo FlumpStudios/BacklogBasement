@@ -12,9 +12,47 @@
 
 .profile-identity {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: var(--spacing-md);
   flex-wrap: wrap;
+}
+
+.profile-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #9147ff;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 3px 10px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background var(--transition-fast);
+}
+
+.profile-live-badge:hover {
+  background: #7c2fe8;
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ff4040;
+  animation: live-pulse 1.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.live-viewers {
+  font-weight: 400;
+  opacity: 0.9;
 }
 
 .profile-display-name {

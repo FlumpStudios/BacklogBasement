@@ -138,7 +138,11 @@ namespace BacklogBasement.Services
             {
                 game.IgdbIdChecked = true;
                 var igdbId = await _igdbService.FindIgdbIdBySteamIdAsync(game.SteamAppId.Value);
-                if (igdbId.HasValue) game.IgdbId = igdbId;
+                if (igdbId.HasValue)
+                {
+                    var conflict = await _context.Games.AnyAsync(g => g.IgdbId == igdbId && g.Id != game.Id);
+                    if (!conflict) game.IgdbId = igdbId;
+                }
                 await _context.SaveChangesAsync();
             }
 

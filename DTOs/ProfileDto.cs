@@ -8,6 +8,7 @@ namespace BacklogBasement.DTOs
         public Guid UserId { get; set; }
         public string Username { get; set; } = string.Empty;
         public string DisplayName { get; set; } = string.Empty;
+        public string? TwitchId { get; set; }
         public DateTime MemberSince { get; set; }
         public ProfileStatsDto Stats { get; set; } = new();
         public List<CollectionItemDto> CurrentlyPlaying { get; set; } = new();

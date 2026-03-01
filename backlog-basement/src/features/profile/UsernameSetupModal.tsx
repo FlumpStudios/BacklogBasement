@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Modal } from '../../components';
-import { useCheckUsername, useSetUsername } from '../../hooks';
+import { useCheckUsername, useSetUsername, useTwitchImport } from '../../hooks';
 import { useAuth } from '../../auth';
 import { steamApi } from '../../api';
+import { TwitchImportResultDto } from '../../types';
 import './UsernameSetupModal.css';
 
 const USERNAME_REGEX = /^[a-zA-Z0-9][a-zA-Z0-9_-]*[a-zA-Z0-9]$/;
@@ -22,8 +24,11 @@ interface Props {
 
 export function UsernameSetupModal({ onComplete }: Props) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
-  const [step, setStep] = useState<'username' | 'steam'>('username');
+  const [step, setStep] = useState<'username' | 'steam' | 'twitch'>('username');
+  const [twitchImportResult, setTwitchImportResult] = useState<TwitchImportResultDto | null>(null);
+  const twitchImport = useTwitchImport();
   const clientError = getClientValidationError(username);
   const { data: availability, isFetching: isChecking } = useCheckUsername(
     clientError ? '' : username
@@ -44,6 +49,8 @@ export function UsernameSetupModal({ onComplete }: Props) {
         if (user?.hasSteamLinked) {
           localStorage.setItem('backlog_onboarding', 'import');
           onComplete();
+        } else if (user?.hasTwitchLinked) {
+          setStep('twitch');
         } else {
           setStep('steam');
         }
@@ -67,7 +74,7 @@ export function UsernameSetupModal({ onComplete }: Props) {
     <Modal
       isOpen={true}
       onClose={() => {}}
-      title={step === 'username' ? 'Choose your username' : 'Link your Steam account?'}
+      title={step === 'username' ? 'Choose your username' : step === 'twitch' ? 'Import your stream history?' : 'Link your Steam account?'}
       dismissible={false}
     >
       {step === 'username' ? (
@@ -111,7 +118,7 @@ export function UsernameSetupModal({ onComplete }: Props) {
             {setUsernameMutation.isPending ? 'Setting username...' : 'Confirm Username'}
           </button>
         </form>
-      ) : (
+      ) : step === 'steam' ? (
         <div className="steam-step">
           <div className="steam-step-icon">
             <svg viewBox="0 0 24 24" width="56" height="56">
@@ -144,7 +151,59 @@ export function UsernameSetupModal({ onComplete }: Props) {
             Skip for now
           </button>
         </div>
-      )}
+      ) : step === 'twitch' ? (
+        <div className="twitch-step">
+          {!twitchImportResult ? (
+            <>
+              <div className="twitch-step-icon">
+                <svg viewBox="0 0 24 24" width="56" height="56">
+                  <path fill="#9147ff" d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/>
+                </svg>
+              </div>
+              <p className="twitch-step-desc">
+                You're signed in with Twitch! Import your stream history to add every game you've streamed to your collection, with streaming time recorded as playtime.
+              </p>
+              <p className="twitch-step-note">Up to 500 past broadcasts will be scanned. Note: Twitch only retains broadcast history for a limited time, so older streams may not appear (60 days for partners, 14 days for regular streamers).</p>
+              <button
+                className="btn btn-twitch"
+                onClick={async () => {
+                  const result = await twitchImport.mutateAsync();
+                  setTwitchImportResult(result);
+                }}
+                disabled={twitchImport.isPending}
+              >
+                {twitchImport.isPending ? 'Importing...' : 'Import Stream History'}
+              </button>
+              <button className="onboarding-skip" onClick={onComplete}>
+                Skip for now
+              </button>
+            </>
+          ) : (
+            <>
+              <h4 className="import-complete-title">Import Complete!</h4>
+              <div className="import-stats">
+                <div className="stat">
+                  <span className="stat-value">{twitchImportResult.total}</span>
+                  <span className="stat-label">Games Found</span>
+                </div>
+                <div className="stat stat-success">
+                  <span className="stat-value">{twitchImportResult.imported}</span>
+                  <span className="stat-label">Imported</span>
+                </div>
+                <div className="stat stat-skipped">
+                  <span className="stat-value">{twitchImportResult.skipped}</span>
+                  <span className="stat-label">Already Owned</span>
+                </div>
+              </div>
+              <div className="modal-actions">
+                <button className="btn btn-primary" onClick={() => { navigate('/collection'); onComplete(); }}>
+                  Go to Collection
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      ) : null}
     </Modal>
   );
 }

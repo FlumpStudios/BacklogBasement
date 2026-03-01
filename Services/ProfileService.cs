@@ -59,6 +59,7 @@ namespace BacklogBasement.Services
                 UserId = user.Id,
                 Username = user.Username!,
                 DisplayName = user.DisplayName,
+                TwitchId = user.TwitchId,
                 MemberSince = user.CreatedAt,
                 Stats = new ProfileStatsDto
                 {

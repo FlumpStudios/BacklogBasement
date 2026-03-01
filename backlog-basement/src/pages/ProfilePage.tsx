@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth';
-import { useProfile, useFriendshipStatus, useSuggestions, useDismissSuggestion } from '../hooks';
+import { useProfile, useFriendshipStatus, useSuggestions, useDismissSuggestion, useTwitchLive } from '../hooks';
 import { GameGrid } from '../features/games';
 import { SuggestGameModal } from '../features/suggestions';
 import { EmptyState, FriendButton } from '../components';
@@ -22,6 +22,7 @@ export function ProfilePage() {
   const isOwnProfile = user?.username === profile?.username;
   const isFriend = friendshipStatus?.status === 'friends';
   const completedGames = profile?.collection.filter(g => g.status === 'completed') ?? [];
+  const { data: liveStatus } = useTwitchLive(profile?.twitchId);
   const { data: suggestions } = useSuggestions(isOwnProfile);
   const dismissSuggestion = useDismissSuggestion();
 
@@ -54,6 +55,20 @@ export function ProfilePage() {
         <div className="profile-identity">
           <h1 className="profile-display-name">{profile.displayName}</h1>
           <span className="profile-username">@{profile.username}</span>
+          {liveStatus?.isLive && liveStatus.twitchLogin && (
+            <a
+              href={`https://twitch.tv/${liveStatus.twitchLogin}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="profile-live-badge"
+            >
+              <span className="live-dot" />
+              LIVE{liveStatus.gameName ? ` — ${liveStatus.gameName}` : ''}
+              {liveStatus.viewerCount > 0 && (
+                <span className="live-viewers"> · {liveStatus.viewerCount.toLocaleString()} viewers</span>
+              )}
+            </a>
+          )}
         </div>
         <span className="profile-member-since">
           Member since {new Date(profile.memberSince).toLocaleDateString(undefined, { year: 'numeric', month: 'long' })}

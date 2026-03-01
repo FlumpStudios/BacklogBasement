@@ -81,6 +81,7 @@ export {
 export { useDailyPoll, usePreviousPoll, useVotePoll, DAILY_POLL_QUERY_KEY, PREVIOUS_POLL_QUERY_KEY } from './useDailyPoll';
 export { useDailyQuiz, usePreviousQuiz, useAnswerQuiz, DAILY_QUIZ_QUERY_KEY, PREVIOUS_QUIZ_QUERY_KEY } from './useDailyQuiz';
 export { useGlobalLeaderboard, useFriendLeaderboard, GLOBAL_LEADERBOARD_QUERY_KEY, FRIEND_LEADERBOARD_QUERY_KEY } from './useLeaderboard';
+export { useTwitchLive, useTwitchImport, useTwitchSync } from './useTwitch';
 export {
   useConversations,
   useMessages,

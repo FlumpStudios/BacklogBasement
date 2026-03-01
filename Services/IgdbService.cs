@@ -302,7 +302,11 @@ namespace BacklogBasement.Services
                 await EnsureAccessTokenAsync();
                 var query = $@"fields game; where uid = ""{steamAppId}"" & category = 1; limit 1;";
                 var results = await PostAsync<ExternalGame[]>("external_games", query);
-                return results?.FirstOrDefault()?.Game;
+                if (results?.Length > 0) return results[0].Game;
+                // Fallback: some IGDB entries are missing the category field
+                query = $@"fields game; where uid = ""{steamAppId}""; limit 1;";
+                var fallback = await PostAsync<ExternalGame[]>("external_games", query);
+                return fallback?.FirstOrDefault()?.Game;
             }
             catch (Exception ex)
             {

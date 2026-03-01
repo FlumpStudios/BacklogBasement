@@ -85,6 +85,12 @@
   font-size: 0.9rem;
 }
 
+.twitch-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
 .btn-twitch {
   display: inline-flex;
   align-items: center;

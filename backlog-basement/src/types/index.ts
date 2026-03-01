@@ -75,11 +75,37 @@ export interface UserDto {
   xpInfo?: XpInfoDto;
 }
 
+// Twitch DTOs
+export interface TwitchLiveDto {
+  isLive: boolean;
+  streamTitle?: string | null;
+  gameName?: string | null;
+  igdbGameId?: number | null;
+  viewerCount: number;
+  twitchLogin?: string | null;
+  thumbnailUrl?: string | null;
+  updatedPlayingStatus: boolean;
+}
+
+export interface TwitchImportResultDto {
+  total: number;
+  imported: number;
+  skipped: number;
+  importedGames: TwitchImportedGameDto[];
+}
+
+export interface TwitchImportedGameDto {
+  name: string;
+  igdbId: number;
+  streamedMinutes: number;
+}
+
 // Profile DTOs
 export interface ProfileDto {
   userId: string;
   username: string;
   displayName: string;
+  twitchId?: string | null;
   memberSince: string;
   stats: ProfileStatsDto;
   currentlyPlaying: CollectionItemDto[];

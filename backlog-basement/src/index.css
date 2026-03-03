@@ -381,11 +381,16 @@ body[data-retro="true"] .btn-sm {
   font-size: 0.7rem;
 }
 
-/* BBC: primary color is yellow — force black text so it's readable */
-body[data-retro-style="bbc"] .btn-primary {
-  color: #000000;
-}
-body[data-retro-style="bbc"] .nav-level-badge {
+/* BBC: primary color is yellow — force black text on any primary-background element */
+body[data-retro-style="bbc"] .btn-primary,
+body[data-retro-style="bbc"] .nav-level-badge,
+body[data-retro-style="bbc"] .compare-tab.active,
+body[data-retro-style="bbc"] .conversation-unread-badge,
+body[data-retro-style="bbc"] .bubble-mine,
+body[data-retro-style="bbc"] .lb-page-tab--active,
+body[data-retro-style="bbc"] .lb-page-tab--active:hover,
+body[data-retro-style="bbc"] .lb-tab--active,
+body[data-retro-style="bbc"] .profile-status-badge {
   color: #000000;
 }
 

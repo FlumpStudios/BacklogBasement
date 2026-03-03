@@ -29,5 +29,6 @@ namespace BacklogBasement.Models
         public ICollection<DirectMessage> ReceivedMessages { get; set; } = new List<DirectMessage>();
         public ICollection<DailyPollVote> PollVotes { get; set; } = new List<DailyPollVote>();
         public ICollection<DailyQuizAnswer> QuizAnswers { get; set; } = new List<DailyQuizAnswer>();
+        public ICollection<ActivityEvent> ActivityEvents { get; set; } = new List<ActivityEvent>();
     }
 }

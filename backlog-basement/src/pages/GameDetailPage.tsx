@@ -153,6 +153,12 @@ export function GameDetailPage() {
           )}
         </div>
 
+        {game.igdbId && (
+          <div className="game-detail-twitch">
+            <TwitchStreams igdbId={game.igdbId} />
+          </div>
+        )}
+
         <div className="game-detail-info">
           <h1 className="game-title">{game.name}</h1>
 
@@ -223,6 +229,14 @@ export function GameDetailPage() {
               >
                 + Add to Collection
               </button>
+            )}
+            {game.steamAppId && (
+              <a
+                href={`steam://run/${game.steamAppId}`}
+                className="btn btn-secondary"
+              >
+                ▶ Launch in Steam
+              </a>
             )}
             {isAuthenticated && (
               <button
@@ -324,10 +338,6 @@ export function GameDetailPage() {
             </div>
           )}
 
-          {game.igdbId && <TwitchStreams igdbId={game.igdbId} />}
-
-          {id && <GameClubReviewsSection gameId={id} />}
-
           {isInCollection && playSessions && (
             <div className="game-sessions">
               <div className="sessions-header">
@@ -349,6 +359,8 @@ export function GameDetailPage() {
               />
             </div>
           )}
+
+          {id && <GameClubReviewsSection gameId={id} />}
         </div>
       </div>
 

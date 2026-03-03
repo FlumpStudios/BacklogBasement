@@ -79,6 +79,8 @@ namespace BacklogBasement.DTOs
         public int Score { get; set; }
         public string? Comment { get; set; }
         public DateTime SubmittedAt { get; set; }
+        public Guid? GameId { get; set; }
+        public Guid ClubId { get; set; }
     }
 
     public class GameClubInviteDto

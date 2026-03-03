@@ -39,6 +39,11 @@ function QuizResults({ quiz }: { quiz: DailyQuizDto }) {
                 )
               )}
               <span className="quiz-option-name">{opt.text}</span>
+              {(isCorrect || isSelected) && (
+                <span className={`quiz-option-icon${isCorrect ? ' quiz-option-icon--correct' : ' quiz-option-icon--wrong'}`}>
+                  {isCorrect ? '✓' : '✗'}
+                </span>
+              )}
               <span className="quiz-option-pct">{result?.percentage ?? 0}%</span>
             </div>
             {result && (
@@ -96,27 +101,13 @@ function QuizWidget({ quiz, label }: { quiz: DailyQuizDto; label?: string }) {
     answerMutation.mutate({ quizId: quiz.quizId, optionId });
   };
 
-  const correctOption = quiz.options.find((o) => {
-    if (!quiz.results) return false;
-    return quiz.results.find((r) => r.optionId === o.optionId && r.isCorrect);
-  });
-
   return (
     <div className="quiz-widget">
       {label && <p className="quiz-date-label">{label}</p>}
       <p className="quiz-question">{quiz.questionText}</p>
 
       {hasAnswered ? (
-        <>
-          {quiz.userWasCorrect !== null && quiz.userWasCorrect !== undefined && (
-            <div className={`quiz-feedback-pill${quiz.userWasCorrect ? ' quiz-feedback-pill--correct' : ' quiz-feedback-pill--wrong'}`}>
-              {quiz.userWasCorrect
-                ? '✓ Correct!'
-                : `✗ The answer was ${correctOption?.text ?? '?'}`}
-            </div>
-          )}
-          <QuizResults quiz={quiz} />
-        </>
+        <QuizResults quiz={quiz} />
       ) : (
         <div className={`quiz-options${isTrueFalse ? ' quiz-options--tf' : ''}`}>
           {quiz.options.map((opt) => (

@@ -481,6 +481,22 @@ export interface CollectionStatsDto {
   gamesCompleted: number;
 }
 
+// Activity Feed DTOs
+export interface ActivityEventDto {
+  id: string;
+  userId: string;
+  username: string;
+  displayName: string;
+  eventType: string;
+  gameId?: string | null;
+  gameName?: string | null;
+  gameCoverUrl?: string | null;
+  clubId?: string | null;
+  clubName?: string | null;
+  intValue?: number | null;
+  createdAt: string;
+}
+
 // API Response types
 export interface PaginatedResponse<T> {
   items: T[];

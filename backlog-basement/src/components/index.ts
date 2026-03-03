@@ -15,6 +15,7 @@ export { SteamImportPrompt } from './SteamImportPrompt/SteamImportPrompt';
 export { DailyPoll } from './DailyPoll/DailyPoll';
 export { DailyQuiz } from './DailyQuiz/DailyQuiz';
 export { LeaderboardWidget } from './LeaderboardWidget/LeaderboardWidget';
+export { ActivityFeed } from './ActivityFeed/ActivityFeed';
 export { RetroArchSection } from './RetroArchSection';
 export { TwitchStreams } from './TwitchStreams/TwitchStreams';
 export { TwitchSection } from './TwitchSection/TwitchSection';

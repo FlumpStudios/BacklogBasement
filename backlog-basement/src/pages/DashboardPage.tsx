@@ -5,7 +5,7 @@ import { useCollection, useUpdateGameStatus, useMyClubs, useTwitchSync } from '.
 import { CollectionStats } from '../features/collection';
 import { GameGrid } from '../features/games';
 import { SuggestionsSection } from '../features/suggestions';
-import { EmptyState, useToast, DailyPoll, DailyQuiz, LeaderboardWidget } from '../components';
+import { EmptyState, useToast, DailyPoll, DailyQuiz, LeaderboardWidget, ActivityFeed } from '../components';
 import { CollectionItemDto, GameClubDto } from '../types';
 import './DashboardPage.css';
 
@@ -105,6 +105,8 @@ export function DashboardPage() {
       </div>
 
       <LeaderboardWidget />
+
+      <ActivityFeed />
 
       {isLoading ? (
         <div className="loading-container">

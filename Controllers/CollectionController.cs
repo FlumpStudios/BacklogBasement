@@ -17,12 +17,14 @@ namespace BacklogBasement.Controllers
         private readonly ICollectionService _collectionService;
         private readonly IUserService _userService;
         private readonly IXpService _xpService;
+        private readonly IActivityService _activityService;
 
-        public CollectionController(ICollectionService collectionService, IUserService userService, IXpService xpService)
+        public CollectionController(ICollectionService collectionService, IUserService userService, IXpService xpService, IActivityService activityService)
         {
             _collectionService = collectionService;
             _userService = userService;
             _xpService = xpService;
+            _activityService = activityService;
         }
 
         [HttpGet]
@@ -75,6 +77,7 @@ namespace BacklogBasement.Controllers
                 }
 
                 var result = await _collectionService.AddGameToCollectionAsync(userId.Value, request);
+                await _activityService.LogAsync(userId.Value, "game_added", gameId);
                 var xpAwarded = 0;
                 if (await _xpService.TryGrantAsync(userId.Value, "first_game_added", "initial", IXpService.XP_FIRST_GAME))
                     xpAwarded += IXpService.XP_FIRST_GAME;
@@ -195,6 +198,10 @@ namespace BacklogBasement.Controllers
                 }
 
                 var result = await _collectionService.UpdateGameStatusAsync(userId.Value, gameId, request.Status);
+                if (request.Status == "playing")
+                    await _activityService.LogAsync(userId.Value, "game_started", gameId);
+                else if (request.Status == "completed")
+                    await _activityService.LogAsync(userId.Value, "game_completed", gameId);
                 var xpAwarded = 0;
                 if (request.Status == "completed" && await _xpService.TryGrantAsync(userId.Value, "complete_game", gameId.ToString(), IXpService.XP_COMPLETE_GAME))
                     xpAwarded += IXpService.XP_COMPLETE_GAME;

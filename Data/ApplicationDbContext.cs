@@ -32,6 +32,7 @@ namespace BacklogBasement.Data
         public DbSet<DailyQuiz> DailyQuizzes { get; set; } = null!;
         public DbSet<DailyQuizOption> DailyQuizOptions { get; set; } = null!;
         public DbSet<DailyQuizAnswer> DailyQuizAnswers { get; set; } = null!;
+        public DbSet<ActivityEvent> ActivityEvents { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -356,6 +357,31 @@ namespace BacklogBasement.Data
                 .WithMany(u => u.QuizAnswers)
                 .HasForeignKey(dqa => dqa.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure ActivityEvent entity
+            modelBuilder.Entity<ActivityEvent>()
+                .HasOne(ae => ae.User)
+                .WithMany(u => u.ActivityEvents)
+                .HasForeignKey(ae => ae.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ActivityEvent>()
+                .HasOne(ae => ae.Game)
+                .WithMany(g => g.ActivityEvents)
+                .HasForeignKey(ae => ae.GameId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<ActivityEvent>()
+                .HasOne(ae => ae.Club)
+                .WithMany(gc => gc.ActivityEvents)
+                .HasForeignKey(ae => ae.ClubId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<ActivityEvent>()
+                .HasIndex(ae => ae.CreatedAt);
+
+            modelBuilder.Entity<ActivityEvent>()
+                .HasIndex(ae => new { ae.UserId, ae.CreatedAt });
         }
     }
 }

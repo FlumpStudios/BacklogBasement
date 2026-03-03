@@ -16,12 +16,14 @@ namespace BacklogBasement.Controllers
         private readonly IDailyPollService _pollService;
         private readonly IUserService _userService;
         private readonly IXpService _xpService;
+        private readonly IActivityService _activityService;
 
-        public DailyPollController(IDailyPollService pollService, IUserService userService, IXpService xpService)
+        public DailyPollController(IDailyPollService pollService, IUserService userService, IXpService xpService, IActivityService activityService)
         {
             _pollService = pollService;
             _userService = userService;
             _xpService = xpService;
+            _activityService = activityService;
         }
 
         [HttpGet("today")]
@@ -71,6 +73,7 @@ namespace BacklogBasement.Controllers
                     return Unauthorized(new { error = "User not found" });
 
                 var result = await _pollService.VoteAsync(userId.Value, pollId, request.GameId);
+                await _activityService.LogAsync(userId.Value, "poll_voted");
 
                 if (await _xpService.TryGrantAsync(userId.Value, "daily_poll", pollId.ToString(), IXpService.XP_DAILY_POLL))
                     Response.Headers.Append("X-XP-Awarded", IXpService.XP_DAILY_POLL.ToString());

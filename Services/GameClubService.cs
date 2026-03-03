@@ -784,7 +784,9 @@ namespace BacklogBasement.Services
                     Username = user.Username ?? string.Empty,
                     Score = existing.Score,
                     Comment = existing.Comment,
-                    SubmittedAt = existing.SubmittedAt
+                    SubmittedAt = existing.SubmittedAt,
+                    GameId = round.GameId,
+                    ClubId = round.ClubId
                 };
             }
 
@@ -810,7 +812,9 @@ namespace BacklogBasement.Services
                 Username = reviewer.Username ?? string.Empty,
                 Score = review.Score,
                 Comment = review.Comment,
-                SubmittedAt = review.SubmittedAt
+                SubmittedAt = review.SubmittedAt,
+                GameId = round.GameId,
+                ClubId = round.ClubId
             };
         }
 

@@ -16,12 +16,14 @@ namespace BacklogBasement.Controllers
         private readonly IDailyQuizService _quizService;
         private readonly IUserService _userService;
         private readonly IXpService _xpService;
+        private readonly IActivityService _activityService;
 
-        public DailyQuizController(IDailyQuizService quizService, IUserService userService, IXpService xpService)
+        public DailyQuizController(IDailyQuizService quizService, IUserService userService, IXpService xpService, IActivityService activityService)
         {
             _quizService = quizService;
             _userService = userService;
             _xpService = xpService;
+            _activityService = activityService;
         }
 
         [HttpGet("today")]
@@ -72,6 +74,7 @@ namespace BacklogBasement.Controllers
                     return Unauthorized(new { error = "User not found" });
 
                 var result = await _quizService.AnswerAsync(userId.Value, quizId, request.OptionId);
+                await _activityService.LogAsync(userId.Value, "quiz_answered", intValue: result.UserWasCorrect == true ? 1 : 0);
 
                 var xpReason = result.UserWasCorrect == true ? "quiz_correct" : "quiz_incorrect";
                 var xpAmount = result.UserWasCorrect == true ? IXpService.XP_QUIZ_CORRECT : IXpService.XP_QUIZ_INCORRECT;

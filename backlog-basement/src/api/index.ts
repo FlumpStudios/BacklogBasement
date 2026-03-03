@@ -12,5 +12,6 @@ export { messagesApi } from './messages';
 export { pollApi } from './poll';
 export { quizApi } from './quiz';
 export { leaderboardApi } from './leaderboard';
+export { activityApi } from './activity';
 export { retroarchApi } from './retroarch';
 export type { RetroArchEntry, RetroArchMatchResult } from './retroarch';

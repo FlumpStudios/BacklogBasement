@@ -16,12 +16,14 @@ namespace BacklogBasement.Controllers
         private readonly IGameClubService _clubService;
         private readonly IUserService _userService;
         private readonly IXpService _xpService;
+        private readonly IActivityService _activityService;
 
-        public GameClubController(IGameClubService clubService, IUserService userService, IXpService xpService)
+        public GameClubController(IGameClubService clubService, IUserService userService, IXpService xpService, IActivityService activityService)
         {
             _clubService = clubService;
             _userService = userService;
             _xpService = xpService;
+            _activityService = activityService;
         }
 
         [HttpGet]
@@ -329,6 +331,8 @@ namespace BacklogBasement.Controllers
             try
             {
                 var round = await _clubService.AdvanceRoundStatusAsync(userId.Value, roundId);
+                if (round.Status == "playing")
+                    await _activityService.LogAsync(userId.Value, "club_round_started", round.GameId, clubId);
                 return Ok(round);
             }
             catch (BadRequestException ex)
@@ -408,6 +412,7 @@ namespace BacklogBasement.Controllers
             try
             {
                 var review = await _clubService.SubmitReviewAsync(userId.Value, roundId, request);
+                await _activityService.LogAsync(userId.Value, "club_review_posted", review.GameId, review.ClubId);
                 if (await _xpService.TryGrantAsync(userId.Value, "club_review", Guid.NewGuid().ToString(), IXpService.XP_CLUB_REVIEW))
                     Response.Headers.Append("X-XP-Awarded", IXpService.XP_CLUB_REVIEW.ToString());
                 return Ok(review);

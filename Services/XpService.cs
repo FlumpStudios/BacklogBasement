@@ -24,10 +24,12 @@ namespace BacklogBasement.Services
         };
 
         private readonly ApplicationDbContext _context;
+        private readonly IActivityService _activityService;
 
-        public XpService(ApplicationDbContext context)
+        public XpService(ApplicationDbContext context, IActivityService activityService)
         {
             _context = context;
+            _activityService = activityService;
         }
 
         public async Task<bool> TryGrantAsync(Guid userId, string reason, string referenceId, int amount)
@@ -57,11 +59,15 @@ namespace BacklogBasement.Services
                 return false;
             }
 
+            var oldLevel = ComputeLevel(user.XpTotal).Level;
             user.XpTotal += amount;
 
             try
             {
                 await _context.SaveChangesAsync();
+                var newLevel = ComputeLevel(user.XpTotal).Level;
+                if (newLevel > oldLevel)
+                    await _activityService.LogAsync(userId, "level_up", intValue: newLevel);
                 return true;
             }
             catch (DbUpdateException)

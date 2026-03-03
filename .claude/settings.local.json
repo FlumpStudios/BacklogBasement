@@ -42,7 +42,8 @@
       "Bash(powershell.exe:*)",
       "Bash(cd /tmp/dbmigrate && dotnet run 2>&1)",
       "Bash(rm:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(ls:*)"
     ]
   }
 }

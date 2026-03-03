@@ -306,6 +306,89 @@ h3 {
   color: var(--color-text-secondary);
 }
 
+/* =====================
+   CRT Retro Themes
+   ===================== */
+
+@keyframes crt-flicker {
+  0%, 100% { opacity: 1; }
+  92%       { opacity: 1; }
+  93%       { opacity: 0.97; }
+  94%       { opacity: 1; }
+}
+
+/* Shared retro base */
+body[data-retro="true"] {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  line-height: 2;
+  animation: crt-flicker 8s infinite;
+}
+
+/* Let the pixel font inherit naturally; only force it on elements
+   that commonly override font-family */
+body[data-retro="true"] input,
+body[data-retro="true"] button,
+body[data-retro="true"] select,
+body[data-retro="true"] textarea {
+  font-family: 'Press Start 2P', monospace;
+}
+
+/* Prevent text bursting out of containers */
+body[data-retro="true"] * {
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* CRT scanline overlay */
+body[data-retro="true"]::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.12) 2px,
+    rgba(0, 0, 0, 0.12) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Square pixel corners on buttons */
+body[data-retro="true"] .btn {
+  border: 2px solid var(--color-primary);
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* --- C64 phosphor glow (blue-purple) --- */
+body[data-retro-style="c64"] {
+  text-shadow: 0 0 6px rgba(168, 168, 255, 0.5);
+}
+
+/* --- BBC phosphor glow (yellow) --- */
+body[data-retro-style="bbc"] {
+  text-shadow: 0 0 6px rgba(255, 255, 0, 0.35);
+}
+
+/* Shrink small buttons further in retro mode */
+body[data-retro="true"] .btn-sm {
+  padding: 3px 6px;
+  font-size: 0.7rem;
+}
+
+/* BBC: primary color is yellow — force black text so it's readable */
+body[data-retro-style="bbc"] .btn-primary {
+  color: #000000;
+}
+body[data-retro-style="bbc"] .nav-level-badge {
+  color: #000000;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

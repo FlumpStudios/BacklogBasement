@@ -8,11 +8,14 @@ import { InboxBell } from '../InboxBell';
 import { CookieBanner } from '../CookieBanner';
 import { SteamImportPrompt } from '../SteamImportPrompt/SteamImportPrompt';
 import { UsernameSetupModal } from '../../features/profile';
+import { useTheme } from '../../contexts/ThemeContext';
 import './Layout.css';
 
 
 export function Layout() {
   const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const { retroMode, cycleRetro } = useTheme();
+  const retroLabel = retroMode === 'off' ? 'CRT: Off' : retroMode === 'c64' ? 'CRT: C64' : 'CRT: BBC';
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const { data: myClubs } = useMyClubs(isAuthenticated);
@@ -69,16 +72,8 @@ export function Layout() {
                   <Link to="/search" className="nav-link" onClick={closeMenu}>
                     Search
                   </Link>
-                  {user?.username && (
-                    <Link to={`/profile/${user.username}`} className="nav-link" onClick={closeMenu}>
-                      Profile
-                    </Link>
-                  )}
                   <Link to="/friends" className="nav-link" onClick={closeMenu}>
                     Friends
-                  </Link>
-                  <Link to="/leaderboard" className="nav-link" onClick={closeMenu}>
-                    Leaderboard
                   </Link>
                   <span className="nav-link-wrapper">
                     <Link to="/clubs" className="nav-link" onClick={closeMenu}>
@@ -86,6 +81,12 @@ export function Layout() {
                     </Link>
                     {hasClubAction && <span className="nav-badge-dot" />}
                   </span>
+                  <button
+                    className={`drawer-retro-toggle${retroMode !== 'off' ? ` retro-active retro-${retroMode}` : ''}`}
+                    onClick={cycleRetro}
+                  >
+                    🕹️ {retroLabel}
+                  </button>
                   <div className="user-menu">
                     {user?.avatarUrl && (
                       <img
@@ -94,21 +95,33 @@ export function Layout() {
                         className="user-avatar"
                       />
                     )}
-                    <span className="user-name">
-                      {user?.username ?? user?.displayName}
-                      {user?.xpInfo && (
-                        <span className="nav-level-badge" title={user.xpInfo.levelName}>
-                          Lv.{user.xpInfo.level}
-                        </span>
-                      )}
-                    </span>
+                    {user?.username ? (
+                      <Link to={`/profile/${user.username}`} className="user-name" onClick={closeMenu}>
+                        {user.username}
+                        {user?.xpInfo && (
+                          <span className="nav-level-badge" title={user.xpInfo.levelName}>
+                            Lv.{user.xpInfo.level}
+                          </span>
+                        )}
+                      </Link>
+                    ) : (
+                      <span className="user-name">{user?.displayName}</span>
+                    )}
                     <button onClick={handleLogout} className="btn btn-secondary btn-sm">
                       Logout
                     </button>
                   </div>
                 </div>
                 {menuOpen && <div className="drawer-backdrop" onClick={closeMenu} />}
-                <ThemeToggle />
+                {retroMode === 'off' && <ThemeToggle />}
+                <button
+                  className={`retro-toggle${retroMode !== 'off' ? ` retro-active retro-${retroMode}` : ''}`}
+                  onClick={cycleRetro}
+                  title={retroLabel}
+                  aria-label={retroLabel}
+                >
+                  🕹️
+                </button>
                 <InboxBell />
                 <NotificationBell />
                 <button
@@ -134,7 +147,15 @@ export function Layout() {
               </>
             ) : (
               <>
-                <ThemeToggle />
+                {retroMode === 'off' && <ThemeToggle />}
+                <button
+                  className={`retro-toggle${retroMode !== 'off' ? ` retro-active retro-${retroMode}` : ''}`}
+                  onClick={cycleRetro}
+                  title={retroLabel}
+                  aria-label={retroLabel}
+                >
+                  🕹️
+                </button>
                 <Link to="/login" className="btn btn-primary">
                   Sign In
                 </Link>

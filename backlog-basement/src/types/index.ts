@@ -64,7 +64,6 @@ export interface XpInfoDto {
 // User DTOs
 export interface UserDto {
   id: string;
-  email: string;
   displayName: string;
   avatarUrl?: string;
   steamId?: string | null;
@@ -105,6 +104,7 @@ export interface ProfileDto {
   userId: string;
   username: string;
   displayName: string;
+  avatarUrl?: string | null;
   twitchId?: string | null;
   memberSince: string;
   stats: ProfileStatsDto;
@@ -129,6 +129,7 @@ export interface FriendDto {
   userId: string;
   username: string;
   displayName: string;
+  avatarUrl?: string | null;
   friendsSince: string;
 }
 
@@ -462,6 +463,7 @@ export interface LeaderboardEntryDto {
   userId: string;
   username?: string | null;
   displayName: string;
+  avatarUrl?: string | null;
   xpTotal: number;
   level: number;
   levelName: string;
@@ -487,6 +489,7 @@ export interface ActivityEventDto {
   userId: string;
   username: string;
   displayName: string;
+  userAvatarUrl?: string | null;
   eventType: string;
   gameId?: string | null;
   gameName?: string | null;

@@ -151,6 +151,13 @@ export function GameDetailPage() {
           ) : (
             <div className="cover-placeholder">🎮</div>
           )}
+          {game.steamAppId && (
+            <div className="game-external-links">
+              <a href={`https://store.steampowered.com/app/${game.steamAppId}`} target="_blank" rel="noopener noreferrer" className="game-external-link">
+                View on Steam ↗
+              </a>
+            </div>
+          )}
         </div>
 
         {game.igdbId && (

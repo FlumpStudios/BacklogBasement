@@ -1,3 +1,8 @@
+.af-avatar-link {
+  display: flex;
+  flex-shrink: 0;
+}
+
 .af-section {
   margin-bottom: var(--spacing-xl);
 }

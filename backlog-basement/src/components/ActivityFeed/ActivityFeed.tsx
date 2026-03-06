@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useActivityFeed } from '../../hooks';
 import { ActivityEventDto } from '../../types';
+import { Avatar } from '../Avatar';
 import './ActivityFeed.css';
 
 const PAGE_SIZE = 10;
@@ -69,6 +70,13 @@ function FeedItem({ event }: { event: ActivityEventDto }) {
   const hasCover = event.gameCoverUrl && event.gameId;
   return (
     <div className="af-item">
+      {event.username ? (
+        <Link to={`/profile/${event.username}`} className="af-avatar-link">
+          <Avatar avatarUrl={event.userAvatarUrl} displayName={event.displayName} userId={event.userId} size="sm" />
+        </Link>
+      ) : (
+        <Avatar avatarUrl={event.userAvatarUrl} displayName={event.displayName} userId={event.userId} size="sm" />
+      )}
       {hasCover ? (
         <Link to={`/games/${event.gameId}`} className="af-cover-link">
           <img src={event.gameCoverUrl!} alt={event.gameName ?? ''} className="af-cover" />

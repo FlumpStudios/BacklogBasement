@@ -375,6 +375,11 @@ body[data-retro-style="bbc"] {
   text-shadow: 0 0 6px rgba(255, 255, 0, 0.35);
 }
 
+/* --- Spectrum phosphor glow (white) --- */
+body[data-retro-style="spectrum"] {
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
+}
+
 /* Shrink small buttons further in retro mode */
 body[data-retro="true"] .btn-sm {
   padding: 3px 6px;
@@ -390,7 +395,24 @@ body[data-retro-style="bbc"] .bubble-mine,
 body[data-retro-style="bbc"] .lb-page-tab--active,
 body[data-retro-style="bbc"] .lb-page-tab--active:hover,
 body[data-retro-style="bbc"] .lb-tab--active,
-body[data-retro-style="bbc"] .profile-status-badge {
+body[data-retro-style="bbc"] .profile-status-badge,
+body[data-retro-style="bbc"] .profile-own-badge,
+body[data-retro-style="bbc"] .profile-xp-level-badge {
+  color: #000000;
+}
+
+/* Spectrum: primary is green — force black text on primary-background elements */
+body[data-retro-style="spectrum"] .btn-primary,
+body[data-retro-style="spectrum"] .nav-level-badge,
+body[data-retro-style="spectrum"] .compare-tab.active,
+body[data-retro-style="spectrum"] .conversation-unread-badge,
+body[data-retro-style="spectrum"] .bubble-mine,
+body[data-retro-style="spectrum"] .lb-page-tab--active,
+body[data-retro-style="spectrum"] .lb-page-tab--active:hover,
+body[data-retro-style="spectrum"] .lb-tab--active,
+body[data-retro-style="spectrum"] .profile-status-badge,
+body[data-retro-style="spectrum"] .profile-own-badge,
+body[data-retro-style="spectrum"] .profile-xp-level-badge {
   color: #000000;
 }
 

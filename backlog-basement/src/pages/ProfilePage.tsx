@@ -4,7 +4,7 @@ import { useAuth } from '../auth';
 import { useProfile, useFriendshipStatus, useSuggestions, useDismissSuggestion, useTwitchLive } from '../hooks';
 import { GameGrid } from '../features/games';
 import { SuggestGameModal } from '../features/suggestions';
-import { EmptyState, FriendButton } from '../components';
+import { EmptyState, FriendButton, Avatar } from '../components';
 import { formatPlaytime } from '../utils';
 import './ProfilePage.css';
 
@@ -53,6 +53,7 @@ export function ProfilePage() {
     <div className="profile-page">
       <header className="profile-header">
         <div className="profile-identity">
+          <Avatar avatarUrl={profile.avatarUrl} displayName={profile.displayName} userId={profile.userId} size="lg" />
           <h1 className="profile-display-name">{profile.displayName}</h1>
           <span className="profile-username">@{profile.username}</span>
           {liveStatus?.isLive && liveStatus.twitchLogin && (
@@ -201,6 +202,7 @@ export function ProfilePage() {
           <div className="profile-friends-list">
             {profile.friends.map((friend) => (
               <Link key={friend.userId} to={`/profile/${friend.username}`} className="profile-friend-card">
+                <Avatar avatarUrl={friend.avatarUrl} displayName={friend.displayName} userId={friend.userId} size="sm" />
                 <span className="profile-friend-name">{friend.displayName}</span>
                 <span className="profile-friend-username">@{friend.username}</span>
               </Link>

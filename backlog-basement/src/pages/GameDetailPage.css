@@ -35,6 +35,25 @@
   z-index: 1;
 }
 
+.game-external-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.game-external-link {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  text-align: center;
+}
+
+.game-external-link:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
 .game-detail-twitch {
   grid-area: twitch;
   align-self: start;

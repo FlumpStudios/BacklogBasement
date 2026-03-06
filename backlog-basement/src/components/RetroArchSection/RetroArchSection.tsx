@@ -100,7 +100,7 @@ type Step = 'idle' | 'parsing' | 'matching' | 'review' | 'importing' | 'done';
 export function RetroArchSection() {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState<Step>('idle');
   const [matches, setMatches] = useState<RetroArchMatchResult[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -206,7 +206,6 @@ export function RetroArchSection() {
       <button className="retroarch-header" onClick={() => setIsOpen(!isOpen)}>
         <div className="retroarch-header-left">
           <h3>RetroArch Import</h3>
-          <span className="retroarch-header-badge">Beta</span>
         </div>
         <span className={`retroarch-chevron ${isOpen ? 'open' : ''}`}>&#9662;</span>
       </button>

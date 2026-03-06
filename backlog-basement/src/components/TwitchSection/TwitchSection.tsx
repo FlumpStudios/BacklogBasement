@@ -16,7 +16,7 @@ export function TwitchSection() {
   const importMutation = useTwitchImport();
 
   const [unlinking, setUnlinking] = useState(false);
-  const [isOpen, setIsOpen] = useState(!user?.hasTwitchLinked);
+  const [isOpen, setIsOpen] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [importResult, setImportResult] = useState<TwitchImportResultDto | null>(null);
 

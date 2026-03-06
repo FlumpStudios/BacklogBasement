@@ -1,5 +1,6 @@
+import { useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { steamApi } from '../api';
+import { steamApi, collectionApi } from '../api';
 import { useToast } from '../components';
 import { SteamImportRequest } from '../types';
 import { COLLECTION_QUERY_KEY } from './useCollection';
@@ -56,6 +57,37 @@ export function useSyncAllSteamPlaytime() {
       queryClient.invalidateQueries({ queryKey: COLLECTION_QUERY_KEY });
     },
   });
+}
+
+export function useSteamAutoSync(hasSteamLinked: boolean, hasUsername: boolean, isOnboarding: boolean) {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  const hasRun = useRef(false);
+  const { data: collection } = useQuery({
+    queryKey: COLLECTION_QUERY_KEY,
+    queryFn: collectionApi.getAll,
+    enabled: hasSteamLinked && hasUsername,
+  });
+  const hasSteamGames = collection?.some(g => g.source === 'steam') ?? false;
+
+  useEffect(() => {
+    if (!hasSteamLinked || !hasUsername || isOnboarding || hasRun.current) return;
+    if (!hasSteamGames) return;
+    if (sessionStorage.getItem('steam_auto_synced')) return;
+
+    hasRun.current = true;
+    sessionStorage.setItem('steam_auto_synced', '1');
+
+    steamApi.importLibrary({ includePlaytime: true }).then(({ data }) => {
+      queryClient.invalidateQueries({ queryKey: COLLECTION_QUERY_KEY });
+      if (data.importedCount > 0) {
+        const label = data.importedCount === 1 ? 'game' : 'games';
+        showToast(`${data.importedCount} new Steam ${label} added to your collection`, 'success');
+      }
+    }).catch(() => {
+      // silent fail — auto sync shouldn't disrupt the user
+    });
+  }, [hasSteamLinked, hasUsername, isOnboarding, queryClient, showToast]);
 }
 
 export function useSyncSteamPlaytime(gameId: string) {

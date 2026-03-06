@@ -10,6 +10,7 @@ namespace BacklogBasement.Services
         Task<int?> GetMetacriticScoreAsync(long steamAppId);
         Task<(int? MetacriticScore, string? Description)> GetSteamAppDetailsAsync(long steamAppId);
         Task<List<string>?> GetSteamFriendsAsync(string steamId);
+        Task<string?> GetSteamAvatarAsync(string steamId);
     }
 
     public class SteamGame

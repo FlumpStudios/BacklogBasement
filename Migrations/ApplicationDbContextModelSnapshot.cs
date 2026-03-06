@@ -17,6 +17,44 @@ namespace BacklogBasement.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.1");
 
+            modelBuilder.Entity("BacklogBasement.Models.ActivityEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ClubId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("GameId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("IntValue")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClubId");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("GameId");
+
+                    b.HasIndex("UserId", "CreatedAt");
+
+                    b.ToTable("ActivityEvents");
+                });
+
             modelBuilder.Entity("BacklogBasement.Models.DailyPoll", b =>
                 {
                     b.Property<Guid>("Id")
@@ -642,14 +680,13 @@ namespace BacklogBasement.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("AvatarUrl")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("DisplayName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -751,6 +788,31 @@ namespace BacklogBasement.Migrations
                         .IsUnique();
 
                     b.ToTable("XpGrants");
+                });
+
+            modelBuilder.Entity("BacklogBasement.Models.ActivityEvent", b =>
+                {
+                    b.HasOne("BacklogBasement.Models.GameClub", "Club")
+                        .WithMany("ActivityEvents")
+                        .HasForeignKey("ClubId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("BacklogBasement.Models.Game", "Game")
+                        .WithMany("ActivityEvents")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("BacklogBasement.Models.User", "User")
+                        .WithMany("ActivityEvents")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Club");
+
+                    b.Navigation("Game");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BacklogBasement.Models.DailyPollGame", b =>
@@ -1102,6 +1164,8 @@ namespace BacklogBasement.Migrations
 
             modelBuilder.Entity("BacklogBasement.Models.Game", b =>
                 {
+                    b.Navigation("ActivityEvents");
+
                     b.Navigation("GameClubNominations");
 
                     b.Navigation("GameClubRounds");
@@ -1113,6 +1177,8 @@ namespace BacklogBasement.Migrations
 
             modelBuilder.Entity("BacklogBasement.Models.GameClub", b =>
                 {
+                    b.Navigation("ActivityEvents");
+
                     b.Navigation("Invites");
 
                     b.Navigation("Members");
@@ -1136,6 +1202,8 @@ namespace BacklogBasement.Migrations
 
             modelBuilder.Entity("BacklogBasement.Models.User", b =>
                 {
+                    b.Navigation("ActivityEvents");
+
                     b.Navigation("GameClubMemberships");
 
                     b.Navigation("Notifications");

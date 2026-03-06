@@ -9,8 +9,8 @@ namespace BacklogBasement.Models
         public string? GoogleSubjectId { get; set; }
         public string? SteamId { get; set; }
         public string? TwitchId { get; set; }
+        public string? AvatarUrl { get; set; }
         public string? Username { get; set; }
-        public string Email { get; set; } = string.Empty;
         public string DisplayName { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
         public int XpTotal { get; set; }

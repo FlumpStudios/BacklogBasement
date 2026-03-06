@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useGlobalLeaderboard, useFriendLeaderboard } from '../../hooks';
 import { LeaderboardEntryDto } from '../../types';
+import { Avatar } from '../Avatar';
 import './LeaderboardWidget.css';
 
 type Tab = 'global' | 'friends';
@@ -18,6 +19,13 @@ function LeaderboardRow({ entry }: { entry: LeaderboardEntryDto }) {
   return (
     <div className={`lb-row${entry.isCurrentUser ? ' lb-row--me' : ''}`}>
       <RankBadge rank={entry.rank} />
+      {entry.username ? (
+        <Link to={`/profile/${entry.username}`} className="lb-avatar-link">
+          <Avatar avatarUrl={entry.avatarUrl} displayName={entry.displayName} userId={entry.userId.toString()} size="sm" />
+        </Link>
+      ) : (
+        <Avatar avatarUrl={entry.avatarUrl} displayName={entry.displayName} userId={entry.userId.toString()} size="sm" />
+      )}
       <span className="lb-name">
         {entry.username ? (
           <Link to={`/profile/${entry.username}`} className="lb-name-link">{name}</Link>

@@ -1,21 +1,29 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth';
-import { useMyClubs } from '../../hooks';
-import { ThemeToggle } from '../ThemeToggle';
+import { useMyClubs, useSteamAutoSync } from '../../hooks';
 import { NotificationBell } from '../NotificationBell';
 import { InboxBell } from '../InboxBell';
 import { CookieBanner } from '../CookieBanner';
+import { Avatar } from '../Avatar';
 import { SteamImportPrompt } from '../SteamImportPrompt/SteamImportPrompt';
 import { UsernameSetupModal } from '../../features/profile';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useToast } from '../Toast/ToastContext';
 import './Layout.css';
 
 
 export function Layout() {
   const { user, isAuthenticated, isLoading, logout } = useAuth();
   const { retroMode, cycleRetro } = useTheme();
-  const retroLabel = retroMode === 'off' ? 'CRT: Off' : retroMode === 'c64' ? 'CRT: C64' : 'CRT: BBC';
+  const { showToast } = useToast();
+  const retroLabel = retroMode === 'c64' ? 'CRT: C64' : retroMode === 'bbc' ? 'CRT: BBC' : 'CRT: Spectrum';
+
+  const handleCycleRetro = () => {
+    cycleRetro();
+    const next = retroMode === 'c64' ? 'BBC Micro' : retroMode === 'bbc' ? 'ZX Spectrum' : 'C64';
+    showToast(`📺 Switched to ${next}`, 'info');
+  };
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const { data: myClubs } = useMyClubs(isAuthenticated);
@@ -29,8 +37,15 @@ export function Layout() {
   const [onboardingActive, setOnboardingActive] = useState(false);
   const [showImportPrompt, setShowImportPrompt] = useState(false);
 
+  useSteamAutoSync(
+    !!user?.hasSteamLinked,
+    !!user?.username,
+    onboardingActive || showImportPrompt,
+  );
+
   useEffect(() => {
     if (isAuthenticated && !isLoading && !user?.username) {
+      localStorage.removeItem('backlog_onboarding');
       setOnboardingActive(true);
     }
   }, [isAuthenticated, isLoading, user?.username]);
@@ -83,17 +98,17 @@ export function Layout() {
                   </span>
                   <button
                     className={`drawer-retro-toggle${retroMode !== 'off' ? ` retro-active retro-${retroMode}` : ''}`}
-                    onClick={cycleRetro}
+                    onClick={handleCycleRetro}
                   >
-                    🕹️ {retroLabel}
+                    📺 {retroLabel}
                   </button>
                   <div className="user-menu">
-                    {user?.avatarUrl && (
-                      <img
-                        src={user.avatarUrl}
-                        alt={user.displayName}
-                        className="user-avatar"
-                      />
+                    {user?.username ? (
+                      <Link to={`/profile/${user.username}`} className="nav-avatar-link" onClick={closeMenu}>
+                        <Avatar avatarUrl={user.avatarUrl} displayName={user.displayName} userId={user.id} size="sm" />
+                      </Link>
+                    ) : (
+                      <Avatar avatarUrl={user?.avatarUrl} displayName={user?.displayName ?? ''} userId={user?.id} size="sm" />
                     )}
                     {user?.username ? (
                       <Link to={`/profile/${user.username}`} className="user-name" onClick={closeMenu}>
@@ -113,14 +128,13 @@ export function Layout() {
                   </div>
                 </div>
                 {menuOpen && <div className="drawer-backdrop" onClick={closeMenu} />}
-                {retroMode === 'off' && <ThemeToggle />}
                 <button
-                  className={`retro-toggle${retroMode !== 'off' ? ` retro-active retro-${retroMode}` : ''}`}
-                  onClick={cycleRetro}
+                  className={`retro-toggle retro-active retro-${retroMode}`}
+                  onClick={handleCycleRetro}
                   title={retroLabel}
                   aria-label={retroLabel}
                 >
-                  🕹️
+                  📺
                 </button>
                 <InboxBell />
                 <NotificationBell />
@@ -147,14 +161,13 @@ export function Layout() {
               </>
             ) : (
               <>
-                {retroMode === 'off' && <ThemeToggle />}
                 <button
-                  className={`retro-toggle${retroMode !== 'off' ? ` retro-active retro-${retroMode}` : ''}`}
-                  onClick={cycleRetro}
+                  className={`retro-toggle retro-active retro-${retroMode}`}
+                  onClick={handleCycleRetro}
                   title={retroLabel}
                   aria-label={retroLabel}
                 >
-                  🕹️
+                  📺
                 </button>
                 <Link to="/login" className="btn btn-primary">
                   Sign In
@@ -179,7 +192,13 @@ export function Layout() {
       </footer>
 
       <CookieBanner />
-      {onboardingActive && <UsernameSetupModal onComplete={() => setOnboardingActive(false)} />}
+      {onboardingActive && <UsernameSetupModal onComplete={() => {
+        setOnboardingActive(false);
+        if (localStorage.getItem('backlog_onboarding') === 'import') {
+          localStorage.removeItem('backlog_onboarding');
+          setShowImportPrompt(true);
+        }
+      }} />}
       {showImportPrompt && <SteamImportPrompt onClose={() => setShowImportPrompt(false)} />}
     </div>
   );

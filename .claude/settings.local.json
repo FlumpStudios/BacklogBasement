@@ -43,7 +43,12 @@
       "Bash(cd /tmp/dbmigrate && dotnet run 2>&1)",
       "Bash(rm:*)",
       "Bash(curl:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(taskkill:*)",
+      "Bash(cmd:*)",
+      "Bash(powershell:*)",
+      "Bash(dotnet:*)",
+      "WebFetch(domain:www.igdb.com)"
     ]
   }
 }

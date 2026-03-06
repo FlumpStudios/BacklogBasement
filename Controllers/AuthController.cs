@@ -20,15 +20,17 @@ namespace BacklogBasement.Controllers
     {
         private readonly IUserService _userService;
         private readonly IXpService _xpService;
+        private readonly ISteamService _steamService;
         private readonly ILogger<AuthController> _logger;
         private readonly string _frontendUrl;
         private readonly IConfiguration _configuration;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public AuthController(IUserService userService, IXpService xpService, ILogger<AuthController> logger, IConfiguration configuration, IHttpClientFactory httpClientFactory)
+        public AuthController(IUserService userService, IXpService xpService, ISteamService steamService, ILogger<AuthController> logger, IConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
             _userService = userService;
             _xpService = xpService;
+            _steamService = steamService;
             _logger = logger;
             _configuration = configuration;
             _frontendUrl = configuration["FrontendUrl"]?.TrimEnd('/') ?? "http://localhost:5173";
@@ -74,19 +76,18 @@ namespace BacklogBasement.Controllers
             {
                 // Get user info from claims
                 var googleSubjectId = User.FindFirst("sub")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                var email = User.FindFirst(ClaimTypes.Email)?.Value;
                 var displayName = User.FindFirst(ClaimTypes.Name)?.Value;
+                var avatarUrl = User.FindFirst("picture")?.Value;
 
-                if (!string.IsNullOrEmpty(googleSubjectId) && !string.IsNullOrEmpty(email))
+                if (!string.IsNullOrEmpty(googleSubjectId))
                 {
                     // Create or get user
-                    var user = await _userService.GetOrCreateUserAsync(googleSubjectId, email, displayName ?? email);
-                    
+                    var user = await _userService.GetOrCreateUserAsync(googleSubjectId, displayName ?? "User", avatarUrl);
+
                     // Sign in the user with additional claims including our database ID
                     var claims = new List<Claim>
                     {
                         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                        new Claim(ClaimTypes.Email, user.Email),
                         new Claim(ClaimTypes.Name, user.DisplayName),
                         new Claim("GoogleId", user.GoogleSubjectId!)
                     };
@@ -120,8 +121,6 @@ namespace BacklogBasement.Controllers
                 return Unauthorized();
 
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var email = User.FindFirst(ClaimTypes.Email)?.Value;
-            var displayName = User.FindFirst(ClaimTypes.Name)?.Value;
 
             if (string.IsNullOrEmpty(userId))
                 return Forbid();
@@ -139,8 +138,8 @@ namespace BacklogBasement.Controllers
             return Ok(new
             {
                 id = user.Id.ToString(),
-                email = user.Email ?? string.Empty,
                 displayName = user.DisplayName,
+                avatarUrl = user.AvatarUrl,
                 googleId = user.GoogleSubjectId,
                 steamId = user.SteamId,
                 hasSteamLinked = !string.IsNullOrEmpty(user.SteamId),
@@ -206,16 +205,17 @@ namespace BacklogBasement.Controllers
                     ? intentValue
                     : null;
 
+                var steamAvatarUrl = await _steamService.GetSteamAvatarAsync(steamId);
+
                 if (intent == "login")
                 {
                     // Steam standalone login
-                    var user = await _userService.GetOrCreateSteamUserAsync(steamId, personaName);
+                    var user = await _userService.GetOrCreateSteamUserAsync(steamId, personaName, steamAvatarUrl);
                     _logger.LogInformation("Steam login for user {UserId}", user.Id);
 
                     var claims = new List<Claim>
                     {
                         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                        new Claim(ClaimTypes.Email, user.Email),
                         new Claim(ClaimTypes.Name, user.DisplayName)
                     };
                     if (!string.IsNullOrEmpty(user.GoogleSubjectId))
@@ -258,7 +258,6 @@ namespace BacklogBasement.Controllers
                     var claims = new List<Claim>
                     {
                         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                        new Claim(ClaimTypes.Email, user.Email),
                         new Claim(ClaimTypes.Name, user.DisplayName)
                     };
                     if (!string.IsNullOrEmpty(user.GoogleSubjectId))
@@ -342,7 +341,7 @@ namespace BacklogBasement.Controllers
 
             if (intent == "login")
             {
-                var user = await _userService.GetOrCreateTwitchUserAsync(twitchUser.Id, twitchUser.DisplayName, twitchUser.Email);
+                var user = await _userService.GetOrCreateTwitchUserAsync(twitchUser.Id, twitchUser.DisplayName, twitchUser.ProfileImageUrl);
                 var claims = BuildClaims(user);
                 await HttpContext.SignInAsync("Cookies", new ClaimsPrincipal(new ClaimsIdentity(claims, "Twitch")));
                 return Redirect($"{_frontendUrl}/?auth=success");
@@ -383,7 +382,7 @@ namespace BacklogBasement.Controllers
         {
             var clientId = _configuration["Igdb:ClientId"]!;
             var redirectUri = Url.Action("TwitchCallback", "Auth", null, Request.Scheme)!;
-            var scope = "user:read:email";
+            var scope = "";
             return $"https://id.twitch.tv/oauth2/authorize" +
                    $"?client_id={Uri.EscapeDataString(clientId)}" +
                    $"&redirect_uri={Uri.EscapeDataString(redirectUri)}" +
@@ -407,7 +406,6 @@ namespace BacklogBasement.Controllers
             var claims = new List<Claim>
             {
                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new(ClaimTypes.Email, user.Email),
                 new(ClaimTypes.Name, user.DisplayName)
             };
             if (!string.IsNullOrEmpty(user.GoogleSubjectId))
@@ -445,10 +443,11 @@ namespace BacklogBasement.Controllers
             var data = doc.RootElement.GetProperty("data");
             if (data.GetArrayLength() == 0) return null;
             var first = data[0];
+            var profileImageUrl = first.TryGetProperty("profile_image_url", out var piu) ? piu.GetString() : null;
             return new TwitchUserInfo(
                 first.GetProperty("id").GetString() ?? "",
                 first.GetProperty("display_name").GetString() ?? "",
-                first.TryGetProperty("email", out var emailEl) ? emailEl.GetString() : null
+                profileImageUrl
             );
         }
 
@@ -458,6 +457,6 @@ namespace BacklogBasement.Controllers
             public string AccessToken { get; set; } = "";
         }
 
-        private record TwitchUserInfo(string Id, string DisplayName, string? Email);
+        private record TwitchUserInfo(string Id, string DisplayName, string? ProfileImageUrl = null);
     }
 }

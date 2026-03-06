@@ -90,6 +90,11 @@
   border-radius: 50%;
 }
 
+.nav-avatar-link {
+  display: flex;
+  flex-shrink: 0;
+}
+
 .user-name {
   font-weight: 500;
   color: var(--color-text-secondary);

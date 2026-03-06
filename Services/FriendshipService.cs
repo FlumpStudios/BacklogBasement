@@ -200,6 +200,7 @@ namespace BacklogBasement.Services
                     UserId = f.RequesterId == userId ? f.AddresseeId : f.RequesterId,
                     Username = f.RequesterId == userId ? (f.Addressee.Username ?? string.Empty) : (f.Requester.Username ?? string.Empty),
                     DisplayName = f.RequesterId == userId ? f.Addressee.DisplayName : f.Requester.DisplayName,
+                    AvatarUrl = f.RequesterId == userId ? f.Addressee.AvatarUrl : f.Requester.AvatarUrl,
                     FriendsSince = f.RespondedAt ?? f.CreatedAt
                 })
                 .ToListAsync();

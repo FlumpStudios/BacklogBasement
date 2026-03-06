@@ -8,6 +8,7 @@ namespace BacklogBasement.DTOs
         public Guid UserId { get; set; }
         public string? Username { get; set; }
         public string DisplayName { get; set; } = string.Empty;
+        public string? AvatarUrl { get; set; }
         public int XpTotal { get; set; }
         public int Level { get; set; }
         public string LevelName { get; set; } = string.Empty;

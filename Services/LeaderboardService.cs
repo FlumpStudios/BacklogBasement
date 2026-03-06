@@ -26,7 +26,7 @@ namespace BacklogBasement.Services
                 .OrderByDescending(u => u.XpTotal)
                 .ThenBy(u => u.CreatedAt)
                 .Take(limit)
-                .Select(u => new { u.Id, u.Username, u.DisplayName, u.XpTotal, u.CreatedAt })
+                .Select(u => new { u.Id, u.Username, u.DisplayName, u.AvatarUrl, u.XpTotal, u.CreatedAt })
                 .ToListAsync();
 
             var entries = topUsers.Select((u, index) =>
@@ -38,6 +38,7 @@ namespace BacklogBasement.Services
                     UserId = u.Id,
                     Username = u.Username,
                     DisplayName = u.DisplayName,
+                    AvatarUrl = u.AvatarUrl,
                     XpTotal = u.XpTotal,
                     Level = xpInfo.Level,
                     LevelName = xpInfo.LevelName,
@@ -51,7 +52,7 @@ namespace BacklogBasement.Services
             {
                 var currentUser = await _context.Users
                     .Where(u => u.Id == currentUserId)
-                    .Select(u => new { u.Id, u.Username, u.DisplayName, u.XpTotal, u.CreatedAt })
+                    .Select(u => new { u.Id, u.Username, u.DisplayName, u.AvatarUrl, u.XpTotal, u.CreatedAt })
                     .FirstOrDefaultAsync();
 
                 if (currentUser != null)
@@ -69,6 +70,7 @@ namespace BacklogBasement.Services
                         UserId = currentUser.Id,
                         Username = currentUser.Username,
                         DisplayName = currentUser.DisplayName,
+                        AvatarUrl = currentUser.AvatarUrl,
                         XpTotal = currentUser.XpTotal,
                         Level = xpInfo.Level,
                         LevelName = xpInfo.LevelName,
@@ -94,7 +96,7 @@ namespace BacklogBasement.Services
                 .Where(u => userIds.Contains(u.Id))
                 .OrderByDescending(u => u.XpTotal)
                 .ThenBy(u => u.CreatedAt)
-                .Select(u => new { u.Id, u.Username, u.DisplayName, u.XpTotal })
+                .Select(u => new { u.Id, u.Username, u.DisplayName, u.AvatarUrl, u.XpTotal })
                 .ToListAsync();
 
             return users.Select((u, index) =>
@@ -106,6 +108,7 @@ namespace BacklogBasement.Services
                     UserId = u.Id,
                     Username = u.Username,
                     DisplayName = u.DisplayName,
+                    AvatarUrl = u.AvatarUrl,
                     XpTotal = u.XpTotal,
                     Level = xpInfo.Level,
                     LevelName = xpInfo.LevelName,

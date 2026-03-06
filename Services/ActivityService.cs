@@ -60,6 +60,7 @@ namespace BacklogBasement.Services
                 UserId = e.UserId,
                 Username = e.User.Username ?? string.Empty,
                 DisplayName = e.User.DisplayName,
+                UserAvatarUrl = e.User.AvatarUrl,
                 EventType = e.EventType,
                 GameId = e.GameId,
                 GameName = e.Game?.Name,

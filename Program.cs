@@ -95,7 +95,6 @@ public class Program
 
                 // Map Google claims to our user identity
                 options.ClaimActions.MapJsonKey("sub", "sub");
-                options.ClaimActions.MapJsonKey("email", "email");
                 options.ClaimActions.MapJsonKey("name", "name");
             })
             .AddSteam(options =>

@@ -99,7 +99,7 @@ export function CollectionFilters({
               onChange={(e) => onPlayStatusChange(e.target.value as PlayStatusFilter)}
               className="filter-select"
             >
-              <option value="all">All Games</option>
+              <option value="all">All</option>
               <option value="played">Played</option>
               <option value="unplayed">Unplayed</option>
             </select>
@@ -113,9 +113,9 @@ export function CollectionFilters({
               onChange={(e) => onSourceFilterChange(e.target.value as SourceFilter)}
               className="filter-select"
             >
-              <option value="all">All Sources</option>
+              <option value="all">All</option>
               <option value="steam">Steam</option>
-              <option value="manual">Added Manually</option>
+              <option value="manual">IGDB</option>
             </select>
           </div>
 
@@ -127,7 +127,7 @@ export function CollectionFilters({
               onChange={(e) => onGameStatusChange(e.target.value as GameStatusFilter)}
               className="filter-select"
             >
-              <option value="all">All Progress</option>
+              <option value="all">All</option>
               <option value="none">No Status</option>
               <option value="backlog">Backlog</option>
               <option value="playing">Playing</option>
@@ -189,7 +189,7 @@ export function CollectionFilters({
               onChange={(e) => onPlayStatusChange(e.target.value as PlayStatusFilter)}
               className="filter-select"
             >
-              <option value="all">All Games</option>
+              <option value="all">All</option>
               <option value="played">Played</option>
               <option value="unplayed">Unplayed</option>
             </select>
@@ -203,9 +203,9 @@ export function CollectionFilters({
               onChange={(e) => onSourceFilterChange(e.target.value as SourceFilter)}
               className="filter-select"
             >
-              <option value="all">All Sources</option>
+              <option value="all">All</option>
               <option value="steam">Steam</option>
-              <option value="manual">Added Manually</option>
+              <option value="manual">IGDB</option>
             </select>
           </div>
 
@@ -217,7 +217,7 @@ export function CollectionFilters({
               onChange={(e) => onGameStatusChange(e.target.value as GameStatusFilter)}
               className="filter-select"
             >
-              <option value="all">All Progress</option>
+              <option value="all">All</option>
               <option value="none">No Status</option>
               <option value="backlog">Backlog</option>
               <option value="playing">Playing</option>

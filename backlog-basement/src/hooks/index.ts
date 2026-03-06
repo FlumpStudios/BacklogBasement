@@ -26,6 +26,7 @@ export {
   useSteamImport,
   useSyncSteamPlaytime,
   useSyncAllSteamPlaytime,
+  useSteamAutoSync,
   STEAM_STATUS_QUERY_KEY,
 } from './useSteam';
 export {

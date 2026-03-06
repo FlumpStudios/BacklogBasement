@@ -5,6 +5,7 @@ import { useCheckUsername, useSetUsername, useTwitchImport } from '../../hooks';
 import { useAuth } from '../../auth';
 import { steamApi } from '../../api';
 import { TwitchImportResultDto } from '../../types';
+import { useTheme, RetroMode } from '../../contexts/ThemeContext';
 import './UsernameSetupModal.css';
 
 const USERNAME_REGEX = /^[a-zA-Z0-9][a-zA-Z0-9_-]*[a-zA-Z0-9]$/;
@@ -26,7 +27,8 @@ export function UsernameSetupModal({ onComplete }: Props) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
-  const [step, setStep] = useState<'username' | 'steam' | 'twitch'>('username');
+  const [step, setStep] = useState<'username' | 'theme' | 'steam' | 'twitch'>('username');
+  const { retroMode, setRetroMode } = useTheme();
   const [twitchImportResult, setTwitchImportResult] = useState<TwitchImportResultDto | null>(null);
   const twitchImport = useTwitchImport();
   const clientError = getClientValidationError(username);
@@ -41,20 +43,22 @@ export function UsernameSetupModal({ onComplete }: Props) {
     availability?.available === true &&
     !isChecking;
 
+  const proceedFromTheme = () => {
+    if (user?.hasSteamLinked) {
+      localStorage.setItem('backlog_onboarding', 'import');
+      onComplete();
+    } else if (user?.hasTwitchLinked) {
+      setStep('twitch');
+    } else {
+      setStep('steam');
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isValid) return;
     setUsernameMutation.mutate(username, {
-      onSuccess: () => {
-        if (user?.hasSteamLinked) {
-          localStorage.setItem('backlog_onboarding', 'import');
-          onComplete();
-        } else if (user?.hasTwitchLinked) {
-          setStep('twitch');
-        } else {
-          setStep('steam');
-        }
-      },
+      onSuccess: () => setStep('theme'),
     });
   };
 
@@ -74,7 +78,7 @@ export function UsernameSetupModal({ onComplete }: Props) {
     <Modal
       isOpen={true}
       onClose={() => {}}
-      title={step === 'username' ? 'Choose your username' : step === 'twitch' ? 'Import your stream history?' : 'Link your Steam account?'}
+      title={step === 'username' ? 'Choose your username' : step === 'theme' ? 'Choose your style' : step === 'twitch' ? 'Import your stream history?' : 'Link your Steam account?'}
       dismissible={false}
     >
       {step === 'username' ? (
@@ -118,6 +122,35 @@ export function UsernameSetupModal({ onComplete }: Props) {
             {setUsernameMutation.isPending ? 'Setting username...' : 'Confirm Username'}
           </button>
         </form>
+      ) : step === 'theme' ? (
+        <div className="theme-step">
+          <p className="theme-step-desc">
+            Backlog Basement supports a retro CRT look. Pick your style — you can always change it later with the 🕹️ button.
+          </p>
+          <div className="theme-options">
+            {([
+{ mode: 'c64' as RetroMode, label: 'C64', desc: 'Retro blue', bg: '#1a1ab8', text: '#a8a8ff', accent: '#70d4ff' },
+              { mode: 'bbc' as RetroMode, label: 'BBC Micro', desc: 'Retro classic', bg: '#000000', text: '#ffffff', accent: '#ffff00' },
+              { mode: 'spectrum' as RetroMode, label: 'ZX Spectrum', desc: 'Retro green', bg: '#000000', text: '#ffffff', accent: '#00ff00' },
+            ]).map(({ mode, label, desc, bg, text, accent }) => (
+              <button
+                key={mode}
+                className={`theme-option${retroMode === mode ? ' theme-option--selected' : ''}`}
+                onClick={() => setRetroMode(mode)}
+              >
+                <div className="theme-option-preview" style={{ background: bg }}>
+                  <span style={{ color: accent, fontFamily: mode === 'off' ? 'inherit' : '\'Press Start 2P\', monospace', fontSize: mode === 'off' ? '1.5rem' : '0.6rem' }}>Aa</span>
+                  <span style={{ color: text, fontFamily: mode === 'off' ? 'inherit' : '\'Press Start 2P\', monospace', fontSize: mode === 'off' ? '0.7rem' : '0.45rem' }}>Hello World</span>
+                </div>
+                <span className="theme-option-label">{label}</span>
+                <span className="theme-option-desc">{desc}</span>
+              </button>
+            ))}
+          </div>
+          <button className="btn btn-primary theme-step-continue" onClick={proceedFromTheme}>
+            Continue
+          </button>
+        </div>
       ) : step === 'steam' ? (
         <div className="steam-step">
           <div className="steam-step-icon">

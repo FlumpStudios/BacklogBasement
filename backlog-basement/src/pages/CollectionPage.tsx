@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useInfiniteCollection, useCollectionStats, useRemoveFromCollection, useUpdateGameStatus } from '../hooks';
 import { CollectionStats, CollectionFilters, SortOption, PlayStatusFilter, SourceFilter, GameStatusFilter } from '../features/collection';
@@ -22,13 +22,60 @@ export function CollectionPage() {
   const { showToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState<SortOption>('added-desc');
-  const [playStatus, setPlayStatus] = useState<PlayStatusFilter>('all');
-  const [sourceFilter, setSourceFilter] = useState<SourceFilter>('all');
-  const [gameStatus, setGameStatus] = useState<GameStatusFilter>('all');
+  // searchQuery is local state so typing is immediate; everything else lives in the URL
+  // so the browser back button restores all filters automatically.
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get('q') ?? '');
 
-  const debouncedSearch = useDebounce(searchQuery, 300);
+  const sortBy       = (searchParams.get('f_sort') as SortOption)       ?? 'added-desc';
+  const playStatus   = (searchParams.get('f_play') as PlayStatusFilter) ?? 'all';
+  const sourceFilter = (searchParams.get('f_src')  as SourceFilter)     ?? 'all';
+  const gameStatus   = (searchParams.get('f_stat') as GameStatusFilter) ?? 'all';
+
+  const setSortBy = useCallback((val: SortOption) => setSearchParams(prev => {
+    const next = new URLSearchParams(prev);
+    val !== 'added-desc' ? next.set('f_sort', val) : next.delete('f_sort');
+    return next;
+  }, { replace: true }), [setSearchParams]);
+
+  const setPlayStatus = useCallback((val: PlayStatusFilter) => setSearchParams(prev => {
+    const next = new URLSearchParams(prev);
+    val !== 'all' ? next.set('f_play', val) : next.delete('f_play');
+    return next;
+  }, { replace: true }), [setSearchParams]);
+
+  const setSourceFilter = useCallback((val: SourceFilter) => setSearchParams(prev => {
+    const next = new URLSearchParams(prev);
+    val !== 'all' ? next.set('f_src', val) : next.delete('f_src');
+    return next;
+  }, { replace: true }), [setSearchParams]);
+
+  const setGameStatus = useCallback((val: GameStatusFilter) => setSearchParams(prev => {
+    const next = new URLSearchParams(prev);
+    val !== 'all' ? next.set('f_stat', val) : next.delete('f_stat');
+    return next;
+  }, { replace: true }), [setSearchParams]);
+
+  const clearAllFilters = useCallback(() => {
+    setSearchQuery('');
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.delete('q'); next.delete('f_sort'); next.delete('f_play'); next.delete('f_src'); next.delete('f_stat');
+      return next;
+    }, { replace: true });
+  }, [setSearchParams]);
+
+  const debouncedSearch = useDebounce(searchQuery, 1200);
+
+  // Sync debounced search value back into the URL (skip first render — URL already correct)
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) { isFirstRender.current = false; return; }
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      debouncedSearch ? next.set('q', debouncedSearch) : next.delete('q');
+      return next;
+    }, { replace: true });
+  }, [debouncedSearch]); // eslint-disable-line react-hooks/exhaustive-deps
   const { sortBy: serverSortBy, sortDir } = sortOptionToParams(sortBy);
 
   const filters = {
@@ -97,31 +144,35 @@ export function CollectionPage() {
 
     const statusParam = searchParams.get('status');
     if (statusParam && ['none', 'backlog', 'playing', 'completed'].includes(statusParam)) {
-      setGameStatus(statusParam as GameStatusFilter);
-      searchParams.delete('status');
-      setSearchParams(searchParams, { replace: true });
+      setSearchParams(prev => {
+        const next = new URLSearchParams(prev);
+        next.set('f_stat', statusParam);
+        next.delete('status');
+        return next;
+      }, { replace: true });
     }
 
     const resetParam = searchParams.get('reset');
     if (resetParam === 'true') {
       setSearchQuery('');
-      setSortBy('added-desc');
-      setPlayStatus('all');
-      setSourceFilter('all');
-      setGameStatus('all');
-      searchParams.delete('reset');
-      setSearchParams(searchParams, { replace: true });
+      setSearchParams(prev => {
+        const next = new URLSearchParams(prev);
+        next.delete('q'); next.delete('f_sort'); next.delete('f_play'); next.delete('f_src'); next.delete('f_stat'); next.delete('reset');
+        return next;
+      }, { replace: true });
     }
 
     const sortParam = searchParams.get('sort');
     const validSorts: SortOption[] = ['name-asc', 'name-desc', 'release-desc', 'release-asc', 'added-desc', 'added-asc', 'playtime-desc', 'playtime-asc', 'score-desc', 'score-asc'];
     if (sortParam && validSorts.includes(sortParam as SortOption)) {
       setSearchQuery('');
-      setSortBy(sortParam as SortOption);
-      setSourceFilter('all');
-      setGameStatus('all');
-      searchParams.delete('sort');
-      setSearchParams(searchParams, { replace: true });
+      setSearchParams(prev => {
+        const next = new URLSearchParams(prev);
+        next.delete('q'); next.delete('f_play'); next.delete('f_src'); next.delete('f_stat');
+        sortParam !== 'added-desc' ? next.set('f_sort', sortParam) : next.delete('f_sort');
+        next.delete('sort');
+        return next;
+      }, { replace: true });
     }
   }, [searchParams, setSearchParams, showToast]);
 
@@ -260,15 +311,7 @@ export function CollectionPage() {
           ) : (
             <div className="no-results">
               <p>No games match your filters.</p>
-              <button
-                className="btn btn-secondary"
-                onClick={() => {
-                  setSearchQuery('');
-                  setPlayStatus('all');
-                  setSourceFilter('all');
-                  setGameStatus('all');
-                }}
-              >
+              <button className="btn btn-secondary" onClick={clearAllFilters}>
                 Clear Filters
               </button>
             </div>

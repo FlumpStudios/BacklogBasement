@@ -150,6 +150,30 @@ namespace BacklogBasement.Services
             }
         }
 
+        public async Task<string?> GetSteamAvatarAsync(string steamId)
+        {
+            try
+            {
+                var url = $"{SteamApiBaseUrl}/ISteamUser/GetPlayerSummaries/v0002/" +
+                          $"?key={_apiKey}&steamids={steamId}";
+                var response = await _httpClient.GetAsync(url);
+                if (!response.IsSuccessStatusCode) return null;
+
+                var content = await response.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(content);
+                var players = doc.RootElement
+                    .GetProperty("response")
+                    .GetProperty("players");
+                if (players.GetArrayLength() == 0) return null;
+                return players[0].TryGetProperty("avatarfull", out var av) ? av.GetString() : null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to fetch Steam avatar for {SteamId}", steamId);
+                return null;
+            }
+        }
+
         public async Task<(int? MetacriticScore, string? Description)> GetSteamAppDetailsAsync(long steamAppId)
         {
             try

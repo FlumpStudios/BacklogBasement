@@ -24,7 +24,7 @@ namespace BacklogBasement.Services
             _profanityService = profanityService;
         }
 
-        public async Task<User> GetOrCreateUserAsync(string googleSubjectId, string email, string displayName)
+        public async Task<User> GetOrCreateUserAsync(string googleSubjectId, string displayName, string? avatarUrl = null)
         {
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.GoogleSubjectId == googleSubjectId);
@@ -35,36 +35,44 @@ namespace BacklogBasement.Services
                 {
                     Id = Guid.NewGuid(),
                     GoogleSubjectId = googleSubjectId,
-                    Email = email,
                     DisplayName = displayName,
+                    AvatarUrl = avatarUrl,
                     CreatedAt = DateTime.UtcNow
                 };
 
                 _context.Users.Add(user);
-                await _context.SaveChangesAsync();
+            }
+            else if (avatarUrl != null)
+            {
+                user.AvatarUrl = avatarUrl;
             }
 
+            await _context.SaveChangesAsync();
             return user;
         }
 
-        public async Task<User> GetOrCreateSteamUserAsync(string steamId, string displayName)
+        public async Task<User> GetOrCreateSteamUserAsync(string steamId, string displayName, string? avatarUrl = null)
         {
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.SteamId == steamId);
 
-            if (user != null)
-                return user;
-
-            user = new User
+            if (user == null)
             {
-                Id = Guid.NewGuid(),
-                GoogleSubjectId = null,
-                SteamId = steamId,
-                Email = string.Empty,
-                DisplayName = displayName,
-                CreatedAt = DateTime.UtcNow
-            };
-            _context.Users.Add(user);
+                user = new User
+                {
+                    Id = Guid.NewGuid(),
+                    SteamId = steamId,
+                    DisplayName = displayName,
+                    AvatarUrl = avatarUrl,
+                    CreatedAt = DateTime.UtcNow
+                };
+                _context.Users.Add(user);
+            }
+            else if (avatarUrl != null)
+            {
+                user.AvatarUrl = avatarUrl;
+            }
+
             await _context.SaveChangesAsync();
             return user;
         }
@@ -125,20 +133,26 @@ namespace BacklogBasement.Services
             return user;
         }
 
-        public async Task<User> GetOrCreateTwitchUserAsync(string twitchId, string displayName, string? email)
+        public async Task<User> GetOrCreateTwitchUserAsync(string twitchId, string displayName, string? avatarUrl = null)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.TwitchId == twitchId);
-            if (user != null) return user;
-
-            user = new User
+            if (user == null)
             {
-                Id = Guid.NewGuid(),
-                TwitchId = twitchId,
-                Email = email ?? string.Empty,
-                DisplayName = displayName,
-                CreatedAt = DateTime.UtcNow
-            };
-            _context.Users.Add(user);
+                user = new User
+                {
+                    Id = Guid.NewGuid(),
+                    TwitchId = twitchId,
+                    DisplayName = displayName,
+                    AvatarUrl = avatarUrl,
+                    CreatedAt = DateTime.UtcNow
+                };
+                _context.Users.Add(user);
+            }
+            else if (avatarUrl != null)
+            {
+                user.AvatarUrl = avatarUrl;
+            }
+
             await _context.SaveChangesAsync();
             return user;
         }

@@ -6,9 +6,9 @@ namespace BacklogBasement.Services
 {
     public interface IUserService
     {
-        Task<User> GetOrCreateUserAsync(string googleSubjectId, string email, string displayName);
-        Task<User> GetOrCreateSteamUserAsync(string steamId, string displayName);
-        Task<User> GetOrCreateTwitchUserAsync(string twitchId, string displayName, string? email);
+        Task<User> GetOrCreateUserAsync(string googleSubjectId, string displayName, string? avatarUrl = null);
+        Task<User> GetOrCreateSteamUserAsync(string steamId, string displayName, string? avatarUrl = null);
+        Task<User> GetOrCreateTwitchUserAsync(string twitchId, string displayName, string? avatarUrl = null);
         Task<User?> GetCurrentUserAsync();
         Guid? GetCurrentUserId();
         Guid? GetCachedCurrentUserId();

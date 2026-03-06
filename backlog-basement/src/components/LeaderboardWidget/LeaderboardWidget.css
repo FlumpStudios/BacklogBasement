@@ -1,3 +1,8 @@
+.lb-avatar-link {
+  display: flex;
+  flex-shrink: 0;
+}
+
 .lb-widget-section {
   margin-bottom: var(--spacing-xl);
 }

@@ -4,19 +4,22 @@ export function PrivacyPolicyPage() {
   return (
     <div className="policy-page">
       <h1>Privacy Policy</h1>
-      <p className="policy-updated">Last updated: January 2026</p>
+      <p className="policy-updated">Last updated: March 2026</p>
 
       <section>
         <h2>What Data We Collect</h2>
         <p>When you sign in with Google, we receive and store:</p>
         <ul>
-          <li><strong>Email address</strong> &mdash; used to identify your account</li>
+          <li><strong>Google account identifier</strong> &mdash; used to identify your account</li>
           <li><strong>Display name</strong> &mdash; shown in the app interface</li>
-          <li><strong>Profile picture URL</strong> &mdash; shown in the navigation bar</li>
         </ul>
-        <p>If you link your Steam account, we also store:</p>
+        <p>If you link or sign in with Steam, we also store:</p>
         <ul>
           <li><strong>Steam ID</strong> &mdash; used to import your game library and playtime data</li>
+        </ul>
+        <p>If you link or sign in with Twitch, we also store:</p>
+        <ul>
+          <li><strong>Twitch ID</strong> &mdash; used to identify your account and import your stream history</li>
         </ul>
       </section>
 
@@ -52,6 +55,12 @@ export function PrivacyPolicyPage() {
             <strong>Steam</strong> &mdash; optional account linking to import your game library. Subject to{' '}
             <a href="https://store.steampowered.com/privacy_agreement/" target="_blank" rel="noopener noreferrer">
               Steam's Privacy Policy
+            </a>.
+          </li>
+          <li>
+            <strong>Twitch</strong> &mdash; optional account linking to import your stream history. Subject to{' '}
+            <a href="https://www.twitch.tv/p/legal/privacy-notice/" target="_blank" rel="noopener noreferrer">
+              Twitch's Privacy Notice
             </a>.
           </li>
           <li>

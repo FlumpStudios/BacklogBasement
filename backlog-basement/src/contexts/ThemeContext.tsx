@@ -1,13 +1,14 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 export type Theme = 'light' | 'dark';
-export type RetroMode = 'off' | 'c64' | 'bbc';
+export type RetroMode = 'off' | 'c64' | 'bbc' | 'spectrum';
 
 interface ThemeContextType {
   theme: Theme;
   toggleTheme: () => void;
   retroMode: RetroMode;
   cycleRetro: () => void;
+  setRetroMode: (mode: RetroMode) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -50,6 +51,19 @@ const BBC_VARS: [string, string][] = [
   ['--color-accent', '#00ffff'],
 ];
 
+const SPECTRUM_VARS: [string, string][] = [
+  ['--color-background', '#000000'],
+  ['--color-surface', '#0a0a0a'],
+  ['--color-surface-elevated', '#141400'],
+  ['--color-border', '#00ff00'],
+  ['--color-text', '#ffffff'],
+  ['--color-text-secondary', '#00ffff'],
+  ['--color-text-muted', '#aaaaaa'],
+  ['--color-primary', '#00ff00'],
+  ['--color-primary-hover', '#00cc00'],
+  ['--color-accent', '#ff0000'],
+];
+
 const DARK_VARS: [string, string][] = [
   ['--color-background', '#0f0f14'],
   ['--color-surface', '#1a1a24'],
@@ -64,8 +78,8 @@ function loadSavedRetro(): RetroMode {
   const saved = localStorage.getItem('retro');
   // migrate old boolean value
   if (saved === 'true') return 'c64';
-  if (saved === 'c64' || saved === 'bbc') return saved;
-  return 'off';
+  if (saved === 'c64' || saved === 'bbc' || saved === 'spectrum') return saved;
+  return 'bbc';
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
@@ -122,7 +136,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       body.style.color = theme === 'light' ? '#212529' : '#f5f5f7';
       for (const [k, v] of vars) body.style.setProperty(k, v);
     } else {
-      const vars = retroMode === 'c64' ? C64_VARS : BBC_VARS;
+      const vars = retroMode === 'c64' ? C64_VARS : retroMode === 'bbc' ? BBC_VARS : SPECTRUM_VARS;
       body.setAttribute('data-retro', 'true');
       body.setAttribute('data-retro-style', retroMode);
       body.style.backgroundColor = vars[0][1];
@@ -139,14 +153,14 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
   const cycleRetro = () => {
     setRetroMode(prev => {
-      if (prev === 'off') return 'c64';
       if (prev === 'c64') return 'bbc';
-      return 'off';
+      if (prev === 'bbc') return 'spectrum';
+      return 'c64';
     });
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, retroMode, cycleRetro }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, retroMode, cycleRetro, setRetroMode }}>
       {children}
     </ThemeContext.Provider>
   );

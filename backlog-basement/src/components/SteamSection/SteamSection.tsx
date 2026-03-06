@@ -50,7 +50,7 @@ export function SteamSection() {
     setImportResult(null);
   };
 
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [hasInitialized, setHasInitialized] = useState(false);
 
   useEffect(() => {
@@ -109,7 +109,7 @@ export function SteamSection() {
                 onClick={handleSyncAllPlaytime}
                 disabled={syncAllPlaytime.isPending}
               >
-                {syncAllPlaytime.isPending ? 'Syncing...' : 'Update Playtime for all games'}
+                {syncAllPlaytime.isPending ? 'Syncing...' : 'Update Playtime'}
               </button>
             )}
             <button

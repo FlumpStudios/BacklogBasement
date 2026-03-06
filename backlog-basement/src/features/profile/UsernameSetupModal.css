@@ -22,7 +22,7 @@
 .username-prefix {
   padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) var(--spacing-md);
   color: var(--color-text-muted);
-  font-size: 0.85rem;
+  font-size: 0.7rem;
   white-space: nowrap;
   user-select: none;
 }
@@ -32,7 +32,7 @@
   border: none;
   background: transparent;
   padding: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) 0;
-  font-size: 1rem;
+  font-size: 0.75rem;
   color: var(--color-text);
   outline: none;
 }
@@ -61,6 +61,76 @@
 .username-submit {
   align-self: flex-end;
   margin-top: var(--spacing-sm);
+}
+
+.theme-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.theme-step-desc {
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.theme-options {
+  display: flex;
+  gap: var(--spacing-md);
+  width: 100%;
+}
+
+.theme-option {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  background: none;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md) var(--spacing-sm);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  color: var(--color-text);
+}
+
+.theme-option:hover {
+  border-color: var(--color-primary);
+}
+
+.theme-option--selected {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.theme-option-preview {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  overflow: hidden;
+}
+
+.theme-option-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.theme-option-desc {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.theme-step-continue {
+  min-width: 140px;
 }
 
 .steam-step {

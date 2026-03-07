@@ -155,6 +155,7 @@ h3 {
 .btn-sm {
   padding: var(--spacing-xs) var(--spacing-md);
   font-size: 0.875rem;
+  white-space: nowrap;
 }
 
 .btn-lg {

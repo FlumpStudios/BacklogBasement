@@ -114,4 +114,6 @@
 
 .game-card-actions .btn {
   flex: 1;
+  white-space: normal;
+  word-break: break-word;
 }

@@ -80,9 +80,17 @@ export function useSteamAutoSync(hasSteamLinked: boolean, hasUsername: boolean, 
 
     steamApi.importLibrary({ includePlaytime: true }).then(({ data }) => {
       queryClient.invalidateQueries({ queryKey: COLLECTION_QUERY_KEY });
+      const parts: string[] = [];
       if (data.importedCount > 0) {
         const label = data.importedCount === 1 ? 'game' : 'games';
-        showToast(`${data.importedCount} new Steam ${label} added to your collection`, 'success');
+        parts.push(`${data.importedCount} new Steam ${label} added`);
+      }
+      if (data.updatedCount > 0) {
+        const label = data.updatedCount === 1 ? 'game' : 'games';
+        parts.push(`playtime updated for ${data.updatedCount} ${label}`);
+      }
+      if (parts.length > 0) {
+        showToast(parts.join(', '), 'success');
       }
     }).catch(() => {
       // silent fail — auto sync shouldn't disrupt the user

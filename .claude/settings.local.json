@@ -48,7 +48,9 @@
       "Bash(cmd:*)",
       "Bash(powershell:*)",
       "Bash(dotnet:*)",
-      "WebFetch(domain:www.igdb.com)"
+      "WebFetch(domain:www.igdb.com)",
+      "Bash(git checkout:*)",
+      "Bash(node:*)"
     ]
   }
 }

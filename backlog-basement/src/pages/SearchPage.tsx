@@ -28,7 +28,7 @@ export function SearchPage() {
 
     if (isInCollection) {
       return (
-        <span className="in-collection-badge">✓ In Collection</span>
+        <span className="in-collection-badge">✓ Collected</span>
       );
     }
 

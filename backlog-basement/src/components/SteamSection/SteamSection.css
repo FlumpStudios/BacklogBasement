@@ -127,6 +127,8 @@
   flex-wrap: wrap;
 }
 
+
+
 .steam-not-linked p {
   color: var(--text-secondary);
   margin: 0 0 1rem 0;
@@ -344,4 +346,18 @@
 
 .import-list-skipped {
   opacity: 0.8;
+}
+
+@media (max-width: 565px) {
+  .steam-header-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}
+
+@media (max-width: 974px) {
+  .steam-actions .btn {
+    width: 100%;
+  }
 }

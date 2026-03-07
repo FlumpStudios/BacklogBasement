@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSteamStatus, useSteamLink, useSteamUnlink, useSteamImport, useSyncAllSteamPlaytime, useCollection } from '../../hooks';
 import { Modal } from '../Modal/Modal';
 import { useToast } from '../Toast';
@@ -51,14 +51,6 @@ export function SteamSection() {
   };
 
   const [isOpen, setIsOpen] = useState(false);
-  const [hasInitialized, setHasInitialized] = useState(false);
-
-  useEffect(() => {
-    if (!hasInitialized && !statusLoading) {
-      setIsOpen(!(steamStatus?.isLinked && hasSteamGames));
-      setHasInitialized(true);
-    }
-  }, [statusLoading, steamStatus, hasSteamGames, hasInitialized]);
 
   if (statusLoading) {
     return (

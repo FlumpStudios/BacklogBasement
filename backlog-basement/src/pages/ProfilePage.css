@@ -57,6 +57,10 @@
 
 .profile-display-name {
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .profile-username {
@@ -138,7 +142,7 @@
 
 .profile-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--spacing-md);
   margin-bottom: var(--spacing-xl);
 }
@@ -216,4 +220,28 @@
 .btn-dismiss:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+@media (max-width: 950px) {
+  .profile-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 400px) {
+  .profile-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 370px) {
+  .profile-xp-level {
+    flex-wrap: wrap;
+  }
+
+  .profile-xp-level-name {
+    order: 3;
+    flex-basis: 100%;
+    font-size: 0.875rem;
+  }
 }

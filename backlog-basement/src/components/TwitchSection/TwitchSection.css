@@ -109,3 +109,17 @@
 .btn-twitch:hover {
   background: #7c2fe8;
 }
+
+@media (max-width: 565px) {
+  .twitch-header-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}
+
+@media (max-width: 974px) {
+  .twitch-actions .btn {
+    width: 100%;
+  }
+}

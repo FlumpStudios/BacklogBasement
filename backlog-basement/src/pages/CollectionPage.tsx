@@ -248,7 +248,7 @@ export function CollectionPage() {
         className="btn btn-danger btn-sm"
         disabled={removeFromCollection.isPending}
       >
-        Remove from Collection
+        Remove
       </button>
     </>
   );

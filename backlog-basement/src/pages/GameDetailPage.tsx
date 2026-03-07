@@ -225,7 +225,7 @@ export function GameDetailPage() {
                   className="btn btn-danger"
                   disabled={removeFromCollection.isPending}
                 >
-                  Remove from Collection
+                  Remove
                 </button>
               </>
             ) : (
@@ -294,7 +294,7 @@ export function GameDetailPage() {
                       className="btn btn-ghost btn-sm"
                       disabled={updateGameStatus.isPending}
                     >
-                      Remove from Backlog
+                      Remove
                     </button>
                   </>
                 )}

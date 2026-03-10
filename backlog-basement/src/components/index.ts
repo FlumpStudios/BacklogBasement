@@ -18,5 +18,6 @@ export { DailyQuiz } from './DailyQuiz/DailyQuiz';
 export { LeaderboardWidget } from './LeaderboardWidget/LeaderboardWidget';
 export { ActivityFeed } from './ActivityFeed/ActivityFeed';
 export { RetroArchSection } from './RetroArchSection';
+export { GamePasswords } from './GamePasswords/GamePasswords';
 export { TwitchStreams } from './TwitchStreams/TwitchStreams';
 export { TwitchSection } from './TwitchSection/TwitchSection';

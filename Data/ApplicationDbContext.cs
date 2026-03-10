@@ -33,6 +33,7 @@ namespace BacklogBasement.Data
         public DbSet<DailyQuizOption> DailyQuizOptions { get; set; } = null!;
         public DbSet<DailyQuizAnswer> DailyQuizAnswers { get; set; } = null!;
         public DbSet<ActivityEvent> ActivityEvents { get; set; } = null!;
+        public DbSet<GamePassword> GamePasswords { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -382,6 +383,22 @@ namespace BacklogBasement.Data
 
             modelBuilder.Entity<ActivityEvent>()
                 .HasIndex(ae => new { ae.UserId, ae.CreatedAt });
+
+            // Configure GamePassword entity
+            modelBuilder.Entity<GamePassword>()
+                .HasOne(gp => gp.User)
+                .WithMany()
+                .HasForeignKey(gp => gp.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<GamePassword>()
+                .HasOne(gp => gp.Game)
+                .WithMany()
+                .HasForeignKey(gp => gp.GameId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<GamePassword>()
+                .HasIndex(gp => new { gp.UserId, gp.GameId });
         }
     }
 }

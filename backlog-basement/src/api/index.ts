@@ -15,3 +15,5 @@ export { leaderboardApi } from './leaderboard';
 export { activityApi } from './activity';
 export { retroarchApi } from './retroarch';
 export type { RetroArchEntry, RetroArchMatchResult } from './retroarch';
+export { passwordsApi } from './passwords';
+export type { GamePasswordDto, CreateGamePasswordRequest } from './passwords';

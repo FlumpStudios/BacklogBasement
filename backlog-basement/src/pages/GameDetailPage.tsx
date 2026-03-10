@@ -16,7 +16,7 @@ import { GameStatus } from '../types';
 import { PlaySessionForm, PlaySessionList } from '../features/playtime';
 import { SuggestGameModal } from '../features/suggestions';
 import { GameClubReviewsSection } from '../features/gameclub';
-import { Modal, useToast, TwitchStreams } from '../components';
+import { Modal, useToast, TwitchStreams, GamePasswords } from '../components';
 import { useAuth } from '../auth';
 import { formatPlaytime, formatDate } from '../utils';
 import './GameDetailPage.css';
@@ -366,6 +366,8 @@ export function GameDetailPage() {
               />
             </div>
           )}
+
+          {id && <GamePasswords gameId={id} isInCollection={!!isInCollection} />}
 
           {id && <GameClubReviewsSection gameId={id} />}
         </div>

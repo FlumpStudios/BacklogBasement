@@ -125,7 +125,7 @@ export function GameClubDetailPage() {
       </button>
 
       <div className="club-detail-header">
-        <div>
+        <div className="club-detail-info">
           <h1 className="club-detail-name">{club.name}</h1>
           {club.description && <p className="club-detail-desc">{club.description}</p>}
           <div className="club-detail-meta">

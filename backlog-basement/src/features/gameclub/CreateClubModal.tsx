@@ -121,6 +121,7 @@ export function CreateClubModal({ isOpen, onClose, onCreated }: CreateClubModalP
             value={discordLink}
             onChange={(e) => setDiscordLink(e.target.value)}
             placeholder="https://discord.gg/..."
+            maxLength={255}
           />
           {discordError && <p className="club-form-error">{discordError}</p>}
         </div>
@@ -133,6 +134,7 @@ export function CreateClubModal({ isOpen, onClose, onCreated }: CreateClubModalP
             value={whatsAppLink}
             onChange={(e) => setWhatsAppLink(e.target.value)}
             placeholder="https://chat.whatsapp.com/..."
+            maxLength={255}
           />
           {whatsAppError && <p className="club-form-error">{whatsAppError}</p>}
         </div>
@@ -145,6 +147,7 @@ export function CreateClubModal({ isOpen, onClose, onCreated }: CreateClubModalP
             value={redditLink}
             onChange={(e) => setRedditLink(e.target.value)}
             placeholder="https://reddit.com/r/..."
+            maxLength={255}
           />
           {redditError && <p className="club-form-error">{redditError}</p>}
         </div>
@@ -157,6 +160,7 @@ export function CreateClubModal({ isOpen, onClose, onCreated }: CreateClubModalP
             value={youTubeLink}
             onChange={(e) => setYouTubeLink(e.target.value)}
             placeholder="https://www.youtube.com/..."
+            maxLength={255}
           />
           {youTubeError && <p className="club-form-error">{youTubeError}</p>}
         </div>

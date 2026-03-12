@@ -10,9 +10,10 @@ import './FriendButton.css';
 
 interface FriendButtonProps {
   userId: string;
+  showRemove?: boolean;
 }
 
-export function FriendButton({ userId }: FriendButtonProps) {
+export function FriendButton({ userId, showRemove = true }: FriendButtonProps) {
   const { data: statusData, isLoading } = useFriendshipStatus(userId);
   const sendRequest = useSendFriendRequest();
   const acceptRequest = useAcceptFriendRequest();
@@ -98,13 +99,15 @@ export function FriendButton({ userId }: FriendButtonProps) {
       return (
         <div className="friend-btn-group">
           <span className="friend-label">Friends</span>
-          <button
-            className="btn btn-secondary btn-sm friend-remove-btn"
-            onClick={handleRemove}
-            disabled={removeFriend.isPending}
-          >
-            Remove
-          </button>
+          {showRemove && (
+            <button
+              className="btn btn-secondary btn-sm friend-remove-btn"
+              onClick={handleRemove}
+              disabled={removeFriend.isPending}
+            >
+              Remove
+            </button>
+          )}
         </div>
       );
 

@@ -14,6 +14,7 @@ namespace BacklogBasement.Models
         public string DisplayName { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
         public int XpTotal { get; set; }
+        public bool IsAdmin { get; set; }
 
         // Navigation properties
         public ICollection<UserGame> UserGames { get; set; } = new List<UserGame>();

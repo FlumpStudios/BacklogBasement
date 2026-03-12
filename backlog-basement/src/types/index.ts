@@ -72,6 +72,7 @@ export interface UserDto {
   hasTwitchLinked?: boolean;
   username?: string | null;
   xpInfo?: XpInfoDto;
+  isAdmin?: boolean;
 }
 
 // Twitch DTOs

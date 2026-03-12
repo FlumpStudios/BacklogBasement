@@ -146,7 +146,8 @@ namespace BacklogBasement.Controllers
                 twitchId = user.TwitchId,
                 hasTwitchLinked = !string.IsNullOrEmpty(user.TwitchId),
                 username = user.Username,
-                xpInfo = _xpService.ComputeLevel(user.XpTotal)
+                xpInfo = _xpService.ComputeLevel(user.XpTotal),
+                isAdmin = user.IsAdmin
             });
         }
 

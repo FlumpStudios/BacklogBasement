@@ -23,6 +23,7 @@ namespace BacklogBasement.Services
         const int XP_DAILY_POLL            = 20;
         const int XP_QUIZ_CORRECT          = 30;
         const int XP_QUIZ_INCORRECT        = 5;
+        const int XP_SHARE_PUBLIC_CODE     = 30;
 
         Task<bool> TryGrantAsync(Guid userId, string reason, string referenceId, int amount);
         XpInfoDto ComputeLevel(int xpTotal);

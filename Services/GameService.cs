@@ -114,12 +114,13 @@ namespace BacklogBasement.Services
             if (game == null)
                 return null;
 
-            // Lazy-fetch score and/or description from Steam on first page load
+            // Lazy-fetch score, description, and release date from Steam on first page load
             var needsScore = game.CriticScore == null && !game.CriticScoreChecked;
             var needsSummary = string.IsNullOrEmpty(game.Summary) && !game.SummaryFetched;
-            if (game.SteamAppId.HasValue && (needsScore || needsSummary))
+            var needsReleaseDate = game.ReleaseDate == null;
+            if (game.SteamAppId.HasValue && (needsScore || needsSummary || needsReleaseDate))
             {
-                var (score, description) = await _steamService.GetSteamAppDetailsAsync(game.SteamAppId.Value);
+                var (score, description, releaseDate) = await _steamService.GetSteamAppDetailsAsync(game.SteamAppId.Value);
                 if (needsScore)
                 {
                     game.CriticScoreChecked = true;
@@ -130,6 +131,8 @@ namespace BacklogBasement.Services
                     game.SummaryFetched = true;
                     if (!string.IsNullOrEmpty(description)) game.Summary = description;
                 }
+                if (needsReleaseDate && releaseDate.HasValue)
+                    game.ReleaseDate = releaseDate;
                 await _context.SaveChangesAsync();
             }
 

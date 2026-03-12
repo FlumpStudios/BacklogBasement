@@ -14,11 +14,13 @@ namespace BacklogBasement.Services
     {
         private readonly ApplicationDbContext _db;
         private readonly IProfanityService _profanity;
+        private readonly IXpService _xpService;
 
-        public GamePasswordService(ApplicationDbContext db, IProfanityService profanity)
+        public GamePasswordService(ApplicationDbContext db, IProfanityService profanity, IXpService xpService)
         {
             _db = db;
             _profanity = profanity;
+            _xpService = xpService;
         }
 
         public async Task<List<GamePasswordDto>> GetPasswordsAsync(Guid userId, Guid gameId)
@@ -86,6 +88,9 @@ namespace BacklogBasement.Services
 
             _db.GamePasswords.Add(password);
             await _db.SaveChangesAsync();
+
+            if (request.IsPublic)
+                await _xpService.TryGrantAsync(userId, "share_public_code", "first", IXpService.XP_SHARE_PUBLIC_CODE);
 
             return new GamePasswordDto
             {

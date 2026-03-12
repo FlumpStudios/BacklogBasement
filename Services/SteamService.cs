@@ -110,7 +110,7 @@ namespace BacklogBasement.Services
 
         public async Task<int?> GetMetacriticScoreAsync(long steamAppId)
         {
-            var (score, _) = await GetSteamAppDetailsAsync(steamAppId);
+            var (score, _, _) = await GetSteamAppDetailsAsync(steamAppId);
             return score;
         }
 
@@ -174,7 +174,7 @@ namespace BacklogBasement.Services
             }
         }
 
-        public async Task<(int? MetacriticScore, string? Description)> GetSteamAppDetailsAsync(long steamAppId)
+        public async Task<(int? MetacriticScore, string? Description, DateTime? ReleaseDate)> GetSteamAppDetailsAsync(long steamAppId)
         {
             try
             {
@@ -183,13 +183,13 @@ namespace BacklogBasement.Services
                 var content = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
-                    return (null, null);
+                    return (null, null, null);
 
                 using var doc = JsonDocument.Parse(content);
                 var appData = doc.RootElement.GetProperty(steamAppId.ToString());
 
                 if (!appData.GetProperty("success").GetBoolean())
-                    return (null, null);
+                    return (null, null, null);
 
                 var data = appData.GetProperty("data");
 
@@ -205,12 +205,26 @@ namespace BacklogBasement.Services
                         description = raw;
                 }
 
-                return (score, description);
+                DateTime? releaseDate = null;
+                if (data.TryGetProperty("release_date", out var releaseDateProp) &&
+                    releaseDateProp.TryGetProperty("coming_soon", out var comingSoon) &&
+                    !comingSoon.GetBoolean() &&
+                    releaseDateProp.TryGetProperty("date", out var dateProp))
+                {
+                    var dateStr = dateProp.GetString();
+                    if (!string.IsNullOrWhiteSpace(dateStr) &&
+                        DateTime.TryParse(dateStr, out var parsed))
+                    {
+                        releaseDate = parsed;
+                    }
+                }
+
+                return (score, description, releaseDate);
             }
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Failed to fetch Steam app details for app {AppId}", steamAppId);
-                return (null, null);
+                return (null, null, null);
             }
         }
     }

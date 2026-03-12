@@ -19,5 +19,6 @@ export { LeaderboardWidget } from './LeaderboardWidget/LeaderboardWidget';
 export { ActivityFeed } from './ActivityFeed/ActivityFeed';
 export { RetroArchSection } from './RetroArchSection';
 export { GamePasswords } from './GamePasswords/GamePasswords';
+export { IndieSpotlight } from './IndieSpotlight/IndieSpotlight';
 export { TwitchStreams } from './TwitchStreams/TwitchStreams';
 export { TwitchSection } from './TwitchSection/TwitchSection';

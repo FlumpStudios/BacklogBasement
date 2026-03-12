@@ -58,7 +58,7 @@ export function ClubMembersList({ clubId, members, currentUserRole, currentUserI
             </span>
           </div>
           {member.userId !== currentUserId && (
-            <FriendButton userId={member.userId} />
+            <FriendButton userId={member.userId} showRemove={false} />
           )}
 
           {canManage && member.userId !== currentUserId && member.role !== 'owner' && (

@@ -1,0 +1,38 @@
+.indie-spotlight {
+  margin-bottom: var(--spacing-xl);
+  padding: var(--spacing-lg);
+  background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-surface-elevated) 100%);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.indie-spotlight-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-lg);
+}
+
+.indie-spotlight-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.indie-spotlight-subtitle {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.indie-spotlight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--spacing-md);
+}
+
+@media (max-width: 480px) {
+  .indie-spotlight-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

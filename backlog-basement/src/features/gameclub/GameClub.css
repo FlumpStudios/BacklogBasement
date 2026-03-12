@@ -58,7 +58,8 @@
 
 .club-card-meta {
   display: flex;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
   font-size: 0.8rem;
   color: var(--color-text-muted);
   margin-bottom: 0.75rem;
@@ -67,6 +68,7 @@
 .club-card-round {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.5rem;
   font-size: 0.8rem;
   margin-bottom: 0.75rem;
@@ -124,6 +126,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   margin-bottom: 0.5rem;
 }
 
@@ -131,6 +135,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .round-banner-round {
@@ -141,6 +146,7 @@
 .round-banner-deadline {
   font-size: 0.8rem;
   color: var(--color-text-muted);
+  text-decoration: underline;
 }
 
 .round-banner-desc {
@@ -240,8 +246,9 @@
 
 .nomination-vote-area {
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
 }
 
 .vote-bar-wrap {
@@ -260,9 +267,27 @@
 }
 
 .vote-count {
-  font-size: 0.75rem;
   color: var(--color-text-muted);
   white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .nomination-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .nomination-cover {
+    display: none;
+  }
+
+  .nomination-vote-area {
+    width: 100%;
+  }
+
+  .vote-bar-wrap {
+    flex: 1;
+  }
 }
 
 /* ── Members List ── */
@@ -287,7 +312,6 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  flex: 1;
 }
 
 .club-member-name {
@@ -324,6 +348,19 @@
   gap: 0.5rem;
 }
 
+@media (max-width: 600px) {
+  .club-member-row {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .club-member-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}
+
 .club-confirm-row {
   display: flex;
   align-items: center;
@@ -350,7 +387,7 @@
 }
 
 .club-form-toggle {
-  flex-direction: row;
+  flex-direction: column;
   align-items: flex-start;
 }
 
@@ -358,6 +395,13 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  cursor: pointer;
+}
+
+.club-form-toggle label input[type="checkbox"] {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
   cursor: pointer;
 }
 

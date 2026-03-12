@@ -5,7 +5,7 @@ import { useCollection, useUpdateGameStatus, useMyClubs, useTwitchSync } from '.
 import { CollectionStats } from '../features/collection';
 import { GameGrid } from '../features/games';
 import { SuggestionsSection } from '../features/suggestions';
-import { EmptyState, useToast, DailyPoll, DailyQuiz, LeaderboardWidget, ActivityFeed } from '../components';
+import { EmptyState, useToast, DailyPoll, DailyQuiz, LeaderboardWidget, ActivityFeed, IndieSpotlight } from '../components';
 import { CollectionItemDto, GameClubDto } from '../types';
 import './DashboardPage.css';
 
@@ -98,6 +98,8 @@ export function DashboardPage() {
         <h1>Welcome back, {user?.username ?? user?.displayName?.split(' ')[0] ?? 'Gamer'}!</h1>
         <p className="dashboard-subtitle">Here's your gaming overview</p>
       </header>
+
+      <IndieSpotlight />
 
       <div className="community-widgets">
         <DailyPoll />

@@ -78,7 +78,7 @@ export function GamePasswords({ gameId, isInCollection }: Props) {
         onClick={() => setExpanded(!expanded)}
         aria-expanded={expanded}
       >
-        <span className="game-passwords-toggle-label">🔑 Passwords</span>
+        <span className="game-passwords-toggle-label">🔑 Passwords & Cheats</span>
         <span className="game-passwords-toggle-chevron">{expanded ? '▲' : '▼'}</span>
       </button>
 
@@ -129,7 +129,7 @@ export function GamePasswords({ gameId, isInCollection }: Props) {
                     ))}
                   </ul>
                 ) : (
-                  <p className="game-passwords-empty">No passwords saved yet.</p>
+                  <p className="game-passwords-empty">No codes saved yet.</p>
                 )}
                 {myCount > PAGE_SIZE && (
                   <button className="btn btn-ghost btn-sm" onClick={() => setMyShowAll(!myShowAll)}>
@@ -142,7 +142,7 @@ export function GamePasswords({ gameId, isInCollection }: Props) {
                     <input
                       className="game-password-input"
                       type="text"
-                      placeholder="Password *"
+                      placeholder="Password or cheat code *"
                       value={passwordText}
                       onChange={(e) => setPasswordText(e.target.value)}
                       required

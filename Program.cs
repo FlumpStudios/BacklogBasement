@@ -63,6 +63,7 @@ public class Program
         builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
         builder.Services.AddScoped<IActivityService, ActivityService>();
         builder.Services.AddScoped<IGamePasswordService, GamePasswordService>();
+        builder.Services.AddScoped<IFeaturedGameService, FeaturedGameService>();
         builder.Services.AddSingleton<IProfanityService, ProfanityService>();
 
         // Configure cookie authentication

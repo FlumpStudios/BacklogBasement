@@ -10,13 +10,20 @@ namespace BacklogBasement.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-
+            migrationBuilder.AddColumn<bool>(
+                name: "IsPublic",
+                table: "GamePasswords",
+                type: "INTEGER",
+                nullable: false,
+                defaultValue: false);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-
+            migrationBuilder.DropColumn(
+                name: "IsPublic",
+                table: "GamePasswords");
         }
     }
 }

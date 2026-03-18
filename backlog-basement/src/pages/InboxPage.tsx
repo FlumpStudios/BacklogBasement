@@ -186,7 +186,7 @@ export function InboxPage() {
               <textarea
                 ref={textareaRef}
                 className="inbox-textarea"
-                placeholder="Write a message... (Enter to send, Shift+Enter for newline)"
+                placeholder="Write a message..."
                 value={draft}
                 onChange={e => setDraft(e.target.value)}
                 onKeyDown={handleKeyDown}

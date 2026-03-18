@@ -297,6 +297,20 @@
   padding: 0 var(--spacing-md);
 }
 
+@media (max-width: 800px) {
+  .inbox-compose {
+    flex-wrap: wrap;
+  }
+
+  .inbox-compose .inbox-textarea {
+    flex-basis: 100%;
+  }
+
+  .inbox-send-btn {
+    width: 100%;
+  }
+}
+
 /* Mobile: single panel */
 @media (max-width: 640px) {
   .inbox-page {

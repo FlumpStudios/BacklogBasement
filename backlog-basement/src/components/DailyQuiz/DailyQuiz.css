@@ -47,10 +47,6 @@
   gap: var(--spacing-sm);
 }
 
-.quiz-options--tf {
-  flex-direction: row;
-  gap: var(--spacing-md);
-}
 
 .quiz-option {
   position: relative;
@@ -74,16 +70,6 @@
   cursor: default;
 }
 
-/* True/False button sizing */
-.quiz-option--tf {
-  flex: 1;
-  text-align: center;
-}
-
-.quiz-option--tf .quiz-option-inner {
-  justify-content: center;
-  padding: var(--spacing-md);
-}
 
 /* Result state borders */
 .quiz-option--result {

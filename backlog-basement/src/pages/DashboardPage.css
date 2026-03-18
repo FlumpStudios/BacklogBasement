@@ -12,6 +12,8 @@
 
 .community-widgets .poll-section,
 .community-widgets .quiz-section {
+  display: flex;
+  flex-direction: column;
   margin-top: 0;
   margin-bottom: 0;
   background: var(--color-surface);

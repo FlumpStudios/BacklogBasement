@@ -110,4 +110,9 @@ export const collectionApi = {
    * Get collection counts for stat display
    */
   getStats: (): Promise<CollectionStatsDto> => api.get<CollectionStatsDto>('/collection/stats'),
+
+  /**
+   * Remove all games from the user's collection
+   */
+  resetCollection: () => api.delete<void>('/collection'),
 };

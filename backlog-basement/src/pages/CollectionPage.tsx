@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { useInfiniteCollection, useCollectionStats, useRemoveFromCollection, useUpdateGameStatus } from '../hooks';
+import { useInfiniteCollection, useCollectionStats, useRemoveFromCollection, useUpdateGameStatus, useResetCollection } from '../hooks';
 import { CollectionStats, CollectionFilters, SortOption, PlayStatusFilter, SourceFilter, GameStatusFilter } from '../features/collection';
 import { GameGrid } from '../features/games';
-import { EmptyState, useToast, SteamSection, RetroArchSection, TwitchSection } from '../components';
+import { EmptyState, useToast, SteamSection, RetroArchSection, TwitchSection, Modal } from '../components';
 import { CollectionItemDto } from '../types';
 import { useDebounce } from '../hooks';
 import './CollectionPage.css';
@@ -19,7 +19,9 @@ function sortOptionToParams(sort: SortOption): { sortBy: string; sortDir: string
 export function CollectionPage() {
   const removeFromCollection = useRemoveFromCollection();
   const updateGameStatus = useUpdateGameStatus();
+  const resetCollection = useResetCollection();
   const { showToast } = useToast();
+  const [showResetModal, setShowResetModal] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
 
   // searchQuery is local state so typing is immediate; everything else lives in the URL
@@ -180,6 +182,15 @@ export function CollectionPage() {
   const totalFiltered = data?.pages[0]?.total ?? 0;
   const totalGames = stats?.totalGames ?? 0;
 
+  const handleResetCollection = async () => {
+    try {
+      await resetCollection.mutateAsync();
+      setShowResetModal(false);
+    } catch {
+      showToast('Failed to reset collection', 'error');
+    }
+  };
+
   const handleRemove = async (gameId: string, gameName: string) => {
     try {
       await removeFromCollection.mutateAsync(gameId);
@@ -267,11 +278,42 @@ export function CollectionPage() {
   return (
     <div className="collection-page">
       <header className="collection-header">
-        <h1>My Collection</h1>
+        <div className="collection-header-top">
+          <h1>My Collection</h1>
+          {totalGames > 0 && (
+            <button className="btn btn-danger btn-sm" onClick={() => setShowResetModal(true)}>
+              Reset Collection
+            </button>
+          )}
+        </div>
         <p className="collection-subtitle">
           All the games in your personal library
         </p>
       </header>
+
+      <Modal
+        isOpen={showResetModal}
+        onClose={() => setShowResetModal(false)}
+        title="Reset Collection"
+      >
+        <p>Are you sure you want to reset your collection? This will permanently remove all <strong>{totalGames} game{totalGames !== 1 ? 's' : ''}</strong> and clear your progress stats. This cannot be undone.</p>
+        <div className="modal-actions">
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowResetModal(false)}
+            disabled={resetCollection.isPending}
+          >
+            Cancel
+          </button>
+          <button
+            className="btn btn-danger"
+            onClick={handleResetCollection}
+            disabled={resetCollection.isPending}
+          >
+            {resetCollection.isPending ? 'Resetting...' : 'Yes, Reset Collection'}
+          </button>
+        </div>
+      </Modal>
 
       <SteamSection />
       <TwitchSection />

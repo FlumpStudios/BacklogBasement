@@ -106,6 +106,19 @@ export function useDeletePlaySession(gameId: string) {
   });
 }
 
+export function useResetCollection() {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+
+  return useMutation({
+    mutationFn: () => collectionApi.resetCollection(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: COLLECTION_QUERY_KEY });
+      showToast('Your collection has been reset', 'success');
+    },
+  });
+}
+
 export function useUpdateGameStatus() {
   const queryClient = useQueryClient();
   const { showToast } = useToast();

@@ -111,6 +111,15 @@ namespace BacklogBasement.Services
             return true;
         }
 
+        public async Task ResetCollectionAsync(Guid userId)
+        {
+            var userGames = await _context.UserGames
+                .Where(ug => ug.UserId == userId)
+                .ToListAsync();
+            _context.UserGames.RemoveRange(userGames);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<CollectionItemDto?> GetCollectionItemAsync(Guid userId, Guid gameId)
         {
             var userGame = await _context.UserGames

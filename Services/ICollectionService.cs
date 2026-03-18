@@ -15,5 +15,6 @@ namespace BacklogBasement.Services
         Task<(int Added, int AlreadyOwned)> BulkAddGamesAsync(Guid userId, IEnumerable<Guid> gameIds);
         Task<PagedCollectionDto> GetPagedCollectionAsync(Guid userId, int skip, int take, string? search, string? status, string? source, string? playStatus, string sortBy, string sortDir);
         Task<CollectionStatsDto> GetCollectionStatsAsync(Guid userId);
+        Task ResetCollectionAsync(Guid userId);
     }
 }

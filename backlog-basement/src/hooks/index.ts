@@ -5,6 +5,7 @@ export {
   useCollectionStats,
   useAddToCollection,
   useRemoveFromCollection,
+  useResetCollection,
   usePlaySessions,
   useAddPlaySession,
   useDeletePlaySession,

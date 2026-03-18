@@ -12,15 +12,12 @@ const GAME_TYPES = new Set([
   'most_played',
 ]);
 
-const TRUE_FALSE_TYPES = new Set(['true_false_release', 'true_false_metacritic']);
-
 function QuizResults({ quiz }: { quiz: DailyQuizDto }) {
   const totalAnswers = quiz.results?.reduce((s, r) => s + r.answerCount, 0) ?? 0;
   const isGameType = GAME_TYPES.has(quiz.questionType);
-  const isTrueFalse = TRUE_FALSE_TYPES.has(quiz.questionType);
 
   return (
-    <div className={`quiz-options${isTrueFalse ? ' quiz-options--tf' : ''}`}>
+    <div className="quiz-options">
       {quiz.options.map((opt) => {
         const result = quiz.results?.find((r) => r.optionId === opt.optionId);
         const isSelected = quiz.userSelectedOptionId === opt.optionId;
@@ -60,19 +57,17 @@ function QuizResults({ quiz }: { quiz: DailyQuizDto }) {
 function QuizOption({
   opt,
   isGameType,
-  isTrueFalse,
   onAnswer,
   isPending,
 }: {
   opt: DailyQuizOptionDto;
   isGameType: boolean;
-  isTrueFalse: boolean;
   onAnswer: (optionId: string) => void;
   isPending: boolean;
 }) {
   return (
     <button
-      className={`quiz-option${isTrueFalse ? ' quiz-option--tf' : ''}`}
+      className="quiz-option"
       onClick={() => onAnswer(opt.optionId)}
       disabled={isPending}
     >
@@ -94,7 +89,6 @@ function QuizWidget({ quiz, label }: { quiz: DailyQuizDto; label?: string }) {
   const answerMutation = useAnswerQuiz();
   const hasAnswered = quiz.userSelectedOptionId != null;
   const isGameType = GAME_TYPES.has(quiz.questionType);
-  const isTrueFalse = TRUE_FALSE_TYPES.has(quiz.questionType);
 
   const handleAnswer = (optionId: string) => {
     if (hasAnswered || answerMutation.isPending) return;
@@ -109,13 +103,12 @@ function QuizWidget({ quiz, label }: { quiz: DailyQuizDto; label?: string }) {
       {hasAnswered ? (
         <QuizResults quiz={quiz} />
       ) : (
-        <div className={`quiz-options${isTrueFalse ? ' quiz-options--tf' : ''}`}>
+        <div className="quiz-options">
           {quiz.options.map((opt) => (
             <QuizOption
               key={opt.optionId}
               opt={opt}
               isGameType={isGameType}
-              isTrueFalse={isTrueFalse}
               onAnswer={handleAnswer}
               isPending={answerMutation.isPending}
             />

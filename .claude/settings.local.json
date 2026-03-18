@@ -50,7 +50,9 @@
       "Bash(dotnet:*)",
       "WebFetch(domain:www.igdb.com)",
       "Bash(git checkout:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Read(//c//**)",
+      "Read(//c/ProgramData/chocolatey/**)"
     ]
   }
 }

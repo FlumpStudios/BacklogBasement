@@ -161,6 +161,23 @@ namespace BacklogBasement.Controllers
             }
         }
 
+        [HttpDelete]
+        public async Task<IActionResult> ResetCollection()
+        {
+            var userId = _userService.GetCurrentUserId();
+            if (userId == null) return Unauthorized(new { error = "User not found" });
+
+            try
+            {
+                await _collectionService.ResetCollectionAsync(userId.Value);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "An error occurred while resetting collection", details = ex.Message });
+            }
+        }
+
         [HttpDelete("{gameId}")]
         public async Task<IActionResult> RemoveFromCollection(Guid gameId)
         {

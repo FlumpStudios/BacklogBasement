@@ -95,7 +95,7 @@ namespace BacklogBasement.Controllers
                     var identity = new ClaimsIdentity(claims, "Google");
                     var principal = new ClaimsPrincipal(identity);
 
-                    await HttpContext.SignInAsync("Cookies", principal);
+                    await HttpContext.SignInAsync("Cookies", principal, new AuthenticationProperties { IsPersistent = true });
                 }
 
                 // Redirect to frontend with success parameter
@@ -225,7 +225,7 @@ namespace BacklogBasement.Controllers
                     var identity = new ClaimsIdentity(claims, "Steam");
                     var principal = new ClaimsPrincipal(identity);
 
-                    await HttpContext.SignInAsync("Cookies", principal);
+                    await HttpContext.SignInAsync("Cookies", principal, new AuthenticationProperties { IsPersistent = true });
                     _logger.LogInformation("Signed in user {UserId} via Steam login", user.Id);
 
                     return Redirect($"{_frontendUrl}/?auth=success");
@@ -267,7 +267,7 @@ namespace BacklogBasement.Controllers
                     var identity = new ClaimsIdentity(claims, "Google");
                     var principal = new ClaimsPrincipal(identity);
 
-                    await HttpContext.SignInAsync("Cookies", principal);
+                    await HttpContext.SignInAsync("Cookies", principal, new AuthenticationProperties { IsPersistent = true });
                     _logger.LogInformation("Re-signed in user {UserId} after Steam linking", userId);
 
                     return Redirect($"{_frontendUrl}/collection?steam=linked");
@@ -344,7 +344,7 @@ namespace BacklogBasement.Controllers
             {
                 var user = await _userService.GetOrCreateTwitchUserAsync(twitchUser.Id, twitchUser.DisplayName, twitchUser.ProfileImageUrl);
                 var claims = BuildClaims(user);
-                await HttpContext.SignInAsync("Cookies", new ClaimsPrincipal(new ClaimsIdentity(claims, "Twitch")));
+                await HttpContext.SignInAsync("Cookies", new ClaimsPrincipal(new ClaimsIdentity(claims, "Twitch")), new AuthenticationProperties { IsPersistent = true });
                 return Redirect($"{_frontendUrl}/?auth=success");
             }
             else
@@ -359,7 +359,7 @@ namespace BacklogBasement.Controllers
                         return Redirect($"{_frontendUrl}/collection?twitch=error&message=user_not_found");
 
                     var claims = BuildClaims(user);
-                    await HttpContext.SignInAsync("Cookies", new ClaimsPrincipal(new ClaimsIdentity(claims, "Twitch")));
+                    await HttpContext.SignInAsync("Cookies", new ClaimsPrincipal(new ClaimsIdentity(claims, "Twitch")), new AuthenticationProperties { IsPersistent = true });
                     return Redirect($"{_frontendUrl}/collection?twitch=linked");
                 }
                 catch (InvalidOperationException)

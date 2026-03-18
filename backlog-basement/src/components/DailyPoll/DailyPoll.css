@@ -150,7 +150,7 @@
 }
 
 .poll-previous {
-  margin-top: var(--spacing-lg);
+  margin-top: auto;
   padding-top: var(--spacing-lg);
   border-top: 1px solid var(--color-border);
 }

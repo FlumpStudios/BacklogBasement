@@ -25,22 +25,13 @@
 .logo {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
   text-decoration: none;
-  color: var(--color-text);
-  font-weight: 700;
-  font-size: 1.25rem;
 }
 
-.logo-icon {
-  font-size: 1.5rem;
-}
-
-.logo-text {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.logo-img {
+  height: 64px;
+  width: auto;
+  mix-blend-mode: lighten;
 }
 
 .nav {
@@ -208,9 +199,6 @@
 }
 
 @media (max-width: 1180px) {
-  .logo-text {
-    display: none;
-  }
 
   .retro-toggle {
     display: none;

@@ -70,8 +70,7 @@ export function Layout() {
       <header className="header">
         <div className="header-content">
           <Link to="/" className="logo" onClick={closeMenu}>
-            <span className="logo-icon">🎮</span>
-            <span className="logo-text">Backlog Basement</span>
+            <img src="/title.png" alt="Backlog Basement" className="logo-img" />
           </Link>
 
           <nav className="nav">

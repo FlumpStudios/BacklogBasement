@@ -12,7 +12,7 @@ export function LandingPage() {
           Your Gaming Life,
           <span className="hero-title-accent">Levelled Up</span>
         </h1>
-        <p className="hero-subtitle">
+<p className="hero-subtitle">
           Manage your backlog, connect with friends, and game together.
           The social hub for every gamer's collection.
         </p>

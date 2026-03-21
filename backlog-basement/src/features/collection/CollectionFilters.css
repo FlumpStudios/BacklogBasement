@@ -2,13 +2,89 @@
   margin-bottom: 1.5rem;
 }
 
-.filters-row {
+/* Sort select - always visible, full width */
+.sort-row {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
   align-items: center;
+  gap: 0.5rem;
 }
 
+.sort-row .filter-select {
+  flex: 1;
+}
+
+/* Filters accordion toggle - full width */
+.filters-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.375rem;
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.9375rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.filters-toggle:hover {
+  background: var(--color-surface-elevated);
+}
+
+.filters-toggle-icon {
+  font-size: 0.75rem;
+  transition: transform 0.2s;
+}
+
+.filters-toggle-icon.open {
+  transform: rotate(180deg);
+}
+
+/* Collapsible filters panel */
+.filters-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.25s ease;
+}
+
+.filters-panel.open {
+  grid-template-rows: 1fr;
+}
+
+.filters-panel-grid {
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.filters-panel.open .filters-panel-grid {
+  padding-top: 0.75rem;
+}
+
+.filters-panel .filter-group {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.25rem;
+}
+
+.filters-panel .filter-group label {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.filters-panel .filter-select {
+  width: 100%;
+}
+
+/* Search - full width, below accordion */
 .search-wrapper {
   position: relative;
   width: 100%;
@@ -56,29 +132,6 @@
   background: var(--color-surface-elevated);
 }
 
-/* Toggle button - hidden on desktop */
-.filters-toggle {
-  display: none;
-}
-
-.filter-controls {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.filter-group {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.filter-group label {
-  font-size: 0.875rem;
-  color: var(--color-text-muted);
-  white-space: nowrap;
-}
-
 .filter-select {
   padding: 0.5rem 2rem 0.5rem 0.75rem;
   font-size: 0.875rem;
@@ -102,102 +155,4 @@
   margin-top: 0.75rem;
   font-size: 0.875rem;
   color: var(--color-text-muted);
-}
-
-/* Mobile sort row and collapsible panel - hidden on desktop */
-.mobile-sort-row {
-  display: none;
-}
-
-.filters-panel {
-  display: none;
-}
-
-@media (max-width: 640px) {
-  .filters-row {
-    flex-direction: row;
-    align-items: center;
-    flex-wrap: nowrap;
-  }
-
-  /* Hide desktop filter controls on mobile */
-  .filter-controls {
-    display: none;
-  }
-
-  /* Mobile sort row - always visible */
-  .mobile-sort-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 0.75rem;
-  }
-
-  .mobile-sort-row .filter-select {
-    flex: 1;
-  }
-
-  /* Show toggle button on mobile - full width row */
-  .filters-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.375rem;
-    width: 100%;
-    margin-top: 0.75rem;
-    padding: 0.625rem 0.875rem;
-    font-size: 0.9375rem;
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
-    background: var(--color-surface);
-    color: var(--color-text);
-    cursor: pointer;
-    white-space: nowrap;
-    transition: border-color 0.2s, background-color 0.2s;
-  }
-
-  .filters-toggle:hover {
-    background: var(--color-surface-elevated);
-  }
-
-  .filters-toggle-icon {
-    font-size: 0.75rem;
-    transition: transform 0.2s;
-  }
-
-  .filters-toggle-icon.open {
-    transform: rotate(180deg);
-  }
-
-  /* Show collapsible panel on mobile */
-  .filters-panel {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows 0.25s ease;
-  }
-
-  .filters-panel.open {
-    grid-template-rows: 1fr;
-  }
-
-  .filters-panel-grid {
-    overflow: hidden;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 0.75rem;
-  }
-
-  .filters-panel.open .filters-panel-grid {
-    padding-top: 0.75rem;
-  }
-
-  .filters-panel .filter-group {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.25rem;
-  }
-
-  .filters-panel .filter-select {
-    width: 100%;
-  }
 }

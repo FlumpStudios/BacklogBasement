@@ -70,8 +70,35 @@ export function CollectionFilters({
 
   return (
     <div className="collection-filters">
-      <div className="filters-row">
-        <div className="filter-controls">
+      {/* Sort - always visible */}
+      <div className="sort-row">
+        <select
+          id="sort-by"
+          value={sortBy}
+          onChange={(e) => onSortChange(e.target.value as SortOption)}
+          className="filter-select"
+        >
+          {sortOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Filters accordion toggle */}
+      <button
+        className="filters-toggle"
+        onClick={() => setFiltersOpen(!filtersOpen)}
+        aria-expanded={filtersOpen}
+      >
+        Filters{activeFilterCount > 0 && ` (${activeFilterCount})`}
+        <span className={`filters-toggle-icon ${filtersOpen ? 'open' : ''}`}>&#9662;</span>
+      </button>
+
+      {/* Collapsible filters panel */}
+      <div className={`filters-panel ${filtersOpen ? 'open' : ''}`}>
+        <div className="filters-panel-grid">
           <div className="filter-group">
             <label htmlFor="play-status">Status:</label>
             <select
@@ -115,99 +142,10 @@ export function CollectionFilters({
               <option value="completed">Completed</option>
             </select>
           </div>
-
-          <div className="filter-group">
-            <label htmlFor="sort-by">Sort:</label>
-            <select
-              id="sort-by"
-              value={sortBy}
-              onChange={(e) => onSortChange(e.target.value as SortOption)}
-              className="filter-select"
-            >
-              {sortOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
         </div>
       </div>
 
-      {/* Mobile sort row - always visible on mobile */}
-      <div className="mobile-sort-row">
-        <select
-          id="sort-by-mobile"
-          value={sortBy}
-          onChange={(e) => onSortChange(e.target.value as SortOption)}
-          className="filter-select"
-        >
-          {sortOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Mobile filters toggle + panel */}
-      <button
-        className="filters-toggle"
-        onClick={() => setFiltersOpen(!filtersOpen)}
-        aria-expanded={filtersOpen}
-      >
-        Filters{activeFilterCount > 0 && ` (${activeFilterCount})`}
-        <span className={`filters-toggle-icon ${filtersOpen ? 'open' : ''}`}>&#9662;</span>
-      </button>
-
-      <div className={`filters-panel ${filtersOpen ? 'open' : ''}`}>
-        <div className="filters-panel-grid">
-          <div className="filter-group">
-            <label htmlFor="play-status-mobile">Status:</label>
-            <select
-              id="play-status-mobile"
-              value={playStatus}
-              onChange={(e) => onPlayStatusChange(e.target.value as PlayStatusFilter)}
-              className="filter-select"
-            >
-              <option value="all">All</option>
-              <option value="played">Played</option>
-              <option value="unplayed">Unplayed</option>
-            </select>
-          </div>
-
-          <div className="filter-group">
-            <label htmlFor="source-filter-mobile">Source:</label>
-            <select
-              id="source-filter-mobile"
-              value={sourceFilter}
-              onChange={(e) => onSourceFilterChange(e.target.value as SourceFilter)}
-              className="filter-select"
-            >
-              <option value="all">All</option>
-              <option value="steam">Steam</option>
-              <option value="manual">IGDB</option>
-            </select>
-          </div>
-
-          <div className="filter-group">
-            <label htmlFor="game-status-mobile">Progress:</label>
-            <select
-              id="game-status-mobile"
-              value={gameStatus}
-              onChange={(e) => onGameStatusChange(e.target.value as GameStatusFilter)}
-              className="filter-select"
-            >
-              <option value="all">All</option>
-              <option value="none">No Status</option>
-              <option value="backlog">Backlog</option>
-              <option value="playing">Playing</option>
-              <option value="completed">Completed</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
+      {/* Full-width search */}
       <div className="search-wrapper">
         <input
           type="text"

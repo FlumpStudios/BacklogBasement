@@ -29,7 +29,7 @@ export function LoginPage() {
     <div className="login-page">
       <div className="login-card">
         <div className="login-header">
-          <span className="login-icon">🎮</span>
+          <img src="/logo.png" alt="Backlog Basement" className="login-icon" />
           <h1 className="login-title">Welcome to Backlog Basement</h1>
           <p className="login-subtitle">
             Sign in to start managing your game collection

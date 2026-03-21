@@ -71,25 +71,6 @@ export function CollectionFilters({
   return (
     <div className="collection-filters">
       <div className="filters-row">
-        <div className="search-wrapper">
-          <input
-            type="text"
-            placeholder="Search games..."
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="search-input"
-          />
-          {searchQuery && (
-            <button
-              className="search-clear"
-              onClick={() => onSearchChange('')}
-              aria-label="Clear search"
-            >
-              x
-            </button>
-          )}
-        </div>
-
         <div className="filter-controls">
           <div className="filter-group">
             <label htmlFor="play-status">Status:</label>
@@ -225,6 +206,25 @@ export function CollectionFilters({
             </select>
           </div>
         </div>
+      </div>
+
+      <div className="search-wrapper">
+        <input
+          type="text"
+          placeholder="Search games..."
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="search-input"
+        />
+        {searchQuery && (
+          <button
+            className="search-clear"
+            onClick={() => onSearchChange('')}
+            aria-label="Clear search"
+          >
+            x
+          </button>
+        )}
       </div>
 
       {isFiltered && (

@@ -11,9 +11,8 @@
 
 .search-wrapper {
   position: relative;
-  flex: 1;
-  min-width: 200px;
-  max-width: 400px;
+  width: 100%;
+  margin-top: 0.75rem;
 }
 
 .search-input {
@@ -119,11 +118,6 @@
     flex-direction: row;
     align-items: center;
     flex-wrap: nowrap;
-  }
-
-  .search-wrapper {
-    max-width: none;
-    min-width: 0;
   }
 
   /* Hide desktop filter controls on mobile */

@@ -20,9 +20,11 @@
 }
 
 .login-icon {
-  font-size: 4rem;
+  width: 12rem;
+  height: auto;
   display: block;
-  margin-bottom: var(--spacing-md);
+  margin: 0 auto var(--spacing-md);
+  mix-blend-mode: lighten;
 }
 
 .login-title {

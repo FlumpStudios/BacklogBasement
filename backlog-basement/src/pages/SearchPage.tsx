@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { SearchInput, EmptyState, useToast } from '../components';
 import { GameGrid } from '../features/games';
-import { useGameSearch, useAddToCollection, useCollection } from '../hooks';
-import { GameDto } from '../types';
+import { useGameSearch, useAddToCollection, useCollection, useRemoveFromCollection, useUpdateGameStatus } from '../hooks';
+import { GameDto, CollectionItemDto } from '../types';
 import './SearchPage.css';
 
 export function SearchPage() {
@@ -10,9 +10,13 @@ export function SearchPage() {
   const { data: searchResults, isLoading, isError } = useGameSearch(query);
   const { data: collection } = useCollection();
   const addToCollection = useAddToCollection();
+  const removeFromCollection = useRemoveFromCollection();
+  const updateGameStatus = useUpdateGameStatus();
   const { showToast } = useToast();
 
-  const collectionIds = new Set(collection?.map((item) => item.gameId) ?? []);
+  const collectionMap = new Map<string, CollectionItemDto>(
+    collection?.map((item) => [item.gameId, item]) ?? []
+  );
 
   const handleAddToCollection = async (gameId: string, gameName: string) => {
     try {
@@ -23,23 +27,85 @@ export function SearchPage() {
     }
   };
 
-  const renderActions = (game: GameDto) => {
-    const isInCollection = collectionIds.has(game.id);
+  const handleRemove = async (gameId: string, gameName: string) => {
+    try {
+      await removeFromCollection.mutateAsync(gameId);
+      showToast(`Removed "${gameName}" from your collection`, 'success');
+    } catch {
+      showToast('Failed to remove game', 'error');
+    }
+  };
 
-    if (isInCollection) {
+  const renderActions = (game: GameDto) => {
+    const item = collectionMap.get(game.id);
+
+    if (!item) {
       return (
-        <span className="in-collection-badge">✓ Collected</span>
+        <button
+          onClick={() => handleAddToCollection(game.id, game.name)}
+          className="btn btn-primary btn-sm"
+          disabled={addToCollection.isPending}
+        >
+          + Add
+        </button>
       );
     }
 
     return (
-      <button
-        onClick={() => handleAddToCollection(game.id, game.name)}
-        className="btn btn-primary btn-sm"
-        disabled={addToCollection.isPending}
-      >
-        + Add
-      </button>
+      <>
+        {!item.status && (
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              updateGameStatus.mutateAsync({ gameId: item.gameId, status: 'backlog' }).then(() =>
+                showToast(`Added "${item.gameName}" to your backlog`, 'success')
+              ).catch(() => showToast('Failed to add to backlog', 'error'));
+            }}
+            className="btn btn-secondary btn-sm"
+            disabled={updateGameStatus.isPending}
+          >
+            Add to Backlog
+          </button>
+        )}
+        {item.status === 'backlog' && (
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              updateGameStatus.mutateAsync({ gameId: item.gameId, status: 'playing' }).then(() =>
+                showToast(`Started playing "${item.gameName}"`, 'success')
+              ).catch(() => showToast('Failed to update status', 'error'));
+            }}
+            className="btn btn-secondary btn-sm"
+            disabled={updateGameStatus.isPending}
+          >
+            Start Playing
+          </button>
+        )}
+        {item.status === 'playing' && (
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              updateGameStatus.mutateAsync({ gameId: item.gameId, status: 'completed' }).then(() =>
+                showToast(`Marked "${item.gameName}" as completed`, 'success')
+              ).catch(() => showToast('Failed to update status', 'error'));
+            }}
+            className="btn btn-secondary btn-sm"
+            disabled={updateGameStatus.isPending}
+          >
+            Mark Completed
+          </button>
+        )}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            handleRemove(item.gameId, item.gameName);
+          }}
+          className="btn btn-danger btn-sm"
+          disabled={removeFromCollection.isPending}
+        >
+          Remove
+        </button>
+      </>
     );
   };
 

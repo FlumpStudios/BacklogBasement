@@ -98,6 +98,11 @@ public class Program
                 // Map Google claims to our user identity
                 options.ClaimActions.MapJsonKey("sub", "sub");
                 options.ClaimActions.MapJsonKey("name", "name");
+
+                // Fix for iOS Safari: SameSite=None requires Secure=true or Safari silently drops it,
+                // breaking the correlation check when Google redirects back.
+                options.CorrelationCookie.SameSite = SameSiteMode.None;
+                options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
             })
             .AddSteam(options =>
             {

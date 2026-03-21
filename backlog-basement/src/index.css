@@ -103,8 +103,9 @@ h3 {
   padding: var(--spacing-sm) var(--spacing-lg);
   font-size: 1rem;
   font-weight: 500;
+  line-height: 1.5;
   border-radius: var(--radius-md);
-  border: none;
+  border: 1px solid transparent;
   cursor: pointer;
   transition: background var(--transition-fast), transform var(--transition-fast);
   text-decoration: none;

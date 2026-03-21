@@ -100,7 +100,7 @@ export function CollectionFilters({
       <div className={`filters-panel ${filtersOpen ? 'open' : ''}`}>
         <div className="filters-panel-grid">
           <div className="filter-group">
-            <label htmlFor="play-status">Status:</label>
+            <label htmlFor="play-status">Play status:</label>
             <select
               id="play-status"
               value={playStatus}

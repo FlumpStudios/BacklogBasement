@@ -213,10 +213,16 @@
   margin-bottom: var(--spacing-xl);
 }
 
+.game-actions .btn {
+  flex: 1;
+  min-width: max-content;
+}
+
 .sessions-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: var(--spacing-md);
   margin-bottom: var(--spacing-md);
 }
@@ -224,6 +230,17 @@
 .sessions-header h2 {
   font-size: 1.25rem;
   margin: 0;
+}
+
+.sessions-header-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.sessions-header-actions .btn {
+  flex: 1;
+  min-width: max-content;
 }
 
 .not-found {
@@ -273,6 +290,11 @@
   display: flex;
   gap: var(--spacing-sm);
   flex-wrap: wrap;
+}
+
+.status-actions .btn {
+  flex: 1;
+  min-width: max-content;
 }
 
 .btn-success {

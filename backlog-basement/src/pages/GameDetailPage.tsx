@@ -212,23 +212,7 @@ export function GameDetailPage() {
           )}
 
           <div className="game-actions">
-            {isInCollection ? (
-              <>
-                <button
-                  onClick={() => setShowPlaySessionModal(true)}
-                  className="btn btn-primary"
-                >
-                  Log Play Session
-                </button>
-                <button
-                  onClick={handleRemoveFromCollection}
-                  className="btn btn-danger"
-                  disabled={removeFromCollection.isPending}
-                >
-                  Remove
-                </button>
-              </>
-            ) : (
+            {!isInCollection && (
               <button
                 onClick={handleAddToCollection}
                 className="btn btn-primary"
@@ -253,11 +237,20 @@ export function GameDetailPage() {
                 Suggest to Friend
               </button>
             )}
+            {isInCollection && (
+              <button
+                onClick={handleRemoveFromCollection}
+                className="btn btn-danger"
+                disabled={removeFromCollection.isPending}
+              >
+                Remove from Collection
+              </button>
+            )}
           </div>
 
           {isInCollection && (
             <div className="game-status-section">
-              <h3>Status</h3>
+              <h3>Play Status</h3>
               {collectionItem?.status && (
                 <span className={`status-badge status-${collectionItem.status}`}>
                   {getStatusLabel(collectionItem.status)}
@@ -349,15 +342,23 @@ export function GameDetailPage() {
             <div className="game-sessions">
               <div className="sessions-header">
                 <h2>Play Sessions</h2>
-                {collectionItem?.source === 'steam' && (
+                <div className="sessions-header-actions">
+                  {collectionItem?.source === 'steam' && (
+                    <button
+                      onClick={handleSyncSteamPlaytime}
+                      className="btn btn-secondary btn-sm"
+                      disabled={syncSteamPlaytime.isPending}
+                    >
+                      {syncSteamPlaytime.isPending ? 'Syncing...' : 'Sync from Steam'}
+                    </button>
+                  )}
                   <button
-                    onClick={handleSyncSteamPlaytime}
-                    className="btn btn-secondary btn-sm"
-                    disabled={syncSteamPlaytime.isPending}
+                    onClick={() => setShowPlaySessionModal(true)}
+                    className="btn btn-primary btn-sm"
                   >
-                    {syncSteamPlaytime.isPending ? 'Syncing...' : 'Sync from Steam'}
+                    Log Play Session
                   </button>
-                )}
+                </div>
               </div>
               <PlaySessionList
                 sessions={playSessions}

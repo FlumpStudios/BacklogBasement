@@ -10,6 +10,11 @@
   gap: var(--spacing-xs);
 }
 
+.profile-header a.btn {
+  align-self: stretch;
+  text-align: center;
+}
+
 .profile-identity {
   display: flex;
   align-items: center;

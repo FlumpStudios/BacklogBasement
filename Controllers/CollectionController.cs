@@ -220,7 +220,7 @@ namespace BacklogBasement.Controllers
                 else if (request.Status == "completed")
                     await _activityService.LogAsync(userId.Value, "game_completed", gameId);
                 var xpAwarded = 0;
-                if (request.Status == "completed" && await _xpService.TryGrantAsync(userId.Value, "complete_game", gameId.ToString(), IXpService.XP_COMPLETE_GAME))
+                if (request.Status == "completed" && await _xpService.TryGrantAsync(userId.Value, "complete_game", "initial", IXpService.XP_COMPLETE_GAME))
                     xpAwarded += IXpService.XP_COMPLETE_GAME;
                 if (request.Status == "backlog" && await _xpService.TryGrantAsync(userId.Value, "add_to_backlog", "initial", IXpService.XP_ADD_TO_BACKLOG))
                     xpAwarded += IXpService.XP_ADD_TO_BACKLOG;

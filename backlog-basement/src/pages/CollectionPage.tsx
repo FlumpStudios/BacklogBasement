@@ -200,10 +200,9 @@ export function CollectionPage() {
     }
   };
 
-  const handleAddToBacklog = async (gameId: string, gameName: string) => {
+  const handleAddToBacklog = async (gameId: string) => {
     try {
       await updateGameStatus.mutateAsync({ gameId, status: 'backlog' });
-      showToast(`Added "${gameName}" to your backlog`, 'success');
     } catch {
       showToast('Failed to add to backlog', 'error');
     }
@@ -215,7 +214,7 @@ export function CollectionPage() {
         <button
           onClick={(e) => {
             e.preventDefault();
-            handleAddToBacklog(item.gameId, item.gameName);
+            handleAddToBacklog(item.gameId);
           }}
           className="btn btn-secondary btn-sm"
           disabled={updateGameStatus.isPending}
@@ -227,9 +226,7 @@ export function CollectionPage() {
         <button
           onClick={(e) => {
             e.preventDefault();
-            updateGameStatus.mutateAsync({ gameId: item.gameId, status: 'playing' }).then(() =>
-              showToast(`Started playing "${item.gameName}"`, 'success')
-            ).catch(() => showToast('Failed to update status', 'error'));
+            updateGameStatus.mutateAsync({ gameId: item.gameId, status: 'playing' }).catch(() => showToast('Failed to update status', 'error'));
           }}
           className="btn btn-secondary btn-sm"
           disabled={updateGameStatus.isPending}
@@ -241,9 +238,7 @@ export function CollectionPage() {
         <button
           onClick={(e) => {
             e.preventDefault();
-            updateGameStatus.mutateAsync({ gameId: item.gameId, status: 'completed' }).then(() =>
-              showToast(`Marked "${item.gameName}" as completed`, 'success')
-            ).catch(() => showToast('Failed to update status', 'error'));
+            updateGameStatus.mutateAsync({ gameId: item.gameId, status: 'completed' }).catch(() => showToast('Failed to update status', 'error'));
           }}
           className="btn btn-secondary btn-sm"
           disabled={updateGameStatus.isPending}

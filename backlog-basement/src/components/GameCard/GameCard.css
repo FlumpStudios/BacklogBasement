@@ -117,3 +117,9 @@
   white-space: normal;
   word-break: break-word;
 }
+
+@media (max-width: 480px) {
+  .game-card-completed-text {
+    display: none;
+  }
+}

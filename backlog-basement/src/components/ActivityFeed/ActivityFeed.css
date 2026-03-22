@@ -81,6 +81,15 @@
   white-space: nowrap;
 }
 
+@media (max-width: 600px) {
+  .af-text {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+}
+
 .af-link {
   color: var(--color-primary);
   text-decoration: none;

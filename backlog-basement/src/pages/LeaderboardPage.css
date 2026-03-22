@@ -164,6 +164,12 @@
   flex-shrink: 0;
 }
 
+@media (max-width: 600px) {
+  .lb-page-level {
+    display: none;
+  }
+}
+
 .lb-page-xp {
   font-size: 0.9rem;
   font-weight: 600;

@@ -173,6 +173,12 @@
   flex-shrink: 0;
 }
 
+@media (max-width: 600px) {
+  .lb-level {
+    display: none;
+  }
+}
+
 .lb-xp {
   font-size: 0.85rem;
   font-weight: 600;

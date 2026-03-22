@@ -19,9 +19,9 @@ namespace BacklogBasement.Controllers
         }
 
         [HttpGet("feed")]
-        public async Task<IActionResult> GetFeed([FromQuery] int limit = 25)
+        public async Task<IActionResult> GetFeed([FromQuery] int limit = 100)
         {
-            limit = Math.Clamp(limit, 1, 25);
+            limit = Math.Clamp(limit, 1, 100);
             var events = await _activityService.GetFeedAsync(limit);
             return Ok(events);
         }

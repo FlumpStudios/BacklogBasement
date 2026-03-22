@@ -5,7 +5,8 @@ import { ActivityEventDto } from '../../types';
 import { Avatar } from '../Avatar';
 import './ActivityFeed.css';
 
-const PAGE_SIZE = 10;
+const INITIAL_SIZE = 10;
+const LOAD_MORE_SIZE = 25;
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -98,11 +99,13 @@ function FeedItem({ event }: { event: ActivityEventDto }) {
 }
 
 export function ActivityFeed() {
-  const [showAll, setShowAll] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_SIZE);
   const { data: events, isLoading } = useActivityFeed();
 
-  const visible = showAll ? (events ?? []) : (events ?? []).slice(0, PAGE_SIZE);
-  const hasMore = (events?.length ?? 0) > PAGE_SIZE;
+  const all = events ?? [];
+  const visible = all.slice(0, visibleCount);
+  const remaining = all.length - visibleCount;
+  const hasMore = remaining > 0;
 
   return (
     <section className="dashboard-section af-section">
@@ -124,9 +127,9 @@ export function ActivityFeed() {
           {hasMore && (
             <button
               className="af-show-more"
-              onClick={() => setShowAll(s => !s)}
+              onClick={() => setVisibleCount(c => c + LOAD_MORE_SIZE)}
             >
-              {showAll ? 'Show less' : `Show ${events.length - PAGE_SIZE} more`}
+              Show {Math.min(remaining, LOAD_MORE_SIZE)} more
             </button>
           )}
         </>

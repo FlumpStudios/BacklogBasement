@@ -56,7 +56,7 @@ export function GameCard({ game, playtime, showPlaytime = false, criticScore, st
             </span>
           )}
           {status === 'completed' && (
-            <span className="game-card-completed">✓ Completed</span>
+            <span className="game-card-completed">✓<span className="game-card-completed-text"> Completed</span></span>
           )}
         </div>
         <div className="game-card-info">

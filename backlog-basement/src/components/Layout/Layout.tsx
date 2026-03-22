@@ -95,6 +95,11 @@ export function Layout() {
                     </Link>
                     {hasClubAction && <span className="nav-badge-dot" />}
                   </span>
+                  {user?.username && (
+                    <Link to={`/profile/${user.username}`} className="nav-link" onClick={closeMenu}>
+                      Your profile
+                    </Link>
+                  )}
                   <button
                     className={`drawer-retro-toggle${retroMode !== 'off' ? ` retro-active retro-${retroMode}` : ''}`}
                     onClick={handleCycleRetro}

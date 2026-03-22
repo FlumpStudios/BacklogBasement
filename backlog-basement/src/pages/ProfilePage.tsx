@@ -87,7 +87,7 @@ export function ProfilePage() {
         )}
         {!isOwnProfile && isAuthenticated && (
           <Link to={`/profile/${profile.username}/compare`} className="btn btn-secondary">
-            Compare collections
+            Compare collection
           </Link>
         )}
         {!isOwnProfile && isAuthenticated && isFriend && (
@@ -138,7 +138,7 @@ export function ProfilePage() {
         </div>
         <div className="stat-card">
           <span className="stat-value">{profile.stats.completedCount}</span>
-          <span className="stat-label">Completed</span>
+          <span className="stat-label">Complete</span>
         </div>
         <div className="stat-card">
           <span className="stat-value">{profile.stats.friendCount}</span>

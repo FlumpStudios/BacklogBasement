@@ -80,8 +80,17 @@
   font-size: 4rem;
 }
 
+.game-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
 .game-title {
-  margin: 0 0 var(--spacing-sm) 0;
+  margin: 0;
   font-size: 2rem;
 }
 

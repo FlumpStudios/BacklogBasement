@@ -167,7 +167,18 @@ export function GameDetailPage() {
         )}
 
         <div className="game-detail-info">
-          <h1 className="game-title">{game.name}</h1>
+          <div className="game-title-row">
+            <h1 className="game-title">{game.name}</h1>
+            {isInCollection && (
+              <button
+                onClick={handleRemoveFromCollection}
+                className="btn btn-danger btn-sm"
+                disabled={removeFromCollection.isPending}
+              >
+                Remove from Collection
+              </button>
+            )}
+          </div>
 
           {game.releaseDate && (
             <p className="game-release">
@@ -235,15 +246,6 @@ export function GameDetailPage() {
                 className="btn btn-secondary"
               >
                 Suggest to Friend
-              </button>
-            )}
-            {isInCollection && (
-              <button
-                onClick={handleRemoveFromCollection}
-                className="btn btn-danger"
-                disabled={removeFromCollection.isPending}
-              >
-                Remove from Collection
               </button>
             )}
           </div>

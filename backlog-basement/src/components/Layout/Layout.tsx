@@ -96,7 +96,7 @@ export function Layout() {
                     {hasClubAction && <span className="nav-badge-dot" />}
                   </span>
                   {user?.username && (
-                    <Link to={`/profile/${user.username}`} className="nav-link" onClick={closeMenu}>
+                    <Link to={`/profile/${user.username}`} className="nav-link drawer-only" onClick={closeMenu}>
                       Your profile
                     </Link>
                   )}
@@ -192,6 +192,8 @@ export function Layout() {
           <Link to="/privacy" className="footer-link">Privacy Policy</Link>
           <span className="footer-separator">|</span>
           <Link to="/cookies" className="footer-link">Cookie Policy</Link>
+          <span className="footer-separator">|</span>
+          <a href="https://discord.gg/QAJDfbuR9V" className="footer-link" target="_blank" rel="noopener noreferrer">Join our Discord server</a>
         </div>
       </footer>
 

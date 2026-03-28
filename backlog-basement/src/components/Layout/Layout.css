@@ -190,7 +190,8 @@
 }
 
 /* drawer variant: hidden on desktop, shown inside mobile menu */
-.drawer-retro-toggle {
+.drawer-retro-toggle,
+.drawer-only {
   display: none;
 }
 

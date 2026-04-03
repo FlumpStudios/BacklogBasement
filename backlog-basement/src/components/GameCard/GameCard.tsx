@@ -11,6 +11,7 @@ interface GameCardProps {
   criticScore?: number | null;
   status?: 'backlog' | 'playing' | 'completed' | null;
   actions?: React.ReactNode;
+  onContextMenu?: (e: React.MouseEvent) => void;
 }
 
 function getScoreColor(score: number): string {
@@ -26,7 +27,7 @@ function isValidCoverUrl(url?: string | null): boolean {
   return !url.endsWith('/.jpg') && !url.endsWith('/.png');
 }
 
-export function GameCard({ game, playtime, showPlaytime = false, criticScore, status, actions }: GameCardProps) {
+export function GameCard({ game, playtime, showPlaytime = false, criticScore, status, actions, onContextMenu }: GameCardProps) {
   const releaseYear = getYear(game.releaseDate ?? undefined);
   const hasCover = isValidCoverUrl(game.coverUrl);
   const [imageError, setImageError] = useState(false);
@@ -34,7 +35,7 @@ export function GameCard({ game, playtime, showPlaytime = false, criticScore, st
   const showPlaceholder = !hasCover || imageError;
 
   return (
-    <div className="game-card">
+    <div className="game-card" onContextMenu={onContextMenu}>
       <Link to={`/games/${game.id}`} className="game-card-link">
         <div className="game-card-cover">
           {!showPlaceholder ? (

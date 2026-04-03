@@ -6,6 +6,7 @@ interface GameGridProps {
   games: GameDto[] | CollectionItemDto[];
   showPlaytime?: boolean;
   renderActions?: (game: GameDto | CollectionItemDto) => React.ReactNode;
+  onContextMenu?: (item: GameDto | CollectionItemDto, e: React.MouseEvent) => void;
 }
 
 function isCollectionItem(
@@ -14,7 +15,7 @@ function isCollectionItem(
   return 'gameName' in item;
 }
 
-export function GameGrid({ games, showPlaytime = false, renderActions }: GameGridProps) {
+export function GameGrid({ games, showPlaytime = false, renderActions, onContextMenu }: GameGridProps) {
   return (
     <div className="game-grid">
       {games.map((item) => {
@@ -41,6 +42,7 @@ export function GameGrid({ games, showPlaytime = false, renderActions }: GameGri
             criticScore={criticScore}
             status={status}
             actions={renderActions?.(item)}
+            onContextMenu={onContextMenu ? (e) => onContextMenu(item, e) : undefined}
           />
         );
       })}

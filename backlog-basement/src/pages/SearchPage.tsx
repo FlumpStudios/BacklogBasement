@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { SearchInput, EmptyState, useToast } from '../components';
 import { GameGrid } from '../features/games';
-import { useGameSearch, useAddToCollection, useCollection, useRemoveFromCollection, useUpdateGameStatus } from '../hooks';
+import { useGameSearch, useAddToCollection, useCollection, useRemoveFromCollection, useUpdateGameStatus, useElectronGameMenu } from '../hooks';
 import { GameDto, CollectionItemDto } from '../types';
 import './SearchPage.css';
 
@@ -13,6 +13,7 @@ export function SearchPage() {
   const removeFromCollection = useRemoveFromCollection();
   const updateGameStatus = useUpdateGameStatus();
   const { showToast } = useToast();
+  const electronGameMenu = useElectronGameMenu();
 
   const collectionMap = new Map<string, CollectionItemDto>(
     collection?.map((item) => [item.gameId, item]) ?? []
@@ -169,6 +170,11 @@ export function SearchPage() {
             <GameGrid
               games={searchResults}
               renderActions={(game) => renderActions(game as GameDto)}
+              onContextMenu={(game, e) => {
+                const item = collectionMap.get((game as GameDto).id);
+                if (!item) return;
+                electronGameMenu(item.gameId, item.status ?? null, e);
+              }}
             />
           </>
         )}

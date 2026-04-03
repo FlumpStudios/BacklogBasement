@@ -1,4 +1,4 @@
-const { app, BrowserWindow, shell, Menu, MenuItem } = require('electron');
+const { app, BrowserWindow, shell, Menu, MenuItem, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -30,6 +30,7 @@ function createWindow() {
     title: 'Backlog Basement',
     webPreferences: {
       contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js'),
     },
   });
 
@@ -139,6 +140,33 @@ function buildMenu() {
 
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
+
+ipcMain.handle('show-game-menu', (event, gameId, currentStatus) => {
+  return new Promise((resolve) => {
+    const items = [
+      { label: 'Add to Backlog', status: 'backlog' },
+      { label: 'Start Playing',  status: 'playing' },
+      { label: 'Mark Completed', status: 'completed' },
+    ];
+
+    let resolved = false;
+    const menu = Menu.buildFromTemplate(
+      items.map(({ label, status }) => ({
+        label,
+        enabled: status !== currentStatus,
+        click: () => {
+          resolved = true;
+          resolve({ gameId, status });
+        },
+      }))
+    );
+
+    menu.popup({
+      window: BrowserWindow.fromWebContents(event.sender),
+      callback: () => { if (!resolved) resolve(null); },
+    });
+  });
+});
 
 app.userAgentFallback = app.userAgentFallback.replace('Electron', '') + ' BacklogBasementApp';
 

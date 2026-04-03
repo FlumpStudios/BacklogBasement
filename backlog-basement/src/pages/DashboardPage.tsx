@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../auth';
-import { useCollection, useUpdateGameStatus, useMyClubs, useTwitchSync } from '../hooks';
+import { useCollection, useUpdateGameStatus, useMyClubs, useTwitchSync, useElectronGameMenu } from '../hooks';
 import { CollectionStats } from '../features/collection';
 import { GameGrid } from '../features/games';
 import { SuggestionsSection } from '../features/suggestions';
@@ -26,6 +26,7 @@ export function DashboardPage() {
   const updateGameStatus = useUpdateGameStatus();
   const { showToast } = useToast();
   const twitchSync = useTwitchSync();
+  const electronGameMenu = useElectronGameMenu();
   const syncedRef = useRef(false);
 
   // Auto-sync Twitch live status once per dashboard visit
@@ -174,6 +175,7 @@ export function DashboardPage() {
                     Mark Completed
                   </button>
                 )}
+                onContextMenu={(item, e) => electronGameMenu((item as CollectionItemDto).gameId, (item as CollectionItemDto).status ?? null, e)}
               />
             </section>
           )}
@@ -201,6 +203,7 @@ export function DashboardPage() {
                     Start Playing
                   </button>
                 )}
+                onContextMenu={(item, e) => electronGameMenu((item as CollectionItemDto).gameId, (item as CollectionItemDto).status ?? null, e)}
               />
             </section>
           )}
@@ -213,7 +216,11 @@ export function DashboardPage() {
                   View All ({collection?.filter(g => g.status === 'completed').length})
                 </Link>
               </div>
-              <GameGrid games={completedGames} showPlaytime />
+              <GameGrid
+                games={completedGames}
+                showPlaytime
+                onContextMenu={(item, e) => electronGameMenu((item as CollectionItemDto).gameId, (item as CollectionItemDto).status ?? null, e)}
+              />
             </section>
           )}
 
@@ -243,6 +250,7 @@ export function DashboardPage() {
                     + Add to Backlog
                   </button>
                 )}
+                onContextMenu={(item, e) => electronGameMenu((item as CollectionItemDto).gameId, (item as CollectionItemDto).status ?? null, e)}
               />
             </section>
           )}

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { useInfiniteCollection, useCollectionStats, useRemoveFromCollection, useUpdateGameStatus, useResetCollection } from '../hooks';
+import { useInfiniteCollection, useCollectionStats, useRemoveFromCollection, useUpdateGameStatus, useResetCollection, useElectronGameMenu } from '../hooks';
 import { CollectionStats, CollectionFilters, SortOption, PlayStatusFilter, SourceFilter, GameStatusFilter } from '../features/collection';
 import { GameGrid } from '../features/games';
 import { EmptyState, useToast, SteamSection, RetroArchSection, TwitchSection, Modal } from '../components';
@@ -208,6 +208,10 @@ export function CollectionPage() {
     }
   };
 
+  const electronGameMenu = useElectronGameMenu();
+  const handleContextMenu = (item: CollectionItemDto, e: React.MouseEvent) =>
+    electronGameMenu(item.gameId, item.status ?? null, e);
+
   const renderActions = (item: CollectionItemDto) => (
     <>
       {!item.status && (
@@ -337,6 +341,7 @@ export function CollectionPage() {
                 games={allItems}
                 showPlaytime
                 renderActions={(item) => renderActions(item as CollectionItemDto)}
+                onContextMenu={(item, e) => handleContextMenu(item as CollectionItemDto, e)}
               />
               <div ref={sentinelRef} style={{ height: 1 }} />
               {isFetchingNextPage && (

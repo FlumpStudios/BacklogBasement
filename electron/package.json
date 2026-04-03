@@ -1,0 +1,40 @@
+{
+  "name": "backlog-basement",
+  "version": "1.0.0",
+  "description": "Backlog Basement Desktop App",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux",
+    "build": "electron-builder --win --mac --linux"
+  },
+  "build": {
+    "appId": "com.backlogbasement.app",
+    "productName": "Backlog Basement",
+    "files": [
+      "main.js",
+      "offline.html",
+      "assets/**"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icon.icns",
+      "category": "public.app-category.games"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icon.png",
+      "category": "Game"
+    }
+  },
+  "devDependencies": {
+    "electron": "^32.0.0",
+    "electron-builder": "^24.0.0"
+  }
+}

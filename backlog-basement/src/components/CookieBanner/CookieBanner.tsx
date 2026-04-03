@@ -13,6 +13,10 @@ export function CookieBanner() {
     return null;
   }
 
+  if (navigator.userAgent.includes('BacklogBasementApp')) {
+    return null;
+  }
+
   const handleSavePreferences = () => {
     updateConsent({ preferences });
     setShowPreferences(false);

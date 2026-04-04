@@ -1,3 +1,9 @@
+// Detect Electron and mark <html> before React renders so CSS can target it
+const _electron = (window as any).electron;
+if (_electron?.platform) {
+  document.documentElement.classList.add('electron-' + _electron.platform);
+}
+
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';

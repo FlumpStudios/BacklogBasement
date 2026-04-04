@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth';
-import { useMyClubs, useSteamAutoSync } from '../../hooks';
+import { useMyClubs, useSteamAutoSync, useElectronBridge } from '../../hooks';
 import { NotificationBell } from '../NotificationBell';
 import { InboxBell } from '../InboxBell';
 import { CookieBanner } from '../CookieBanner';
@@ -15,7 +15,23 @@ import './Layout.css';
 
 export function Layout() {
   const { user, isAuthenticated, isLoading, logout } = useAuth();
-  const { retroMode, cycleRetro } = useTheme();
+  useElectronBridge();
+  const { theme, retroMode, cycleRetro } = useTheme();
+
+
+  // Keep Windows title bar overlay colour in sync with the active theme
+  useEffect(() => {
+    const electron = (window as any).electron;
+    if (!electron || !document.documentElement.classList.contains('electron-win32')) return;
+    const surfaceColor =
+      retroMode === 'c64'      ? '#2424cc'
+      : retroMode === 'bbc'    ? '#111111'
+      : retroMode === 'spectrum' ? '#0a0a0a'
+      : theme === 'light'      ? '#ffffff'
+      : '#1a1a24';
+    const symbolColor = theme === 'light' && retroMode === 'off' ? '#212529' : '#ffffff';
+    electron.setTitleBarOverlay({ color: surfaceColor, symbolColor, height: 64 });
+  }, [theme, retroMode]);
   const { showToast } = useToast();
   const retroLabel = retroMode === 'c64' ? 'CRT: C64' : retroMode === 'bbc' ? 'CRT: BBC' : 'CRT: Spectrum';
 
@@ -72,6 +88,8 @@ export function Layout() {
           <Link to="/" className="logo" onClick={closeMenu}>
             <img src="/title.png" alt="Backlog Basement" className="logo-img" />
           </Link>
+
+          <div className="header-drag" />
 
           <nav className="nav">
             {isAuthenticated ? (

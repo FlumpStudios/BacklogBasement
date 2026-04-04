@@ -85,6 +85,7 @@ export { useDailyQuiz, usePreviousQuiz, useAnswerQuiz, DAILY_QUIZ_QUERY_KEY, PRE
 export { useGlobalLeaderboard, useFriendLeaderboard, GLOBAL_LEADERBOARD_QUERY_KEY, FRIEND_LEADERBOARD_QUERY_KEY } from './useLeaderboard';
 export { useActivityFeed, ACTIVITY_FEED_QUERY_KEY } from './useActivityFeed';
 export { useElectronGameMenu } from './useElectronGameMenu';
+export { useElectronBridge } from './useElectronBridge';
 export { useTwitchLive, useTwitchImport, useTwitchSync } from './useTwitch';
 export {
   useConversations,

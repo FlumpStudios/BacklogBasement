@@ -151,6 +151,36 @@
   color: var(--color-border);
 }
 
+/* ─── Desktop app: frameless title bar ─────────────────────────────────────── */
+
+/* The drag div is always in the DOM but invisible and zero-width on the web */
+.header-drag {
+  display: none;
+}
+
+/* In Electron the preload adds electron-win32 / electron-darwin to <html>.
+   Show the drag div and make it fill the gap between the logo and the nav. */
+html.electron-win32 .header-drag,
+html.electron-darwin .header-drag {
+  display: block;
+  flex: 1;
+  align-self: stretch;
+  -webkit-app-region: drag;
+  cursor: default;
+}
+
+/* Windows: reserve space on the right for the native min/max/close buttons */
+html.electron-win32 .header-content {
+  padding-right: 150px;
+}
+
+/* Mac: reserve space on the left for the traffic lights (positioned at x:16) */
+html.electron-darwin .header-content {
+  padding-left: 80px;
+}
+
+/* ────────────────────────────────────────────────────────────────────────────── */
+
 .mobile-drawer {
   display: flex;
   align-items: center;

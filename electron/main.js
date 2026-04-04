@@ -1,6 +1,13 @@
-const { app, BrowserWindow, shell, Menu, MenuItem, ipcMain } = require('electron');
+const { app, BrowserWindow, shell, Menu, MenuItem, ipcMain, Tray, Notification } = require('electron');
 const path = require('path');
 const fs = require('fs');
+
+let tray = null;
+let mainWin = null;
+let isQuitting = false;
+
+const isMac = process.platform === 'darwin';
+const isWin = process.platform === 'win32';
 
 const APP_URL = 'https://backlogbasement.com';
 const STATE_FILE = path.join(app.getPath('userData'), 'window-state.json');
@@ -26,13 +33,29 @@ function createWindow() {
     ...state,
     minWidth: 900,
     minHeight: 600,
-    icon: path.join(__dirname, 'assets', process.platform === 'win32' ? 'icon.ico' : 'icon.png'),
+    icon: path.join(__dirname, 'assets', isWin ? 'icon.ico' : 'icon.png'),
     title: 'Backlog Basement',
+    // Hide the OS title bar on Mac and Windows so the web nav bar is the only top bar.
+    // Linux keeps the default title bar since there's no equivalent titleBarOverlay support.
+    ...(isMac && {
+      titleBarStyle: 'hiddenInset',
+      trafficLightPosition: { x: 16, y: 24 },
+    }),
+    ...(isWin && {
+      titleBarStyle: 'hidden',
+      titleBarOverlay: {
+        color: '#1a1a24',
+        symbolColor: '#ffffff',
+        height: 64,
+      },
+    }),
     webPreferences: {
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js'),
     },
   });
+
+  mainWin = win;
 
   if (state.maximized) win.maximize();
 
@@ -41,8 +64,12 @@ function createWindow() {
   // Persist window size/position on resize and move
   win.on('resize', () => saveWindowState(win));
   win.on('move', () => saveWindowState(win));
-  win.on('close', () => {
+  win.on('close', (event) => {
     fs.writeFileSync(STATE_FILE, JSON.stringify({ ...win.getBounds(), maximized: win.isMaximized() }));
+    if (!isQuitting) {
+      event.preventDefault();
+      win.hide();
+    }
   });
 
   // Show offline page on load failure, ignoring user-initiated navigation aborts
@@ -94,6 +121,47 @@ function createWindow() {
       menu.popup();
     }
   });
+
+  return win;
+}
+
+function createTray(win) {
+  const iconPath = path.join(__dirname, 'assets', process.platform === 'win32' ? 'icon.ico' : 'icon.png');
+  tray = new Tray(iconPath);
+
+  const buildTrayMenu = (unread = 0) => Menu.buildFromTemplate([
+    {
+      label: unread > 0 ? `Backlog Basement (${unread} unread)` : 'Backlog Basement',
+      enabled: false,
+    },
+    { type: 'separator' },
+    {
+      label: 'Show',
+      click: () => { win.show(); win.focus(); },
+    },
+    { type: 'separator' },
+    {
+      label: 'Quit',
+      click: () => { isQuitting = true; app.quit(); },
+    },
+  ]);
+
+  tray.setToolTip('Backlog Basement');
+  tray.setContextMenu(buildTrayMenu());
+
+  tray.on('click', () => {
+    if (win.isVisible()) {
+      win.focus();
+    } else {
+      win.show();
+    }
+  });
+
+  // Expose a helper so IPC handlers can update the tray menu
+  tray.updateBadge = (count) => {
+    tray.setToolTip(count > 0 ? `Backlog Basement — ${count} unread` : 'Backlog Basement');
+    tray.setContextMenu(buildTrayMenu(count));
+  };
 }
 
 // Minimal menu — keeps useful shortcuts (reload, zoom, devtools) without clutter
@@ -168,18 +236,49 @@ ipcMain.handle('show-game-menu', (event, gameId, currentStatus) => {
   });
 });
 
+ipcMain.on('set-badge-count', (_event, count) => {
+  if (process.platform === 'darwin') {
+    app.setBadgeCount(count);
+  }
+  if (tray) {
+    tray.updateBadge(count);
+  }
+});
+
+ipcMain.on('set-title-bar-overlay', (_event, options) => {
+  if (isWin && mainWin) {
+    mainWin.setTitleBarOverlay(options);
+  }
+});
+
+ipcMain.on('show-notification', (_event, { title, body }) => {
+  if (Notification.isSupported()) {
+    const iconPath = path.join(__dirname, 'assets', 'icon.png');
+    new Notification({ title, body, icon: iconPath }).show();
+  }
+});
+
 app.userAgentFallback = app.userAgentFallback.replace('Electron', '') + ' BacklogBasementApp';
 
 app.whenReady().then(() => {
   buildMenu();
-  createWindow();
+  const win = createWindow();
+  createTray(win);
 
   // Re-create window when dock icon is clicked on Mac (standard Mac behaviour)
   app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    if (BrowserWindow.getAllWindows().length === 0) {
+      const newWin = createWindow();
+      createTray(newWin);
+    } else {
+      win.show();
+      win.focus();
+    }
   });
 });
 
+// With a system tray, closing the window hides it rather than quitting.
+// Only quit when the user explicitly chooses Quit from the tray menu.
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
+  if (isQuitting && process.platform !== 'darwin') app.quit();
 });

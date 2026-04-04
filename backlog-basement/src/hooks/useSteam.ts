@@ -95,7 +95,7 @@ export function useSteamAutoSync(hasSteamLinked: boolean, hasUsername: boolean, 
     }).catch(() => {
       // silent fail — auto sync shouldn't disrupt the user
     });
-  }, [hasSteamLinked, hasUsername, isOnboarding, queryClient, showToast]);
+  }, [hasSteamLinked, hasUsername, isOnboarding, hasSteamGames, queryClient, showToast]);
 }
 
 export function useSyncSteamPlaytime(gameId: string) {

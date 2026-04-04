@@ -20,6 +20,14 @@ function loadWindowState() {
   }
 }
 
+function saveLastUrl(url) {
+  if (!url.startsWith(APP_URL)) return;
+  try {
+    const state = loadWindowState();
+    fs.writeFileSync(STATE_FILE, JSON.stringify({ ...state, lastUrl: url }));
+  } catch { /* ignore */ }
+}
+
 function saveWindowState(win) {
   if (win.isMaximized() || win.isMinimized()) return;
   const bounds = win.getBounds();
@@ -59,7 +67,7 @@ function createWindow() {
 
   if (state.maximized) win.maximize();
 
-  win.loadURL(APP_URL);
+  win.loadURL(state.lastUrl || APP_URL);
 
   // Persist window size/position on resize and move
   win.on('resize', () => saveWindowState(win));
@@ -71,6 +79,10 @@ function createWindow() {
       win.hide();
     }
   });
+
+  // Track last visited URL so we can restore it on next launch
+  win.webContents.on('did-navigate', (_e, url) => saveLastUrl(url));
+  win.webContents.on('did-navigate-in-page', (_e, url) => saveLastUrl(url));
 
   // Show offline page on load failure, ignoring user-initiated navigation aborts
   win.webContents.on('did-fail-load', (event, errorCode) => {

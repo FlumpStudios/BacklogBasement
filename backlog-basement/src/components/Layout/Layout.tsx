@@ -46,8 +46,7 @@ export function Layout() {
   const hasClubAction = myClubs?.some(c => {
     const r = c.currentRound;
     if (!r) return false;
-    return (r.status === 'voting' && !r.userHasVoted) ||
-      (r.status === 'reviewing' && !r.userHasReviewed) ||
+    return (r.status === 'reviewing' && !r.userHasReviewed) ||
       (r.status === 'nominating' && !r.userHasNominated);
   }) ?? false;
   const [onboardingActive, setOnboardingActive] = useState(false);

@@ -2,6 +2,7 @@ export { CreateClubModal } from './CreateClubModal';
 export { ClubCard } from './ClubCard';
 export { ClubMembersList } from './ClubMembersList';
 export { NominateGameModal } from './NominateGameModal';
+export { PickGameModal } from './PickGameModal';
 export { VotingSection } from './VotingSection';
 export { ReviewModal } from './ReviewModal';
 export { RoundStatusBanner } from './RoundStatusBanner';

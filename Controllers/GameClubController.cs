@@ -349,6 +349,32 @@ namespace BacklogBasement.Controllers
             }
         }
 
+        [HttpPost("{clubId}/rounds/{roundId}/pick-game")]
+        public async Task<IActionResult> PickGame(Guid clubId, Guid roundId, [FromBody] PickGameRequest request)
+        {
+            var userId = _userService.GetCurrentUserId();
+            if (userId == null) return Unauthorized();
+
+            try
+            {
+                var round = await _clubService.PickGameAsync(userId.Value, roundId, request.GameId);
+                await _activityService.LogAsync(userId.Value, "club_round_started", round.GameId, clubId);
+                return Ok(round);
+            }
+            catch (BadRequestException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
         [HttpPost("{clubId}/rounds/{roundId}/nominate")]
         public async Task<IActionResult> NominateGame(Guid clubId, Guid roundId, [FromBody] NominateGameRequest request)
         {

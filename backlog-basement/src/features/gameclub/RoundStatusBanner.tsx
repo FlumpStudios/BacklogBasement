@@ -8,20 +8,20 @@ interface RoundStatusBannerProps {
   round: GameClubRoundDto;
   currentUserRole?: string | null;
   onNominate?: () => void;
+  onPickGame?: () => void;
   onReview?: () => void;
 }
 
 const STATUS_DESCRIPTIONS: Record<string, string> = {
   nominating: 'Members can nominate games for the club to play.',
-  voting: 'Vote for your favourite nomination.',
+  selecting: 'Waiting for an admin to pick a game for this round.',
   playing: 'The game has been selected — time to play!',
   reviewing: 'Submit your score and thoughts on the game.',
   completed: 'Round complete. Check out the results below.',
 };
 
 const ADVANCE_LABELS: Record<string, string> = {
-  nominating: 'Close Nominations & Open Voting',
-  voting: 'Close Voting & Select Game',
+  nominating: 'Close Nominations & Pick Game',
   playing: 'Open Reviews',
   reviewing: 'Complete Round',
 };
@@ -31,12 +31,12 @@ function formatDeadline(date: string | null | undefined): string | null {
   return new Date(date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-export function RoundStatusBanner({ clubId, round, currentUserRole, onNominate, onReview }: RoundStatusBannerProps) {
+export function RoundStatusBanner({ clubId, round, currentUserRole, onNominate, onPickGame, onReview }: RoundStatusBannerProps) {
   const advanceRound = useAdvanceRound(clubId);
   const { showToast } = useToast();
 
   const isAdmin = currentUserRole === 'owner' || currentUserRole === 'admin';
-  const canAdvance = isAdmin && round.status !== 'completed';
+  const canAdvance = isAdmin && round.status !== 'completed' && round.status !== 'selecting';
 
   const handleAdvance = async () => {
     try {
@@ -49,7 +49,6 @@ export function RoundStatusBanner({ clubId, round, currentUserRole, onNominate, 
   };
 
   const currentDeadline = round.status === 'nominating' ? round.nominatingDeadline
-    : round.status === 'voting' ? round.votingDeadline
     : round.status === 'playing' ? round.playingDeadline
     : round.status === 'reviewing' ? round.reviewingDeadline
     : null;
@@ -70,7 +69,7 @@ export function RoundStatusBanner({ clubId, round, currentUserRole, onNominate, 
 
       <p className="round-banner-desc">{STATUS_DESCRIPTIONS[round.status]}</p>
 
-      {round.gameName && round.status !== 'nominating' && round.status !== 'voting' && (
+      {round.gameName && round.status !== 'nominating' && round.status !== 'selecting' && (
         <div className="round-banner-game">
           {round.gameCoverUrl && <img src={round.gameCoverUrl} alt="" className="round-game-cover" />}
           <span className="round-game-name">{round.gameName}</span>
@@ -91,6 +90,12 @@ export function RoundStatusBanner({ clubId, round, currentUserRole, onNominate, 
         )}
         {round.status === 'nominating' && round.userHasNominated && (
           <span className="round-banner-already-done">You have already nominated a game this round.</span>
+        )}
+
+        {round.status === 'selecting' && isAdmin && (
+          <button className="btn btn-primary" onClick={onPickGame}>
+            Pick a Game
+          </button>
         )}
 
         {round.status === 'reviewing' && !round.userHasReviewed && (

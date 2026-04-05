@@ -405,6 +405,26 @@
   cursor: pointer;
 }
 
+.club-form-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.club-form-radio {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.club-form-radio input[type="radio"] {
+  margin-top: 0.15rem;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
 .club-form-error {
   margin: 0.25rem 0 0;
   font-size: 0.8rem;

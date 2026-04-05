@@ -26,6 +26,7 @@ export function CreateClubModal({ isOpen, onClose, onCreated }: CreateClubModalP
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [isPublic, setIsPublic] = useState(false);
+  const [selectionMode, setSelectionMode] = useState<'nominated' | 'admin_picked'>('nominated');
   const [discordLink, setDiscordLink] = useState('');
   const [whatsAppLink, setWhatsAppLink] = useState('');
   const [redditLink, setRedditLink] = useState('');
@@ -48,6 +49,7 @@ export function CreateClubModal({ isOpen, onClose, onCreated }: CreateClubModalP
         name: name.trim(),
         description: description.trim() || undefined,
         isPublic,
+        selectionMode,
         discordLink: discordLink.trim() || undefined,
         whatsAppLink: whatsAppLink.trim() || undefined,
         redditLink: redditLink.trim() || undefined,
@@ -65,6 +67,7 @@ export function CreateClubModal({ isOpen, onClose, onCreated }: CreateClubModalP
     setName('');
     setDescription('');
     setIsPublic(false);
+    setSelectionMode('nominated');
     setDiscordLink('');
     setWhatsAppLink('');
     setRedditLink('');
@@ -111,6 +114,32 @@ export function CreateClubModal({ isOpen, onClose, onCreated }: CreateClubModalP
           {!isPublic && (
             <p className="club-form-hint">Invite-only — members must be invited by an admin.</p>
           )}
+        </div>
+
+        <div className="club-form-field">
+          <label>Game Selection</label>
+          <div className="club-form-radio-group">
+            <label className="club-form-radio">
+              <input
+                type="radio"
+                name="selectionMode"
+                value="nominated"
+                checked={selectionMode === 'nominated'}
+                onChange={() => setSelectionMode('nominated')}
+              />
+              <span>Members nominate — a random game is picked from nominations</span>
+            </label>
+            <label className="club-form-radio">
+              <input
+                type="radio"
+                name="selectionMode"
+                value="admin_picked"
+                checked={selectionMode === 'admin_picked'}
+                onChange={() => setSelectionMode('admin_picked')}
+              />
+              <span>Admin picks — an owner or admin chooses the game each round</span>
+            </label>
+          </div>
         </div>
 
         <div className="club-form-field">

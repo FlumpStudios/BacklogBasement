@@ -16,6 +16,7 @@ namespace BacklogBasement.DTOs
         public string OwnerDisplayName { get; set; } = string.Empty;
         public string OwnerUsername { get; set; } = string.Empty;
         public int MemberCount { get; set; }
+        public string SelectionMode { get; set; } = "nominated";
         public GameClubRoundDto? CurrentRound { get; set; }
     }
 
@@ -125,6 +126,12 @@ namespace BacklogBasement.DTOs
         public string? WhatsAppLink { get; set; }
         public string? RedditLink { get; set; }
         public string? YouTubeLink { get; set; }
+        public string SelectionMode { get; set; } = "nominated";
+    }
+
+    public class PickGameRequest
+    {
+        public Guid GameId { get; set; }
     }
 
     public class StartRoundRequest

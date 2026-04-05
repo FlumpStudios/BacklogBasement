@@ -161,6 +161,17 @@ export function useAdvanceRound(clubId: string) {
   });
 }
 
+export function usePickGame(clubId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ roundId, gameId }: { roundId: string; gameId: string }) =>
+      gameClubApi.pickGame(clubId, roundId, gameId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CLUB_DETAIL_QUERY_KEY(clubId) });
+    },
+  });
+}
+
 export function useNominateGame(clubId: string) {
   const queryClient = useQueryClient();
   const { showToast } = useToast();

@@ -12,7 +12,6 @@ import './DashboardPage.css';
 function getClubCta(club: GameClubDto) {
   const r = club.currentRound;
   if (!r) return null;
-  if (r.status === 'voting' && !r.userHasVoted) return { type: 'vote', label: '🗳️ Vote Now' };
   if (r.status === 'reviewing' && !r.userHasReviewed) return { type: 'review', label: '✍️ Write Review' };
   if (r.status === 'nominating' && !r.userHasNominated) return { type: 'nominate', label: '🎮 Nominate a Game' };
   if (r.status === 'playing') return { type: 'playing', label: r.gameName ?? 'Currently Playing' };

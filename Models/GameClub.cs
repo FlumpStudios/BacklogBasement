@@ -14,6 +14,7 @@ namespace BacklogBasement.Models
         public string? RedditLink { get; set; }
         public string? YouTubeLink { get; set; }
         public Guid OwnerId { get; set; }
+        public string SelectionMode { get; set; } = "nominated"; // "nominated" | "admin_picked"
         public DateTime CreatedAt { get; set; }
 
         // Navigation properties

@@ -24,6 +24,7 @@ namespace BacklogBasement.Services
         // Round management
         Task<GameClubRoundDto> StartNewRoundAsync(Guid userId, Guid clubId, StartRoundRequest request);
         Task<GameClubRoundDto> AdvanceRoundStatusAsync(Guid userId, Guid roundId);
+        Task<GameClubRoundDto> PickGameAsync(Guid userId, Guid roundId, Guid gameId);
 
         // Nominations & voting
         Task<GameClubNominationDto> NominateGameAsync(Guid userId, Guid roundId, Guid gameId);

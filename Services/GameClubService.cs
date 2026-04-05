@@ -38,6 +38,8 @@ namespace BacklogBasement.Services
             var user = await _context.Users.FindAsync(userId)
                 ?? throw new NotFoundException("User not found.");
 
+            var selectionMode = request.SelectionMode == "admin_picked" ? "admin_picked" : "nominated";
+
             var club = new GameClub
             {
                 Id = Guid.NewGuid(),
@@ -49,6 +51,7 @@ namespace BacklogBasement.Services
                 RedditLink = request.RedditLink?.Trim() ?? null,
                 YouTubeLink = request.YouTubeLink?.Trim() ?? null,
                 OwnerId = userId,
+                SelectionMode = selectionMode,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -87,6 +90,7 @@ namespace BacklogBasement.Services
                     OwnerDisplayName = gc.Owner.DisplayName,
                     OwnerUsername = gc.Owner.Username ?? string.Empty,
                     MemberCount = gc.Members.Count,
+                    SelectionMode = gc.SelectionMode,
                     CurrentRound = gc.Rounds
                         .Where(r => r.Status != "completed")
                         .OrderByDescending(r => r.RoundNumber)
@@ -126,6 +130,7 @@ namespace BacklogBasement.Services
                     OwnerDisplayName = gcm.Club.Owner.DisplayName,
                     OwnerUsername = gcm.Club.Owner.Username ?? string.Empty,
                     MemberCount = gcm.Club.Members.Count,
+                    SelectionMode = gcm.Club.SelectionMode,
                     CurrentRound = gcm.Club.Rounds
                         .Where(r => r.Status != "completed")
                         .OrderByDescending(r => r.RoundNumber)
@@ -186,6 +191,7 @@ namespace BacklogBasement.Services
                 OwnerDisplayName = club.Owner.DisplayName,
                 OwnerUsername = club.Owner.Username ?? string.Empty,
                 MemberCount = club.Members.Count,
+                SelectionMode = club.SelectionMode,
                 CurrentUserRole = currentMember?.Role,
                 Members = club.Members
                     .OrderBy(m => m.JoinedAt)
@@ -247,7 +253,7 @@ namespace BacklogBasement.Services
                 CompletedAt = round.CompletedAt,
                 AverageScore = avgScore,
                 Nominations = round.Nominations
-                    .OrderByDescending(n => n.Votes.Count)
+                    .OrderBy(n => n.CreatedAt)
                     .Select(n => new GameClubNominationDto
                     {
                         Id = n.Id,
@@ -503,6 +509,9 @@ namespace BacklogBasement.Services
             if (member.Role == "member")
                 throw new BadRequestException("Only admins and owners can start rounds.");
 
+            var club = await _context.GameClubs.FindAsync(clubId)!
+                ?? throw new NotFoundException("Club not found.");
+
             var hasActiveRound = await _context.GameClubRounds
                 .AnyAsync(r => r.ClubId == clubId && r.Status != "completed");
             if (hasActiveRound)
@@ -512,12 +521,14 @@ namespace BacklogBasement.Services
                 .Where(r => r.ClubId == clubId)
                 .MaxAsync(r => (int?)r.RoundNumber) ?? 0;
 
+            var initialStatus = club.SelectionMode == "admin_picked" ? "selecting" : "nominating";
+
             var round = new GameClubRound
             {
                 Id = Guid.NewGuid(),
                 ClubId = clubId,
                 RoundNumber = roundNumber + 1,
-                Status = "nominating",
+                Status = initialStatus,
                 NominatingDeadline = request.NominatingDeadline,
                 VotingDeadline = request.VotingDeadline,
                 PlayingDeadline = request.PlayingDeadline,
@@ -534,13 +545,16 @@ namespace BacklogBasement.Services
                 .Select(m => m.UserId)
                 .ToListAsync();
 
-            var club = await _context.GameClubs.FindAsync(clubId)!;
+            var roundStartedMsg = club.SelectionMode == "admin_picked"
+                ? $"Round {round.RoundNumber} has started in \"{club.Name}\" — the admin is picking a game!"
+                : $"Round {round.RoundNumber} has started in \"{club.Name}\" — nominate your games!";
+
             foreach (var memberId in memberIds)
             {
                 await _notificationService.CreateNotificationAsync(
                     memberId,
                     "club_round_started",
-                    $"Round {round.RoundNumber} has started in \"{club!.Name}\" — nominate your games!",
+                    roundStartedMsg,
                     null, null, clubId);
             }
 
@@ -573,33 +587,18 @@ namespace BacklogBasement.Services
             {
                 case "nominating":
                     if (!round.Nominations.Any())
-                        throw new BadRequestException("Cannot advance to voting: no nominations yet.");
-                    round.Status = "voting";
-                    foreach (var memberId in memberIds)
-                    {
-                        await _notificationService.CreateNotificationAsync(
-                            memberId, "club_voting_started",
-                            $"Voting is open in \"{club!.Name}\" Round {round.RoundNumber} — cast your vote!",
-                            null, null, round.ClubId);
-                    }
-                    break;
-
-                case "voting":
-                    // Resolve votes: pick winner, breaking ties randomly
-                    var maxVotes = round.Nominations.Max(n => n.Votes.Count);
-                    var topNominations = round.Nominations
-                        .Where(n => n.Votes.Count == maxVotes)
-                        .ToList();
-                    var winner = topNominations[Random.Shared.Next(topNominations.Count)];
-                    if (winner != null)
-                        round.GameId = winner.GameId;
+                        throw new BadRequestException("Cannot close nominations: no games have been nominated yet.");
+                    // Weighted random draw — each nomination is one ticket
+                    var nominationList = round.Nominations.ToList();
+                    var winner = nominationList[Random.Shared.Next(nominationList.Count)];
+                    round.GameId = winner.GameId;
                     round.Status = "playing";
                     foreach (var memberId in memberIds)
                     {
                         await _notificationService.CreateNotificationAsync(
                             memberId, "club_game_selected",
-                            $"The game for Round {round.RoundNumber} in \"{club!.Name}\" has been selected: \"{winner?.Game.Name}\"",
-                            null, winner?.GameId, round.ClubId);
+                            $"The game for Round {round.RoundNumber} in \"{club!.Name}\" has been selected: \"{winner.Game.Name}\"",
+                            null, winner.GameId, round.ClubId);
                     }
                     break;
 
@@ -633,6 +632,59 @@ namespace BacklogBasement.Services
             await _context.SaveChangesAsync();
 
             // Reload with full includes for response
+            round = await _context.GameClubRounds
+                .Include(r => r.Nominations).ThenInclude(n => n.Game)
+                .Include(r => r.Nominations).ThenInclude(n => n.NominatedByUser)
+                .Include(r => r.Nominations).ThenInclude(n => n.Votes)
+                .Include(r => r.Votes)
+                .Include(r => r.Reviews)
+                .Include(r => r.Game)
+                .FirstAsync(r => r.Id == roundId);
+
+            return BuildRoundDto(round, userId)!;
+        }
+
+        public async Task<GameClubRoundDto> PickGameAsync(Guid userId, Guid roundId, Guid gameId)
+        {
+            var round = await _context.GameClubRounds
+                .Include(r => r.Nominations).ThenInclude(n => n.Game)
+                .Include(r => r.Nominations).ThenInclude(n => n.NominatedByUser)
+                .Include(r => r.Nominations).ThenInclude(n => n.Votes)
+                .Include(r => r.Votes)
+                .Include(r => r.Reviews)
+                .Include(r => r.Game)
+                .FirstOrDefaultAsync(r => r.Id == roundId)
+                ?? throw new NotFoundException("Round not found.");
+
+            var member = await GetMemberOrThrowAsync(userId, round.ClubId);
+            if (member.Role == "member")
+                throw new BadRequestException("Only admins and owners can pick a game.");
+
+            if (round.Status != "selecting")
+                throw new BadRequestException("Game can only be picked when the round is in selecting status.");
+
+            var game = await _context.Games.FindAsync(gameId)
+                ?? throw new NotFoundException("Game not found.");
+
+            var club = await _context.GameClubs.FindAsync(round.ClubId)!;
+            var memberIds = await _context.GameClubMembers
+                .Where(m => m.ClubId == round.ClubId && m.UserId != userId)
+                .Select(m => m.UserId)
+                .ToListAsync();
+
+            round.GameId = gameId;
+            round.Status = "playing";
+            await _context.SaveChangesAsync();
+
+            foreach (var memberId in memberIds)
+            {
+                await _notificationService.CreateNotificationAsync(
+                    memberId, "club_game_selected",
+                    $"The game for Round {round.RoundNumber} in \"{club!.Name}\" has been selected: \"{game.Name}\"",
+                    null, gameId, round.ClubId);
+            }
+
+            // Reload game nav property
             round = await _context.GameClubRounds
                 .Include(r => r.Nominations).ThenInclude(n => n.Game)
                 .Include(r => r.Nominations).ThenInclude(n => n.NominatedByUser)

@@ -4,6 +4,7 @@ import { useClub, useStartRound, useRoundReviews, useInviteMember, useFriends, u
 import {
   ClubMembersList,
   NominateGameModal,
+  PickGameModal,
   VotingSection,
   ReviewModal,
   RoundStatusBanner,
@@ -22,6 +23,7 @@ export function GameClubDetailPage() {
   const { data: friends } = useFriends();
 
   const [showNominate, setShowNominate] = useState(false);
+  const [showPickGame, setShowPickGame] = useState(false);
   const [showReview, setShowReview] = useState(false);
   const [showStartRound, setShowStartRound] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
@@ -201,19 +203,14 @@ export function GameClubDetailPage() {
             round={activeRound}
             currentUserRole={club.currentUserRole}
             onNominate={() => setShowNominate(true)}
+            onPickGame={() => setShowPickGame(true)}
             onReview={() => setShowReview(true)}
           />
 
-          {(activeRound.status === 'nominating' || activeRound.status === 'voting') && (
+          {activeRound.status === 'nominating' && (
             <div className="club-nominations-section">
               <h3>Nominations</h3>
-              <VotingSection
-                clubId={clubId!}
-                roundId={activeRound.id}
-                nominations={activeRound.nominations}
-                userVotedNominationId={activeRound.userVotedNominationId}
-                status={activeRound.status}
-              />
+              <VotingSection nominations={activeRound.nominations} />
             </div>
           )}
 
@@ -314,6 +311,12 @@ export function GameClubDetailPage() {
           <NominateGameModal
             isOpen={showNominate}
             onClose={() => setShowNominate(false)}
+            clubId={clubId!}
+            roundId={activeRound.id}
+          />
+          <PickGameModal
+            isOpen={showPickGame}
+            onClose={() => setShowPickGame(false)}
             clubId={clubId!}
             roundId={activeRound.id}
           />

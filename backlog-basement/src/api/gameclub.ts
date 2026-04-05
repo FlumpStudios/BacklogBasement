@@ -54,6 +54,9 @@ export const gameClubApi = {
   advanceRound: (clubId: string, roundId: string) =>
     api.post<GameClubRoundDto>(`/clubs/${clubId}/rounds/${roundId}/advance`),
 
+  pickGame: (clubId: string, roundId: string, gameId: string) =>
+    api.post<GameClubRoundDto>(`/clubs/${clubId}/rounds/${roundId}/pick-game`, { gameId }),
+
   nominateGame: (clubId: string, roundId: string, gameId: string) =>
     api.postWithXp<GameClubNominationDto>(`/clubs/${clubId}/rounds/${roundId}/nominate`, { gameId }),
 

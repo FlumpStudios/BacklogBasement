@@ -269,6 +269,7 @@ export interface GameClubDto {
   ownerDisplayName: string;
   ownerUsername: string;
   memberCount: number;
+  selectionMode: 'nominated' | 'admin_picked';
   currentRound?: GameClubRoundDto | null;
 }
 
@@ -282,7 +283,7 @@ export interface GameClubDetailDto extends GameClubDto {
 export interface GameClubRoundDto {
   id: string;
   roundNumber: number;
-  status: 'nominating' | 'voting' | 'playing' | 'reviewing' | 'completed';
+  status: 'nominating' | 'selecting' | 'playing' | 'reviewing' | 'completed';
   gameId?: string | null;
   gameName?: string | null;
   gameCoverUrl?: string | null;
@@ -366,6 +367,7 @@ export interface CreateGameClubRequest {
   whatsAppLink?: string;
   redditLink?: string;
   youTubeLink?: string;
+  selectionMode?: 'nominated' | 'admin_picked';
 }
 
 export interface StartRoundRequest {

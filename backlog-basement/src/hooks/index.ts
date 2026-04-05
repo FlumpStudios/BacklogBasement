@@ -74,6 +74,7 @@ export {
   useUpdateMemberRole,
   useStartRound,
   useAdvanceRound,
+  usePickGame,
   useNominateGame,
   useVote,
   useSubmitReview,

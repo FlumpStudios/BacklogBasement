@@ -11,6 +11,7 @@ interface GameCardProps {
   criticScore?: number | null;
   status?: 'backlog' | 'playing' | 'completed' | null;
   actions?: React.ReactNode;
+  bottomActions?: React.ReactNode;
   onContextMenu?: (e: React.MouseEvent) => void;
 }
 
@@ -27,7 +28,7 @@ function isValidCoverUrl(url?: string | null): boolean {
   return !url.endsWith('/.jpg') && !url.endsWith('/.png');
 }
 
-export function GameCard({ game, playtime, showPlaytime = false, criticScore, status, actions, onContextMenu }: GameCardProps) {
+export function GameCard({ game, playtime, showPlaytime = false, criticScore, status, actions, bottomActions, onContextMenu }: GameCardProps) {
   const releaseYear = getYear(game.releaseDate ?? undefined);
   const hasCover = isValidCoverUrl(game.coverUrl);
   const [imageError, setImageError] = useState(false);
@@ -72,7 +73,21 @@ export function GameCard({ game, playtime, showPlaytime = false, criticScore, st
           )}
         </div>
       </Link>
-      {actions && <div className="game-card-actions">{actions}</div>}
+      {(actions || game.steamAppId || bottomActions) && (
+        <div className="game-card-actions">
+          {actions}
+          {game.steamAppId && (
+            <a
+              href={`steam://run/${game.steamAppId}`}
+              className="btn btn-steam btn-sm"
+              onClick={(e) => e.stopPropagation()}
+            >
+              Launch on Steam
+            </a>
+          )}
+          {bottomActions}
+        </div>
+      )}
     </div>
   );
 }

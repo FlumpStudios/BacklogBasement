@@ -26,6 +26,7 @@ export interface CollectionItemDto {
   notes?: string | null;
   totalPlayTimeMinutes: number;
   source: 'steam' | 'manual';
+  steamAppId?: number | null;
   status?: 'backlog' | 'playing' | 'completed' | null;
   dateCompleted?: string | null;
   criticScore?: number | null;

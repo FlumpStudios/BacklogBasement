@@ -250,16 +250,6 @@ export function CollectionPage() {
           Mark Completed
         </button>
       )}
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          handleRemove(item.gameId, item.gameName);
-        }}
-        className="btn btn-danger btn-sm"
-        disabled={removeFromCollection.isPending}
-      >
-        Remove
-      </button>
     </>
   );
 
@@ -341,6 +331,18 @@ export function CollectionPage() {
                 games={allItems}
                 showPlaytime
                 renderActions={(item) => renderActions(item as CollectionItemDto)}
+                renderBottomActions={(item) => {
+                  const c = item as CollectionItemDto;
+                  return (
+                    <button
+                      onClick={(e) => { e.preventDefault(); handleRemove(c.gameId, c.gameName); }}
+                      className="btn btn-danger btn-sm"
+                      disabled={removeFromCollection.isPending}
+                    >
+                      Remove
+                    </button>
+                  );
+                }}
                 onContextMenu={(item, e) => handleContextMenu(item as CollectionItemDto, e)}
               />
               <div ref={sentinelRef} style={{ height: 1 }} />

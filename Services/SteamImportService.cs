@@ -96,21 +96,28 @@ namespace BacklogBasement.Services
                     // Check if already in user's collection
                     if (existingUserGameIds.TryGetValue(game.Id, out var existingUserGameId))
                     {
-                        // Upgrade: sync playtime for games already in the collection
                         if (includePlaytime && steamGame.PlaytimeForever > 0)
                         {
                             var existingSessions = await _context.PlaySessions
                                 .Where(ps => ps.UserGameId == existingUserGameId)
                                 .ToListAsync();
-                            _context.PlaySessions.RemoveRange(existingSessions);
-                            _context.PlaySessions.Add(new PlaySession
+                            var existingTotal = existingSessions.Sum(ps => ps.DurationMinutes);
+                            if (existingTotal != steamGame.PlaytimeForever)
                             {
-                                Id = Guid.NewGuid(),
-                                UserGameId = existingUserGameId,
-                                DurationMinutes = steamGame.PlaytimeForever,
-                                PlayedAt = DateTime.UtcNow
-                            });
-                            result.UpdatedCount++;
+                                _context.PlaySessions.RemoveRange(existingSessions);
+                                _context.PlaySessions.Add(new PlaySession
+                                {
+                                    Id = Guid.NewGuid(),
+                                    UserGameId = existingUserGameId,
+                                    DurationMinutes = steamGame.PlaytimeForever,
+                                    PlayedAt = DateTime.UtcNow
+                                });
+                                result.UpdatedCount++;
+                            }
+                            else
+                            {
+                                result.SkippedCount++;
+                            }
                         }
                         else
                         {

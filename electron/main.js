@@ -1,6 +1,7 @@
-const { app, BrowserWindow, shell, Menu, MenuItem, ipcMain, Tray, Notification } = require('electron');
+const { app, BrowserWindow, shell, Menu, MenuItem, ipcMain, Tray, Notification, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const { autoUpdater } = require('electron-updater');
 
 let tray = null;
 let mainWin = null;
@@ -270,12 +271,93 @@ ipcMain.on('show-notification', (_event, { title, body }) => {
   }
 });
 
+// In dev (unpackaged), pass the app directory explicitly so Electron doesn't
+// mistake the protocol URL for the app path when a second instance launches.
+if (app.isPackaged) {
+  app.setAsDefaultProtocolClient('backlogbasement');
+} else {
+  app.setAsDefaultProtocolClient('backlogbasement', process.execPath, [
+    path.resolve(process.argv[1]),
+  ]);
+}
+
+function handleProtocolUrl(url) {
+  try {
+    const parsed = new URL(url);
+    // backlogbasement://games/123 -> https://backlogbasement.com/games/123
+    const appPath = parsed.hostname + (parsed.pathname !== '/' ? parsed.pathname : '') + parsed.search;
+    const target = `${APP_URL}/${appPath}`;
+    if (mainWin) {
+      mainWin.loadURL(target);
+      mainWin.show();
+      mainWin.focus();
+    }
+  } catch { /* ignore malformed URLs */ }
+}
+
+// Single instance lock — prevents a second process launching when a protocol URL is clicked
+const gotLock = app.requestSingleInstanceLock();
+if (!gotLock) {
+  app.quit();
+} else {
+  // Windows: second instance passes the protocol URL in argv
+  app.on('second-instance', (_event, argv) => {
+    const url = argv.find(arg => arg.startsWith('backlogbasement://'));
+    if (url) handleProtocolUrl(url);
+    if (mainWin) { mainWin.show(); mainWin.focus(); }
+  });
+}
+
+// Mac: protocol URL fires open-url on the existing instance
+app.on('open-url', (event, url) => {
+  event.preventDefault();
+  handleProtocolUrl(url);
+});
+
 app.userAgentFallback = app.userAgentFallback.replace('Electron', '') + ' BacklogBasementApp';
 
 app.whenReady().then(() => {
   buildMenu();
   const win = createWindow();
   createTray(win);
+
+  // Windows cold start: app launched directly via protocol URL
+  const protocolUrl = process.argv.find(arg => arg.startsWith('backlogbasement://'));
+  if (protocolUrl) handleProtocolUrl(protocolUrl);
+
+  // Auto-updater — only runs in packaged builds
+  if (app.isPackaged) {
+    autoUpdater.checkForUpdates();
+
+    autoUpdater.on('update-available', (info) => {
+      dialog.showMessageBox(win, {
+        type: 'info',
+        title: 'Update Available',
+        message: `Version ${info.version} is available.`,
+        detail: 'Would you like to download and install it now?',
+        buttons: ['Update', 'Later'],
+        defaultId: 0,
+      }).then(({ response }) => {
+        if (response === 0) autoUpdater.downloadUpdate();
+      });
+    });
+
+    autoUpdater.on('update-downloaded', () => {
+      dialog.showMessageBox(win, {
+        type: 'info',
+        title: 'Update Ready',
+        message: 'Update downloaded.',
+        detail: 'The update will be installed when you restart the app.',
+        buttons: ['Restart Now', 'Later'],
+        defaultId: 0,
+      }).then(({ response }) => {
+        if (response === 0) {
+          isQuitting = true;
+          autoUpdater.quitAndInstall();
+        }
+      });
+    });
+  }
 
   // Re-create window when dock icon is clicked on Mac (standard Mac behaviour)
   app.on('activate', () => {

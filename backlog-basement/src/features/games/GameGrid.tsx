@@ -6,6 +6,7 @@ interface GameGridProps {
   games: GameDto[] | CollectionItemDto[];
   showPlaytime?: boolean;
   renderActions?: (game: GameDto | CollectionItemDto) => React.ReactNode;
+  renderBottomActions?: (game: GameDto | CollectionItemDto) => React.ReactNode;
   onContextMenu?: (item: GameDto | CollectionItemDto, e: React.MouseEvent) => void;
 }
 
@@ -15,18 +16,19 @@ function isCollectionItem(
   return 'gameName' in item;
 }
 
-export function GameGrid({ games, showPlaytime = false, renderActions, onContextMenu }: GameGridProps) {
+export function GameGrid({ games, showPlaytime = false, renderActions, renderBottomActions, onContextMenu }: GameGridProps) {
   return (
     <div className="game-grid">
       {games.map((item) => {
         // CollectionItemDto has flat structure, GameDto is already a game
-        const gameForCard: GameDto = isCollectionItem(item) 
-          ? { 
-              id: item.gameId, 
+        const gameForCard: GameDto = isCollectionItem(item)
+          ? {
+              id: item.gameId,
               igdbId: 0,
-              name: item.gameName, 
-              coverUrl: item.coverUrl, 
-              releaseDate: item.releaseDate 
+              name: item.gameName,
+              coverUrl: item.coverUrl,
+              releaseDate: item.releaseDate,
+              steamAppId: item.steamAppId,
             }
           : item;
         const playtime = isCollectionItem(item) ? item.totalPlayTimeMinutes : undefined;
@@ -42,6 +44,7 @@ export function GameGrid({ games, showPlaytime = false, renderActions, onContext
             criticScore={criticScore}
             status={status}
             actions={renderActions?.(item)}
+            bottomActions={renderBottomActions?.(item)}
             onContextMenu={onContextMenu ? (e) => onContextMenu(item, e) : undefined}
           />
         );

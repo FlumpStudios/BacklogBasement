@@ -42,7 +42,8 @@ namespace BacklogBasement.Services
                     Source = ug.Game.SteamAppId.HasValue ? "steam" : "manual",
                     Status = ug.Status,
                     DateCompleted = ug.DateCompleted,
-                    CriticScore = ug.Game.CriticScore
+                    CriticScore = ug.Game.CriticScore,
+                    SteamAppId = ug.Game.SteamAppId
                 })
                 .ToListAsync();
         }
@@ -91,7 +92,8 @@ namespace BacklogBasement.Services
                 Source = game.SteamAppId.HasValue ? "steam" : "manual",
                 Status = userGame.Status,
                 DateCompleted = userGame.DateCompleted,
-                CriticScore = game.CriticScore
+                CriticScore = game.CriticScore,
+                SteamAppId = game.SteamAppId
             };
         }
 
@@ -144,7 +146,8 @@ namespace BacklogBasement.Services
                 Source = userGame.Game.SteamAppId.HasValue ? "steam" : "manual",
                 Status = userGame.Status,
                 DateCompleted = userGame.DateCompleted,
-                CriticScore = userGame.Game.CriticScore
+                CriticScore = userGame.Game.CriticScore,
+                SteamAppId = userGame.Game.SteamAppId
             };
         }
 
@@ -207,7 +210,8 @@ namespace BacklogBasement.Services
                 Source = userGame.Game.SteamAppId.HasValue ? "steam" : "manual",
                 Status = userGame.Status,
                 DateCompleted = userGame.DateCompleted,
-                CriticScore = userGame.Game.CriticScore
+                CriticScore = userGame.Game.CriticScore,
+                SteamAppId = userGame.Game.SteamAppId
             };
         }
 
@@ -318,6 +322,7 @@ namespace BacklogBasement.Services
                     Status = ug.Status,
                     DateCompleted = ug.DateCompleted,
                     CriticScore = ug.Game.CriticScore,
+                    SteamAppId = ug.Game.SteamAppId,
                 })
                 .ToListAsync();
 

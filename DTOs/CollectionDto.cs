@@ -17,6 +17,7 @@ namespace BacklogBasement.DTOs
         public string? Status { get; set; } // null, "backlog", "playing", "completed"
         public DateTime? DateCompleted { get; set; }
         public int? CriticScore { get; set; }
+        public long? SteamAppId { get; set; }
     }
 
     public class AddToCollectionRequest

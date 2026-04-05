@@ -15,9 +15,15 @@
     "productName": "Backlog Basement",
     "files": [
       "main.js",
+      "preload.js",
       "offline.html",
       "assets/**"
     ],
+    "publish": {
+      "provider": "github",
+      "owner": "FlumpStudios",
+      "repo": "BacklogBasement"
+    },
     "win": {
       "target": "nsis",
       "icon": "assets/icon.ico"
@@ -36,5 +42,8 @@
   "devDependencies": {
     "electron": "^32.0.0",
     "electron-builder": "^24.0.0"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.3"
   }
 }
